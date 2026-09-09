@@ -255,6 +255,8 @@ export default function Home() {
   const [characteristics, setCharacteristics] = useState({ customer: true, digital: false, outsourcing: false });
   const [issueIndex, setIssueIndex] = useState(0);
   const [workspaceTab, setWorkspaceTab] = useState('start');
+  const [answeredQuestion, setAnsweredQuestion] = useState('');
+  const [answerIds, setAnswerIds] = useState<number[]>([]);
 
   useEffect(() => {
     const context = document.modelContext;
@@ -357,6 +359,30 @@ export default function Home() {
     characteristics.digital && 'digital lending, consent and LSP controls',
     characteristics.outsourcing && 'vendor governance, audit access and exit planning',
   ].filter(Boolean) as string[];
+  const answerRegulations = answerIds.map((id) => regulations.find((item) => item.id === id)).filter(Boolean) as Regulation[];
+  const primaryAnswer = answerRegulations[0];
+
+  const answerQuestion = () => {
+    const question = query.trim();
+    if (!question) return;
+    const normalized = question.toLowerCase();
+    const stopWords = new Set(['about','after','also','before','being','between','could','does','from','have','into','should','that','their','there','these','they','this','through','under','what','when','where','which','with','would','your','base','middle','upper','layer','nbfc']);
+    const tokens = normalized.split(/[^a-z0-9₹]+/).filter((word) => word.length > 2 && !stopWords.has(word));
+    const aliases: Array<[RegExp, number[]]> = [
+      [/start|register|registration|certificate|\bcor\b|principal business/, [1]], [/capital|crar|tier|net owned fund|\bnof\b/, [2,1]], [/npa|overdue|past due|90 day|asset classification|provision/, [3]], [/default|stress|restructur|resolution/, [4,3]], [/concentration|exposure limit|single borrower|group borrower/, [5]], [/liquidity|alm|lcr|mismatch/, [6]], [/penal|interest|charge|recovery|complaint|kfs|apr|fair practice|prepayment/, [7]], [/digital|\blsp\b|\bdla\b|guarantee|\bdlg\b|microfinance|gold loan|project finance/, [8]], [/kyc|aml|beneficial owner|ckycr|fiu|pep|money laundering/, [9]], [/director|board|committee|governance|cro|cco/, [10]], [/outsourc|vendor|cloud|service provider/, [11]], [/credit information|bureau|\bcic\b|cibil|crilc/, [12]], [/financial statement|disclosure|ind as|impairment reserve/, [13]], [/transfer|co-lending|loan sale/, [14]], [/securitis/, [15]], [/wilful|large defaulter/, [16]], [/public deposit|accept deposit|deposit taking/, [17]], [/credit card|co-brand/, [18]], [/dividend|payout/, [19]], [/shareholder|shareholding|takeover|change in control|acquisition/, [20]], [/aif|overseas|insurance|mutual fund|financial service/, [21]], [/branch|registered office/, [22]], [/amalgamation|merger/, [23]], [/investment portfolio|treasury|derivative|bond/, [24]], [/climate|green deposit|green finance/, [25]], [/underwriting|credit appraisal|end use|related party lending/, [26]], [/ncd|factoring|virtual asset|electronic payment/, [27]], [/payment system|settlement/, [28]],
+    ];
+    const scored = regulations.map((reg) => {
+      const detail = regulationDetails[reg.id];
+      const title = `${reg.title} ${reg.short} ${reg.category}`.toLowerCase();
+      const corpus = `${title} ${reg.summary} ${reg.highlights.join(' ')} ${detail?.applies ?? ''} ${detail?.requirements.join(' ') ?? ''} ${detail?.timing.join(' ') ?? ''} ${detail?.checks.join(' ') ?? ''}`.toLowerCase();
+      let score = tokens.reduce((total, token) => total + (title.includes(token) ? 4 : corpus.includes(token) ? 1 : 0), 0);
+      for (const [pattern, ids] of aliases) if (pattern.test(normalized) && ids.includes(reg.id)) score += 10 - ids.indexOf(reg.id);
+      if (reg.layers.includes(profileLayer)) score += 0.5;
+      return { id: reg.id, score };
+    }).filter((item) => item.score > 0).sort((a, b) => b.score - a.score);
+    setAnsweredQuestion(question);
+    setAnswerIds(scored.slice(0, 3).map((item) => item.id));
+  };
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -369,16 +395,17 @@ export default function Home() {
       </header>
 
       <div className="mx-auto max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-        <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_390px]">
-          <div className="command-panel overflow-hidden rounded-3xl border border-slate-200 bg-[#07182b] p-6 text-white shadow-[0_24px_70px_-42px_rgba(2,12,27,.8)] sm:p-8">
+        <section className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_390px]">
+          <div className="command-panel self-start overflow-hidden rounded-3xl border border-slate-200 bg-[#07182b] p-6 text-white shadow-[0_24px_70px_-42px_rgba(2,12,27,.8)] sm:p-8">
             <div className="relative z-10 max-w-3xl"><div className="mb-5 flex items-center gap-2 text-sm text-cyan-200"><Compass className="size-4" />Start here</div><h1 className="max-w-2xl text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">Understand the NBFC first. Then find the rule.</h1><p className="mt-3 max-w-2xl text-base leading-7 text-slate-300">Learn the regulatory map in plain language, identify what applies to your NBFC and move from a real business question to the exact direction.</p>
               <div className="mt-6 grid gap-3 sm:grid-cols-2"><button type="button" onClick={() => { setWorkspaceTab('start'); document.getElementById('workbench')?.scrollIntoView({ behavior: 'smooth' }); }} className="group rounded-2xl border border-cyan-300/30 bg-cyan-300/10 p-4 text-left hover:bg-cyan-300/15"><span className="flex items-center gap-2 text-sm font-semibold text-cyan-100"><GraduationCap className="size-4" />New to NBFC regulation?</span><span className="mt-1.5 flex items-center justify-between text-lg font-semibold">Begin with the six foundations<ArrowRight className="size-4 transition-transform group-hover:translate-x-1" /></span></button><button type="button" onClick={() => { setWorkspaceTab('library'); document.getElementById('workbench')?.scrollIntoView({ behavior: 'smooth' }); }} className="group rounded-2xl border border-white/15 bg-white/[.06] p-4 text-left hover:bg-white/10"><span className="flex items-center gap-2 text-sm font-semibold text-slate-300"><Search className="size-4" />Know what you need?</span><span className="mt-1.5 flex items-center justify-between text-lg font-semibold">Search the regulation library<ArrowRight className="size-4 transition-transform group-hover:translate-x-1" /></span></button></div>
               <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_175px_130px_130px]">
-                <div className="relative"><Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" /><Input aria-label="Search regulations" value={query} onFocus={() => setWorkspaceTab('library')} onChange={(e) => setQuery(e.target.value)} placeholder="Ask an NBFC compliance question…" className="h-11 border-white/15 bg-white/10 pl-10 text-[15px] text-white placeholder:text-slate-400 focus-visible:border-cyan-300" /></div>
+                <div className="relative"><Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" /><Input aria-label="Ask an NBFC compliance question" value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') answerQuestion(); }} placeholder="Ask an NBFC compliance question…" className="h-11 border-white/15 bg-white/10 pl-10 pr-24 text-[15px] text-white placeholder:text-slate-400 focus-visible:border-cyan-300" /><button type="button" onClick={answerQuestion} className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md bg-cyan-200 px-3 py-1.5 text-xs font-semibold text-slate-950 hover:bg-cyan-100">Answer</button></div>
                 <NativeSelect aria-label="Filter by category" value={category} onChange={(e) => setCategory(e.target.value)} className="w-full [&_select]:h-11 [&_select]:border-white/15 [&_select]:bg-white/10 [&_select]:text-white">{categoryOptions.map((option) => <NativeSelectOption key={option} value={option}>{option}</NativeSelectOption>)}</NativeSelect>
                 <NativeSelect aria-label="Filter by layer" value={layer} onChange={(e) => setLayer(e.target.value)} className="w-full [&_select]:h-11 [&_select]:border-white/15 [&_select]:bg-white/10 [&_select]:text-white">{['All layers','BL','ML','UL','Reference'].map((option) => <NativeSelectOption key={option} value={option}>{option}</NativeSelectOption>)}</NativeSelect>
                 <NativeSelect aria-label="Filter by status" value={status} onChange={(e) => setStatus(e.target.value)} className="w-full [&_select]:h-11 [&_select]:border-white/15 [&_select]:bg-white/10 [&_select]:text-white">{['All statuses','Core','Specialist','Reference'].map((option) => <NativeSelectOption key={option} value={option}>{option}</NativeSelectOption>)}</NativeSelect>
               </div>
+              {answeredQuestion && <section aria-live="polite" className="mt-5 rounded-2xl border border-cyan-200/25 bg-white/[.07] p-5"><div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-[.12em] text-cyan-200">Answer from the indexed library</p><p className="mt-1 text-sm text-slate-300">“{answeredQuestion}”</p></div>{primaryAnswer && <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${primaryAnswer.layers.includes(profileLayer) ? 'bg-emerald-300/15 text-emerald-200' : 'bg-amber-300/15 text-amber-200'}`}>{primaryAnswer.layers.includes(profileLayer) ? `Applies to your ${profileLayer} profile` : 'Applicability needs checking'}</span>}</div>{primaryAnswer ? <><div className="mt-4"><p className="text-xs font-semibold text-slate-300">Short answer</p><p className="mt-1 text-base leading-7 text-white">{primaryAnswer.summary}</p></div><div className="mt-4 grid gap-3 sm:grid-cols-2"><div className="rounded-xl border border-white/10 bg-slate-950/25 p-4"><p className="text-xs font-semibold uppercase tracking-[.08em] text-slate-400">Primary regulation</p><button type="button" onClick={() => setSelected(primaryAnswer)} className="mt-1 flex w-full items-start justify-between gap-3 text-left font-semibold leading-6 text-cyan-100 hover:text-cyan-200"><span>{primaryAnswer.title}</span><ChevronRight className="mt-1 size-4 shrink-0" /></button></div><div className="rounded-xl border border-white/10 bg-slate-950/25 p-4"><p className="text-xs font-semibold uppercase tracking-[.08em] text-slate-400">What to check first</p><ul className="mt-2 space-y-1.5 text-sm leading-6 text-slate-200">{regulationDetails[primaryAnswer.id]?.requirements.slice(0,2).map((item) => <li key={item} className="flex gap-2"><span className="text-cyan-300">•</span><span>{item}</span></li>)}</ul></div></div>{answerRegulations.length > 1 && <div className="mt-4 flex flex-wrap items-center gap-2"><span className="text-xs font-semibold text-slate-400">Also review:</span>{answerRegulations.slice(1).map((reg) => <button type="button" key={reg.id} onClick={() => setSelected(reg)} className="rounded-full border border-white/15 px-2.5 py-1 text-xs font-semibold text-slate-200 hover:border-cyan-200/40 hover:text-cyan-100">{reg.short}</button>)}</div>}<p className="mt-4 border-t border-white/10 pt-3 text-xs leading-5 text-slate-400">This is a research starting point based on the regulations indexed here. Open the primary regulation to confirm applicability, thresholds, exceptions and the latest source paragraph before relying on the answer.</p></> : <div className="mt-4 rounded-xl border border-amber-300/20 bg-amber-300/10 p-4"><p className="font-semibold text-amber-100">No confident match was found.</p><p className="mt-1 text-sm leading-6 text-amber-50/80">Try including the activity or issue—for example “KYC update”, “penal charges”, “public deposits”, “change in control” or “NPA after 90 days”.</p></div>}</section>}
             </div>
           </div>
           <aside id="identity-card" className="scroll-mt-20 rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-6">
