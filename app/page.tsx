@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 type Regulation = { id: number; title: string; short: string; category: string; layers: string[]; status: 'Core' | 'Specialist' | 'Reference'; updated: string; summary: string; highlights: string[] };
 type RegulationDetail = { applies: string; requirements: string[]; timing: string[]; checks: string[]; related: number[] };
+type ThresholdDetail = { value: string; label: string; note: string; tone: string; source: string; clause: string; meaning: string; test: string[]; layers: Record<'BL' | 'ML' | 'UL', { result: string; detail: string; clause: string }>; caution: string; regulationId: number };
 
 type WebMcpTool = {
   name: string;
@@ -64,11 +65,59 @@ const regulations: Regulation[] = [
   { id: 28, title: 'Payment & Settlement Systems Act, 2007', short: 'PSS Act', category: 'Payments', layers: ['Reference'], status: 'Reference', updated: 'Through 2019', summary: 'RBI authorisation and supervision of payment systems, settlement finality, inspections, directions and offences.', highlights: ['RBI authorisation required', 'Settlement finality protected', 'Electronic dishonour remedy'] },
 ];
 
-const thresholds = [
-  { value: '₹1,000 cr', label: 'BL → ML', note: 'Asset-size threshold', tone: 'blue' },
-  { value: '15%', label: 'CRAR', note: 'General ML+ minimum', tone: 'teal' },
-  { value: '>90 days', label: 'NPA', note: 'General overdue test', tone: 'amber' },
-  { value: '5%', label: 'DLG cap', note: 'Defined loan portfolio', tone: 'red' },
+const thresholds: ThresholdDetail[] = [
+  {
+    value: '₹1,000 cr', label: 'BL → ML', note: 'Asset-size threshold', tone: 'blue', regulationId: 1,
+    source: 'RBI (NBFC – Registration, Exemptions and Framework for Scale Based Regulation) Directions, 2025',
+    clause: 'Paragraphs 10(1), 11(2), 17–23; see paragraphs 12 and 24 for Upper Layer',
+    meaning: '₹1,000 crore is the main asset-size boundary between Base Layer and Middle Layer for a non-deposit taking NBFC. It is not the only test: deposit status, activity category and group aggregation can place an NBFC in ML even where its own assets are lower.',
+    test: ['Check the latest audited total assets and monitor when the threshold is crossed during the year.', 'Aggregate registered NBFC assets under common control for the group test.', 'Check whether the category is fixed in BL or ML irrespective of size.', 'Record the conclusion and the date from which the new layer requirements apply.'],
+    layers: {
+      BL: { result: 'Normally below ₹1,000 crore', detail: 'A non-deposit taking NBFC below ₹1,000 crore is generally BL, subject to activity-based placement. P2P, Account Aggregator, NOFHC and the specified Type I category remain in BL.', clause: 'Paragraphs 10 and 15(1)' },
+      ML: { result: '₹1,000 crore or more—or included by activity', detail: 'A non-deposit taking NBFC enters ML on reaching ₹1,000 crore. All deposit-taking NBFCs and specified categories such as CIC, HFC and IFC are ML or UL regardless of this threshold. Group assets may also pull ICC, MFI, Factor and MGC entities into ML.', clause: 'Paragraphs 11, 15(2)–(3), 17–23' },
+      UL: { result: 'Separate ₹1,00,000 crore test', detail: '₹1,000 crore does not by itself place an NBFC in UL. Under the June 2026 amendment reflected in the folder copy, UL comprises NBFCs with assets of ₹1,00,000 crore or more, with RBI identification and transition requirements.', clause: 'Paragraphs 12, 24 and 27' },
+    },
+    caution: 'Layer classification is not a pure standalone asset test. Deposit-taking status, activity category, group structure and RBI identification must all be checked.',
+  },
+  {
+    value: '15%', label: 'CRAR', note: 'General ML+ minimum', tone: 'teal', regulationId: 2,
+    source: 'RBI (NBFC – Prudential Norms on Capital Adequacy) Directions, 2025',
+    clause: 'Paragraph 3 (applicability) and paragraph 6(1)–(4)',
+    meaning: 'CRAR compares eligible regulatory capital with risk-weighted assets. The general 15% minimum in this direction is expressly stated for Middle Layer and above; additional capital composition requirements apply by layer and category.',
+    test: ['Confirm that the entity is within paragraph 3 and is not excluded.', 'Calculate risk-weighted assets using the prescribed risk weights.', 'Deduct ineligible items from Tier 1 and Tier 2 capital.', 'Test the ratio continuously—not only on the reporting date.'],
+    layers: {
+      BL: { result: 'No universal 15% ML+ rule', detail: 'The general paragraph 6(3) minimum is written for ML and above. A gold-jewellery lending NBFC covered by paragraph 6(1) has 15% CRAR and 12% Tier 1. Category-specific rules and paragraph 3 exclusions must still be checked.', clause: 'Paragraphs 3, 6(1) and 6(3)' },
+      ML: { result: 'CRAR ≥15%; Tier 1 ≥10%', detail: 'ML entities covered by the direction must maintain at least 15% CRAR on an ongoing basis, with Tier 1 of at least 10%. Tier 2 cannot exceed 100% of Tier 1.', clause: 'Paragraphs 6(2) and 6(3)' },
+      UL: { result: 'CRAR ≥15%; Tier 1 ≥10%; CET1 ≥9%', detail: 'UL inherits the ML capital minima and must additionally maintain Common Equity Tier 1 of at least 9% of risk-weighted assets.', clause: 'Paragraphs 6(2), 6(3) and 6(4)' },
+    },
+    caution: 'The direction has entity-specific inclusions and exclusions in paragraph 3. Do not apply the headline percentage without first confirming category and layer applicability.',
+  },
+  {
+    value: '>90 days', label: 'NPA', note: 'General overdue test', tone: 'amber', regulationId: 3,
+    source: 'RBI (NBFC – Income Recognition, Asset Classification and Provisioning) Directions, 2025',
+    clause: 'Paragraphs 43–44 for BL, paragraph 51 for ML, and paragraph 56 for UL',
+    meaning: 'For covered NBFCs, a loan or other specified credit asset generally becomes non-performing when interest or principal remains overdue for more than 90 days. Classification is borrower-wise where the direction requires it.',
+    test: ['Calculate days past due consistently from the contractual due date.', 'Apply the test across all relevant facilities of the same borrower.', 'Stop or reverse income recognition as required once the account becomes NPA.', 'Apply the correct sub-standard, doubtful or loss classification and provision.'],
+    layers: {
+      BL: { result: '>90 days from 31 March 2026', detail: 'Paragraph 43 contains the BL asset types and an older 180-day formulation. Paragraph 44 replaces that period through a completed glide path, reaching more than 90 days by 31 March 2026 for applicable BL entities.', clause: 'Paragraphs 42–44' },
+      ML: { result: '>90 days', detail: 'For ML, paragraph 51 directly applies the more-than-90-day test to interest, term-loan instalments, demand/call loans, bills and other listed assets.', clause: 'Paragraphs 50–51' },
+      UL: { result: '>90 days through ML rules', detail: 'UL applies the ML asset-classification requirements in paragraphs 50–53 mutatis mutandis, in addition to the common rules.', clause: 'Paragraph 56 read with paragraphs 50–53' },
+    },
+    caution: 'Paragraph 10 excludes certain categories and profiles. Product-specific or restructuring rules may also change the analysis, so check the full borrower and facility facts.',
+  },
+  {
+    value: '5%', label: 'DLG cap', note: 'Defined loan portfolio', tone: 'red', regulationId: 8,
+    source: 'RBI (NBFC – Credit Facilities) Directions, 2025',
+    clause: 'Paragraph 24(1)–(3); read with paragraphs 3 and 19–28',
+    meaning: 'A Default Loss Guarantee cannot exceed 5% of the amount disbursed from the identified, fixed loan portfolio at any time. A DLG does not replace credit appraisal, NPA recognition or provisioning.',
+    test: ['Define and freeze the identifiable DLG set before measuring the cover.', 'Measure the cap against the amount disbursed—not merely the sanctioned amount.', 'Use only permitted DLG forms and a legally enforceable contract.', 'Track invocation, non-reinstatement, capital treatment and monthly disclosure.'],
+    layers: {
+      BL: { result: 'Applies when a covered BL entity uses DLG', detail: 'The Credit Facilities Directions apply across layers to the listed NBFC categories unless stated otherwise. For BL profiles, first check paragraph 3 limitations, including the treatment of customer-facing entities without public funds.', clause: 'Paragraphs 3 and 24' },
+      ML: { result: '5% cap applies', detail: 'A covered ML entity entering a DLG arrangement must apply the 5% cap, provider due diligence, permitted-form, contract, NPA and disclosure requirements.', clause: 'Paragraphs 19–28, especially 24' },
+      UL: { result: '5% cap applies', detail: 'The same DLG cap and Chapter III controls apply to a covered UL entity. Higher-layer governance does not increase the permitted percentage.', clause: 'Paragraphs 3 and 19–28, especially 24' },
+    },
+    caution: 'NBFC-P2P cannot enter DLG arrangements for loans facilitated on its platform under paragraph 21(2). Confirm the entity is covered by paragraph 3 before applying the cap.',
+  },
 ];
 
 const categoryOptions = ['All categories', ...Array.from(new Set(regulations.map((r) => r.category)))];
@@ -169,6 +218,7 @@ export default function Home() {
   const [layer, setLayer] = useState('All layers');
   const [status, setStatus] = useState('All statuses');
   const [selected, setSelected] = useState<Regulation | null>(null);
+  const [selectedThreshold, setSelectedThreshold] = useState<ThresholdDetail | null>(null);
   const [entityType, setEntityType] = useState('NBFC-ICC');
   const [depositStatus, setDepositStatus] = useState('Non-deposit taking');
   const [characteristics, setCharacteristics] = useState({ customer: true, digital: false, outsourcing: false });
@@ -320,7 +370,7 @@ export default function Home() {
           </aside>
         </section>
 
-        <section aria-label="Key thresholds" className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">{thresholds.map((item) => <div key={item.label} className={`threshold-card tone-${item.tone} rounded-2xl border bg-card p-4 sm:p-5`}><p className="text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">{item.value}</p><div className="mt-3 flex items-end justify-between gap-3"><div><p className="text-sm font-semibold">{item.label}</p><p className="mt-0.5 text-xs text-muted-foreground">{item.note}</p></div><ArrowUpRight className="size-4 text-muted-foreground" /></div></div>)}</section>
+        <section aria-label="Key thresholds" className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">{thresholds.map((item) => <button type="button" key={item.label} onClick={() => setSelectedThreshold(item)} aria-label={`Explain ${item.value} ${item.label}, source clauses and layer applicability`} className={`threshold-card tone-${item.tone} group rounded-2xl border bg-card p-4 text-left transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:p-5`}><p className="text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">{item.value}</p><div className="mt-3 flex items-end justify-between gap-3"><div><p className="text-sm font-semibold">{item.label}</p><p className="mt-0.5 text-xs text-muted-foreground">{item.note}</p></div><span className="grid size-8 place-items-center rounded-full bg-secondary text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground"><ArrowUpRight className="size-4" /></span></div><p className="mt-3 border-t border-border/70 pt-3 text-xs font-medium text-primary">Open source, clauses and BL / ML / UL view</p></button>)}</section>
 
         <Tabs defaultValue="library" className="mt-8"><div className="flex flex-col gap-3 border-b border-border pb-3 sm:flex-row sm:items-end sm:justify-between"><div><p className="eyebrow">Regulatory workbench</p><h2 className="mt-1 text-2xl font-semibold tracking-tight">Applicability before interpretation</h2></div><TabsList variant="line"><TabsTrigger value="library"><BookOpen />Library ({filtered.length})</TabsTrigger><TabsTrigger value="issues"><Search />Issue paths</TabsTrigger><TabsTrigger value="decision"><ShieldCheck />Reading method</TabsTrigger></TabsList></div>
           <TabsContent value="library" className="pt-5">
@@ -343,6 +393,28 @@ export default function Home() {
           <TabsContent value="decision" className="pt-5"><div className="grid gap-4 xl:grid-cols-[1.2fr_.8fr]"><div className="rounded-2xl border border-border bg-card p-5 sm:p-7"><p className="eyebrow">Ten regulatory boxes</p><h3 className="mt-1 text-xl font-semibold">Remember subjects, not circular numbers</h3><div className="mt-5 grid gap-2 sm:grid-cols-2">{regulatoryBoxes.map(([title,body,ids], index) => <button key={title} onClick={() => { const reg = regulations.find((item) => item.id === ids[0]); if (reg) setSelected(reg); }} className="group flex items-start gap-3 rounded-xl border border-border p-3 text-left hover:border-primary/30 hover:bg-secondary/40"><span className="font-mono text-xs font-semibold text-primary">{String(index + 1).padStart(2,'0')}</span><span><span className="block text-sm font-semibold group-hover:text-primary">{title}</span><span className="mt-0.5 block text-xs leading-5 text-muted-foreground">{body}</span></span></button>)}</div></div><div className="rounded-2xl border border-primary/20 bg-[#07182b] p-5 text-white sm:p-7"><p className="text-xs font-semibold uppercase tracking-[.16em] text-cyan-200">A–T–O–E–R</p><h3 className="mt-2 text-xl font-semibold">How to read every paragraph</h3><div className="mt-5 space-y-3">{[['A','Applicability','Which category, layer, threshold or interface?'],['T','Trigger','What event activates the provision?'],['O','Obligation','What must the NBFC do?'],['E','Exception','What proviso, exemption or modification applies?'],['R','Reporting / record / remedy','What filing, evidence, deadline or consequence follows?']].map(([letter,title,body]) => <div key={letter} className="grid grid-cols-[32px_1fr] gap-3"><span className="grid size-8 place-items-center rounded-lg bg-cyan-300/15 font-mono text-sm font-semibold text-cyan-200">{letter}</span><div><p className="text-sm font-semibold">{title}</p><p className="mt-0.5 text-xs leading-5 text-slate-300">{body}</p></div></div>)}</div></div></div><div className="mt-4 grid gap-4 md:grid-cols-3"><div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5"><p className="font-semibold text-emerald-950">Continuous</p><p className="mt-2 text-sm leading-6 text-emerald-900">NOF, capital, KYC, FPC, provisioning, outsourcing and disclosures.</p></div><div className="rounded-2xl border border-blue-200 bg-blue-50 p-5"><p className="font-semibold text-blue-950">Periodic</p><p className="mt-2 text-sm leading-6 text-blue-900">Returns, Board reviews, certificates, financial statements and recurring reports.</p></div><div className="rounded-2xl border border-amber-200 bg-amber-50 p-5"><p className="font-semibold text-amber-950">Event-based</p><p className="mt-2 text-sm leading-6 text-amber-900">Control, directors, office, fraud, default, vendors, products and inspections.</p></div></div><div className="mt-4 rounded-2xl border border-border bg-card p-5 sm:p-7"><p className="eyebrow">Regulatory hierarchy</p><div className="mt-4 flex flex-wrap items-center gap-2 text-sm font-medium">{['RBI Act, 1934','Master Directions','SBR framework','Subject Directions','Circulars / amendments','FAQs','Operational reporting'].map((item,index,array) => <span key={item} className="contents"><span className="rounded-lg border border-border bg-secondary/50 px-3 py-2">{item}</span>{index < array.length - 1 && <ChevronRight className="size-4 text-muted-foreground" />}</span>)}</div><div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950"><strong>Working rule:</strong> subject → governing direction → applicability → obligation → timeline/reporting. Conclude “Applicable”, “Not applicable” or “Applicable with modification”.</div></div></TabsContent>
         </Tabs>
       </div>
+
+      <Sheet open={Boolean(selectedThreshold)} onOpenChange={(open) => !open && setSelectedThreshold(null)}>
+        <SheetContent className="w-[min(96vw,1040px)] max-w-none overflow-y-auto border-l-slate-200 bg-background sm:max-w-5xl">
+          {selectedThreshold && <>
+            <SheetHeader className="border-b border-border bg-card p-6 pr-14 sm:p-9 sm:pr-16">
+              <div className="flex flex-wrap items-center gap-2"><Badge className="bg-primary">Key threshold</Badge><Badge variant="outline">{selectedThreshold.label}</Badge></div>
+              <div className="mt-2 flex items-baseline gap-3"><span className="text-4xl font-semibold tracking-[-.04em] text-primary sm:text-5xl">{selectedThreshold.value}</span></div>
+              <SheetTitle className="text-2xl leading-tight">What this number means—and when it applies</SheetTitle>
+              <SheetDescription className="max-w-4xl text-base leading-7">{selectedThreshold.meaning}</SheetDescription>
+            </SheetHeader>
+            <div className="space-y-9 p-6 sm:p-9">
+              <section className="rounded-2xl border border-primary/15 bg-primary/[.045] p-5 sm:p-6"><p className="eyebrow text-primary">Regulatory source</p><h3 className="mt-2 text-lg font-semibold leading-7">{selectedThreshold.source}</h3><div className="mt-4 rounded-xl border border-primary/15 bg-background p-4"><p className="text-xs font-semibold uppercase tracking-[.08em] text-muted-foreground">Clause / paragraph reference</p><p className="mt-1 text-[15px] font-semibold leading-6 text-primary">{selectedThreshold.clause}</p></div><p className="mt-3 text-xs leading-5 text-muted-foreground">References follow the numbering in the consolidated direction stored in this NBFC Regulations folder. Amendment numbering and effective dates should be rechecked before a filing or formal opinion.</p></section>
+
+              <section><p className="eyebrow">Layer-by-layer applicability</p><h3 className="mt-1 text-xl font-semibold">Base, Middle and Upper Layer treatment</h3><div className="mt-4 grid gap-4 lg:grid-cols-3">{(['BL','ML','UL'] as const).map((layerName) => { const item = selectedThreshold.layers[layerName]; return <article key={layerName} className="overflow-hidden rounded-2xl border border-border bg-card"><div className="flex items-center justify-between border-b border-border bg-secondary/60 px-5 py-4"><div><p className="text-xs font-semibold uppercase tracking-[.1em] text-muted-foreground">{layerName === 'BL' ? 'Base Layer' : layerName === 'ML' ? 'Middle Layer' : 'Upper Layer'}</p><p className="mt-1 text-base font-semibold text-primary">{item.result}</p></div><span className="grid size-9 place-items-center rounded-full bg-background font-mono text-sm font-semibold text-primary">{layerName}</span></div><div className="p-5"><p className="text-sm leading-6 text-foreground/85">{item.detail}</p><div className="mt-4 border-t border-border pt-3"><p className="text-xs font-semibold text-muted-foreground">Read</p><p className="mt-1 text-sm font-semibold leading-5">{item.clause}</p></div></div></article>; })}</div></section>
+
+              <section className="grid gap-6 lg:grid-cols-[1.1fr_.9fr]"><div><p className="eyebrow">How to use this threshold</p><h3 className="mt-1 text-lg font-semibold">Four checks before concluding</h3><div className="mt-4 space-y-3">{selectedThreshold.test.map((item, index) => <div key={item} className="flex gap-3 rounded-xl border border-border bg-card p-4 text-sm leading-6"><span className="grid size-7 shrink-0 place-items-center rounded-lg bg-primary/10 font-mono text-xs font-semibold text-primary">{index + 1}</span><span>{item}</span></div>)}</div></div><aside className="rounded-2xl border border-amber-200 bg-amber-50 p-5"><AlertTriangle className="size-5 text-amber-700" /><p className="mt-3 font-semibold text-amber-950">Do not apply the headline in isolation</p><p className="mt-2 text-sm leading-6 text-amber-950">{selectedThreshold.caution}</p></aside></section>
+
+              <section className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-5 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-semibold">Need the complete direction summary?</p><p className="mt-1 text-sm text-muted-foreground">Open its full applicability, obligations, timelines and evidence checklist.</p></div><Button onClick={() => { const reg = regulations.find((item) => item.id === selectedThreshold.regulationId); setSelectedThreshold(null); if (reg) setSelected(reg); }}>Open full regulation<ChevronRight /></Button></section>
+            </div>
+          </>}
+        </SheetContent>
+      </Sheet>
 
       <Sheet open={Boolean(selected)} onOpenChange={(open) => !open && setSelected(null)}>
         <SheetContent className="w-[min(96vw,960px)] max-w-none overflow-y-auto border-l-slate-200 bg-background sm:max-w-4xl">
