@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, ArrowUpRight, BadgeIndianRupee, BookOpen, CalendarDays, CheckCircle2, ChevronRight, Clock3, FileText, Landmark, Network, Scale, Search, ShieldCheck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -122,6 +121,10 @@ const issuePaths = [
   { title: 'Accept public deposits', chain: ['Authorisation and NBFC-D status', 'Rating and deposit ceiling', 'Tenor, pricing and disclosures', 'Liquid assets and asset cover', 'Branch and maturity rules', 'ALM and LCR overlay'], regulations: [17, 6, 22] },
   { title: 'Declare a dividend', chain: ['Three-year capital record', 'NNPA eligibility', 'Payout-ratio calculation', 'Exceptional-profit treatment', 'Board approval and reporting'], regulations: [19, 2, 3, 13] },
 ];
+
+function Checkbox({ checked, onCheckedChange }: { checked: boolean; onCheckedChange: (checked: boolean) => void }) {
+  return <input type="checkbox" checked={checked} onChange={(event) => onCheckedChange(event.target.checked)} className="size-4 accent-primary" />;
+}
 
 export default function Home() {
   const [query, setQuery] = useState('');
