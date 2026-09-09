@@ -73,6 +73,43 @@ const thresholds = [
 
 const categoryOptions = ['All categories', ...Array.from(new Set(regulations.map((r) => r.category)))];
 
+const entityGuidance: Record<string, string> = {
+  'NBFC-ICC': 'A general lending and investment NBFC. Start with registration, prudential, lending-conduct, KYC and governance rules.',
+  'NBFC-MFI': 'An NBFC focused on collateral-free microfinance. Household-income, repayment-burden, pricing and recovery protections need special attention.',
+  'NBFC-Factor': 'An NBFC whose principal business is factoring. Check the factoring activity tests, assignment documents and debtor-level controls.',
+  HFC: 'A housing finance company. Apply the NBFC framework together with housing-finance product, funding and customer-protection requirements.',
+  CIC: 'A core investment company holding group investments. Group structure, leverage, capital and governance are the main starting points.',
+  IFC: 'An infrastructure finance company. Infrastructure asset tests, concentration limits, funding and capital treatment become central.',
+  'IDF-NBFC': 'An infrastructure debt fund NBFC. Review permitted assets, funding structure, capital and concentration requirements.',
+  'NBFC-P2P': 'A peer-to-peer lending platform. Platform-only activities, participant limits, fund flows, disclosures and technology controls apply.',
+  'Account Aggregator': 'A consent-based financial-data intermediary. Data consent, security, permitted activity and outsourcing controls are the priority.',
+  SPD: 'A standalone primary dealer. Securities-market activity, capital, risk management and RBI reporting require specialist review.',
+};
+
+const layerGuidance: Record<string, string> = {
+  BL: 'Base Layer is the starting rule set. It carries foundational registration, conduct, KYC, governance and prudential duties.',
+  ML: 'Middle Layer adds stronger capital, governance, concentration, liquidity and disclosure controls on top of Base Layer rules.',
+  UL: 'Upper Layer is subject to the most intensive framework, including enhanced capital, governance, listing and supervisory expectations.',
+};
+
+const categoryConsequences: Record<string, string> = {
+  Perimeter: 'Getting this wrong can make the entire compliance conclusion unreliable because category and layer decide which later rules apply.',
+  Prudential: 'These rules protect solvency and the balance sheet. Breaches can restrict growth, distributions and supervisory standing.',
+  'Credit risk': 'These rules control how credit is originated, monitored, transferred and resolved, limiting losses and hidden risk.',
+  Liquidity: 'These rules help ensure the NBFC can meet cash obligations even during stress.',
+  Conduct: 'These rules protect borrowers and make pricing, recovery and servicing fair and transparent.',
+  Products: 'These rules translate regulatory expectations into product design, customer journeys and system controls.',
+  'Financial crime': 'These controls help prevent identity misuse, money laundering, sanctions breaches and reportable transaction failures.',
+  Governance: 'These rules make the Board and senior management demonstrably accountable for regulatory outcomes.',
+  Operations: 'These rules keep accountability with the NBFC even when technology or services are delivered by another party.',
+  Reporting: 'Accurate, timely reporting is how regulators and customers receive a reliable view of the NBFC and its borrowers.',
+  Enforcement: 'These rules require a fair, evidence-based process before serious borrower labels and restrictions are applied.',
+  Funding: 'These rules protect depositors and ensure funding is raised, held and deployed within permitted safeguards.',
+  'Corporate actions': 'These rules prevent ownership, control or structural changes from taking effect without required regulatory review.',
+  Treasury: 'These rules control valuation, dealing, concentration and capital effects in the investment book.',
+  Payments: 'These rules protect authorisation, settlement finality and the integrity of payment-system operations.',
+};
+
 const regulationDetails: Record<number, RegulationDetail> = {
   1: { applies: 'Every company assessing whether it is an NBFC, the registration category it requires, and its placement in Base, Middle or Upper Layer.', requirements: ['Apply the 50–50 principal-business test to financial assets and financial income.', 'Identify category-specific NOF and activity conditions before applying for or varying registration.', 'Aggregate assets of registered NBFCs under common control when testing the ₹1,000 crore Middle Layer threshold.', 'Treat higher layers as inheriting lower-layer rules unless a direction expressly excludes them.'], timing: ['The July 2026 Upper Layer threshold is ₹1,00,000 crore.', 'An identified UL entity files a Board-approved plan within 3 months and complies within 24 months.', 'NOF glide-path requirements for ICC/MFI/Factor run to 31 March 2027.'], checks: ['Document category, asset size, public funds, customer interface and group structure.', 'Obtain annual Board resolution/disclosure before relying on the Type-I exemption.', 'Reassess layer and exemptions after any funding, customer-interface or group change.'], related: [2, 5, 10] },
   2: { applies: 'All NBFCs, with the principal CRAR and Tier 1 framework applying to Middle and Upper Layer entities and category-specific modifications where stated.', requirements: ['Maintain ML+ CRAR of at least 15% and Tier 1 of at least 10%; UL maintains CET1 of 9%.', 'Cap Tier 2 at Tier 1 and apply the Base Layer leverage ceiling of 7 where applicable.', 'Deduct goodwill, specified deferred tax assets, own shares, excess exposures, outstanding DLG and specified unrealised gains.', 'Apply prescribed risk weights, including 125% for most consumer credit subject to product exclusions.'], timing: ['Monitor capital continuously and report on the applicable RBI return cycle.', 'Run forward-looking capital assessment before dividends, acquisitions, rapid growth or material product launches.'], checks: ['Reconcile regulatory capital to audited equity and Ind AS adjustments.', 'Maintain a deduction register and risk-weight mapping by product.', 'Stress capital for concentration, credit migration, liquidity events and growth plans.'], related: [3, 5, 19] },
@@ -222,6 +259,22 @@ export default function Home() {
     });
   }, [query, category, layer, status]);
   const selectedDetails = selected ? regulationDetails[selected.id] : null;
+  const profileLayer = layer === 'All layers' || layer === 'Reference' ? 'BL' : layer;
+  const priorityIds = Array.from(new Set([
+    1,
+    2,
+    9,
+    10,
+    ...(characteristics.customer ? [7, 12] : []),
+    ...(characteristics.digital ? [8, 11] : []),
+    ...(characteristics.outsourcing ? [11] : []),
+    ...(depositStatus === 'Deposit taking' ? [17, 6] : []),
+  ])).slice(0, 7);
+  const activeCharacteristics = [
+    characteristics.customer && 'customer conduct and grievance handling',
+    characteristics.digital && 'digital lending, consent and LSP controls',
+    characteristics.outsourcing && 'vendor governance, audit access and exit planning',
+  ].filter(Boolean) as string[];
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -245,7 +298,26 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <aside className="rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-6"><div className="flex items-center justify-between"><div><p className="eyebrow">Step one</p><h2 className="mt-1 text-xl font-semibold tracking-tight">NBFC identity card</h2></div><Network className="size-5 text-primary" /></div><div className="mt-5 grid gap-3"><label className="text-sm font-medium">Entity category<NativeSelect value={entityType} onChange={(e) => setEntityType(e.target.value)} className="mt-1.5 w-full"><NativeSelectOption value="NBFC-ICC">NBFC-ICC</NativeSelectOption>{['NBFC-MFI','NBFC-Factor','HFC','CIC','IFC','IDF-NBFC','NBFC-P2P','Account Aggregator','SPD'].map((item) => <NativeSelectOption key={item} value={item}>{item}</NativeSelectOption>)}</NativeSelect></label><label className="text-sm font-medium">SBR layer<NativeSelect value={layer === 'All layers' ? 'BL' : layer} onChange={(e) => setLayer(e.target.value)} className="mt-1.5 w-full">{['BL','ML','UL'].map((item) => <NativeSelectOption key={item} value={item}>{item}</NativeSelectOption>)}</NativeSelect></label><label className="text-sm font-medium">Deposit status<NativeSelect value={depositStatus} onChange={(e) => setDepositStatus(e.target.value)} className="mt-1.5 w-full"><NativeSelectOption value="Non-deposit taking">Non-deposit taking</NativeSelectOption><NativeSelectOption value="Deposit taking">Deposit taking</NativeSelectOption></NativeSelect></label><div className="grid grid-cols-2 gap-2 pt-1">{([['customer','Customer-facing'],['digital','Digital lending'],['outsourcing','Outsourcing']] as const).map(([key,label]) => <label key={key} className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs font-medium"><Checkbox checked={characteristics[key]} onCheckedChange={(checked) => setCharacteristics((current) => ({ ...current, [key]: Boolean(checked) }))} />{label}</label>)}</div><div className="rounded-xl bg-primary/5 px-3 py-2.5 text-xs leading-5 text-primary"><strong>{entityType} · {layer === 'All layers' ? 'BL' : layer} · {depositStatus}</strong><br />Test every rule against this profile first.</div></div></aside>
+          <aside className="rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div><p className="eyebrow">Step one · applicability</p><h2 className="mt-1 text-xl font-semibold tracking-tight">Build the NBFC identity</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">This profile tells you which regulatory rulebook to open first. Change any answer when the business model changes.</p></div>
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10"><Network className="size-5 text-primary" /></span>
+            </div>
+            <div className="mt-5 grid gap-4">
+              <label className="text-sm font-semibold">1. What kind of NBFC is it?<NativeSelect value={entityType} onChange={(e) => setEntityType(e.target.value)} className="mt-1.5 w-full"><NativeSelectOption value="NBFC-ICC">NBFC-ICC</NativeSelectOption>{['NBFC-MFI','NBFC-Factor','HFC','CIC','IFC','IDF-NBFC','NBFC-P2P','Account Aggregator','SPD'].map((item) => <NativeSelectOption key={item} value={item}>{item}</NativeSelectOption>)}</NativeSelect><span className="mt-1.5 block text-xs font-normal leading-5 text-muted-foreground">Category is based on the activity actually carried on—not only the company name.</span></label>
+              <label className="text-sm font-semibold">2. Which Scale Based Regulation layer?<NativeSelect value={profileLayer} onChange={(e) => setLayer(e.target.value)} className="mt-1.5 w-full">{['BL','ML','UL'].map((item) => <NativeSelectOption key={item} value={item}>{item}</NativeSelectOption>)}</NativeSelect><span className="mt-1.5 block text-xs font-normal leading-5 text-muted-foreground">Higher layers generally inherit lower-layer rules and add stricter controls.</span></label>
+              <label className="text-sm font-semibold">3. Can it accept public deposits?<NativeSelect value={depositStatus} onChange={(e) => setDepositStatus(e.target.value)} className="mt-1.5 w-full"><NativeSelectOption value="Non-deposit taking">No — non-deposit taking</NativeSelectOption><NativeSelectOption value="Deposit taking">Yes — deposit taking</NativeSelectOption></NativeSelect><span className="mt-1.5 block text-xs font-normal leading-5 text-muted-foreground">Choose “Yes” only where RBI authorisation permits public deposits.</span></label>
+              <fieldset><legend className="text-sm font-semibold">4. How does it operate?</legend><p className="mt-1 text-xs leading-5 text-muted-foreground">Select every feature that applies; each one adds a regulatory overlay.</p><div className="mt-2 grid grid-cols-2 gap-2">{([['customer','Customer-facing'],['digital','Digital lending'],['outsourcing','Uses outsourcing']] as const).map(([key,label]) => <label key={key} className="flex min-h-10 items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs font-medium"><Checkbox checked={characteristics[key]} onCheckedChange={(checked) => setCharacteristics((current) => ({ ...current, [key]: Boolean(checked) }))} />{label}</label>)}</div></fieldset>
+              <div className="rounded-2xl border border-primary/15 bg-primary/[.045] p-4">
+                <p className="text-xs font-semibold uppercase tracking-[.1em] text-primary">What this profile means</p>
+                <p className="mt-2 text-sm font-semibold leading-6">{entityType} · {profileLayer} · {depositStatus}</p>
+                <p className="mt-2 text-sm leading-6 text-foreground/85">{entityGuidance[entityType]}</p>
+                <p className="mt-2 text-sm leading-6 text-foreground/85">{layerGuidance[profileLayer]}</p>
+                {activeCharacteristics.length > 0 && <p className="mt-2 text-sm leading-6 text-foreground/85">Its operating model also brings in {activeCharacteristics.join(', ')}.</p>}
+                <div className="mt-4 border-t border-primary/10 pt-3"><p className="text-xs font-semibold text-foreground">Review these directions first</p><div className="mt-2 flex flex-wrap gap-2">{priorityIds.map((id) => { const reg = regulations.find((item) => item.id === id); return reg ? <button type="button" key={id} onClick={() => setSelected(reg)} className="rounded-full border border-primary/20 bg-background px-2.5 py-1.5 text-xs font-semibold text-primary hover:bg-primary hover:text-primary-foreground">{reg.short}</button> : null; })}</div></div>
+              </div>
+            </div>
+          </aside>
         </section>
 
         <section aria-label="Key thresholds" className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">{thresholds.map((item) => <div key={item.label} className={`threshold-card tone-${item.tone} rounded-2xl border bg-card p-4 sm:p-5`}><p className="text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">{item.value}</p><div className="mt-3 flex items-end justify-between gap-3"><div><p className="text-sm font-semibold">{item.label}</p><p className="mt-0.5 text-xs text-muted-foreground">{item.note}</p></div><ArrowUpRight className="size-4 text-muted-foreground" /></div></div>)}</section>
@@ -273,21 +345,31 @@ export default function Home() {
       </div>
 
       <Sheet open={Boolean(selected)} onOpenChange={(open) => !open && setSelected(null)}>
-        <SheetContent className="w-full overflow-y-auto border-l-slate-200 bg-background sm:max-w-2xl">
+        <SheetContent className="w-[min(96vw,960px)] max-w-none overflow-y-auto border-l-slate-200 bg-background sm:max-w-4xl">
           {selected && selectedDetails && <>
-            <SheetHeader className="border-b border-border p-6 pr-14 sm:p-8 sm:pr-16">
+            <SheetHeader className="border-b border-border bg-card p-6 pr-14 sm:p-9 sm:pr-16">
               <div className="mb-3 flex flex-wrap gap-2"><button type="button" title={`Show all ${selected.status.toLowerCase()} regulations`} onClick={() => { setStatus(selected.status); setSelected(null); }} className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground transition-opacity hover:opacity-85">{selected.status}</button><button type="button" title={`Filter by ${selected.category}`} onClick={() => { setCategory(selected.category); setSelected(null); }} className="rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold text-foreground hover:border-primary/40 hover:text-primary">{selected.category}</button>{selected.layers.map((item) => <button type="button" key={item} title={`Show regulations applicable to ${item}`} onClick={() => { setLayer(item); setSelected(null); }} className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground hover:bg-primary hover:text-primary-foreground">{item}</button>)}</div>
-              <SheetTitle className="text-2xl leading-tight sm:text-3xl">{selected.title}</SheetTitle>
-              <SheetDescription className="text-base leading-7">{selected.summary}</SheetDescription>
-              <div className="flex items-center gap-1.5 pt-1 text-xs text-muted-foreground"><Clock3 className="size-3.5" />Folder copy updated {selected.updated}</div>
+              <SheetTitle className="max-w-3xl text-2xl leading-tight sm:text-3xl">{selected.title}</SheetTitle>
+              <SheetDescription className="max-w-3xl text-sm leading-6">A practical explanation of who must follow this direction, what it requires and what evidence should be kept.</SheetDescription>
+              <div className="flex items-center gap-1.5 pt-1 text-xs text-muted-foreground"><Clock3 className="size-3.5" />Source copy in this folder: {selected.updated}</div>
             </SheetHeader>
-            <div className="space-y-8 p-6 sm:p-8">
-              <section><p className="eyebrow">Who this applies to</p><p className="mt-2 text-[15px] leading-7 text-foreground/90">{selectedDetails.applies}</p></section>
-              <section><p className="eyebrow">Key requirements</p><div className="mt-3 space-y-3">{selectedDetails.requirements.map((item) => <div key={item} className="flex gap-3 text-[15px] leading-6"><ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" /><span>{item}</span></div>)}</div></section>
-              <section><p className="eyebrow">Thresholds & timelines</p><div className="mt-3 grid gap-2">{selected.highlights.map((highlight) => <div key={highlight} className="flex items-center gap-3 rounded-xl bg-secondary/70 px-4 py-3 text-sm font-semibold"><BadgeIndianRupee className="size-4 shrink-0 text-primary" />{highlight}</div>)}{selectedDetails.timing.map((item) => <div key={item} className="flex items-start gap-3 rounded-xl border border-border px-4 py-3 text-sm leading-6"><CalendarDays className="mt-1 size-4 shrink-0 text-amber-600" /><span>{item}</span></div>)}</div></section>
-              <section><p className="eyebrow">Practical compliance checklist</p><div className="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 sm:p-5">{selectedDetails.checks.map((item) => <div key={item} className="flex gap-3 py-2 text-sm leading-6 text-emerald-950"><CheckCircle2 className="mt-1 size-4 shrink-0 text-emerald-700" /><span>{item}</span></div>)}</div></section>
-              <section><div className="flex items-end justify-between gap-3"><div><p className="eyebrow">Related regulations</p><p className="mt-1 text-sm text-muted-foreground">Continue the analysis across connected directions.</p></div></div><div className="mt-3 grid gap-2 sm:grid-cols-2">{selectedDetails.related.map((id) => { const related = regulations.find((item) => item.id === id); return related ? <Button key={id} variant="outline" className="h-auto justify-between whitespace-normal px-4 py-3 text-left" onClick={() => setSelected(related)}><span>{related.short}</span><ChevronRight className="size-4 shrink-0" /></Button> : null; })}</div></section>
-              <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-950"><strong>Interpretation note:</strong> confirm entity category, SBR layer, public-funds/customer-interface status, product overlay and transaction date. Use the exact paragraph of the latest RBI direction before a filing or approval.</div>
+            <div className="space-y-10 p-6 sm:p-9">
+              <section className="rounded-2xl border border-primary/15 bg-primary/[.045] p-5 sm:p-6"><p className="eyebrow text-primary">In simple terms</p><p className="mt-2 text-lg font-medium leading-8 text-foreground">{selected.summary}</p><div className="mt-4 flex gap-3 border-t border-primary/10 pt-4"><AlertTriangle className="mt-1 size-5 shrink-0 text-amber-600" /><div><p className="text-sm font-semibold">Why this matters</p><p className="mt-1 text-sm leading-6 text-foreground/80">{categoryConsequences[selected.category] ?? 'This direction changes what the NBFC must do, when it must act and what records it must retain to demonstrate compliance.'}</p></div></div></section>
+
+              <div className="grid gap-8 lg:grid-cols-[1.05fr_.95fr]">
+                <section><p className="eyebrow">Does this apply to us?</p><h3 className="mt-1 text-lg font-semibold">Who should use this direction</h3><p className="mt-3 text-[15px] leading-7 text-foreground/90">{selectedDetails.applies}</p></section>
+                <section className="rounded-2xl border border-border bg-card p-5"><p className="eyebrow">First answer these questions</p><ol className="mt-3 space-y-3 text-sm leading-6"><li className="flex gap-3"><span className="font-mono font-semibold text-primary">01</span><span>Is the entity category, SBR layer or product named in the applicability clause?</span></li><li className="flex gap-3"><span className="font-mono font-semibold text-primary">02</span><span>Has the event that activates the rule happened—for example sanction, default, outsourcing or a change in control?</span></li><li className="flex gap-3"><span className="font-mono font-semibold text-primary">03</span><span>Does an exemption, threshold, transition period or stricter specialist rule change the result?</span></li></ol></section>
+              </div>
+
+              <section><p className="eyebrow">What the NBFC must do</p><h3 className="mt-1 text-lg font-semibold">Main obligations, translated into actions</h3><div className="mt-4 grid gap-3 sm:grid-cols-2">{selectedDetails.requirements.map((item, index) => <div key={item} className="flex gap-3 rounded-xl border border-border bg-card p-4 text-[15px] leading-6"><span className="grid size-7 shrink-0 place-items-center rounded-lg bg-primary/10 font-mono text-xs font-semibold text-primary">{index + 1}</span><span>{item}</span></div>)}</div></section>
+
+              <section><p className="eyebrow">Numbers and deadlines</p><h3 className="mt-1 text-lg font-semibold">Thresholds, limits and timing to watch</h3><div className="mt-4 grid gap-3 sm:grid-cols-2">{selected.highlights.map((highlight) => <div key={highlight} className="flex items-center gap-3 rounded-xl bg-secondary/70 px-4 py-3 text-sm font-semibold"><BadgeIndianRupee className="size-4 shrink-0 text-primary" />{highlight}</div>)}{selectedDetails.timing.map((item) => <div key={item} className="flex items-start gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm leading-6"><CalendarDays className="mt-1 size-4 shrink-0 text-amber-600" /><span>{item}</span></div>)}</div></section>
+
+              <section><p className="eyebrow">What good compliance looks like</p><h3 className="mt-1 text-lg font-semibold">Evidence and control checklist</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Use these as review questions. A “yes” should be supported by a policy, system record, approval, reconciliation or other auditable evidence.</p><div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 sm:p-5">{selectedDetails.checks.map((item) => <div key={item} className="flex gap-3 py-2.5 text-[15px] leading-6 text-emerald-950"><CheckCircle2 className="mt-1 size-4 shrink-0 text-emerald-700" /><span>{item}</span></div>)}</div></section>
+
+              <section className="rounded-2xl border border-blue-200 bg-blue-50 p-5 sm:p-6"><p className="eyebrow text-blue-800">How to reach a defensible answer</p><div className="mt-4 grid gap-4 sm:grid-cols-4">{[['1','Profile','Confirm category, layer, deposit status and operating model.'],['2','Trigger','Identify the transaction, event or exposure that activates the rule.'],['3','Test','Read the obligation together with thresholds, exceptions and dates.'],['4','Conclude','Record Applicable, Not applicable, or Applicable with modification—and why.']].map(([number,title,body]) => <div key={number}><span className="grid size-8 place-items-center rounded-lg bg-blue-900 font-mono text-xs font-semibold text-white">{number}</span><p className="mt-2 text-sm font-semibold text-blue-950">{title}</p><p className="mt-1 text-xs leading-5 text-blue-900">{body}</p></div>)}</div><p className="mt-5 border-t border-blue-200 pt-4 text-sm leading-6 text-blue-950"><strong>Before filing or approval:</strong> verify the exact paragraph in the latest RBI direction and check later amendments, circulars and FAQs.</p></section>
+
+              <section><div><p className="eyebrow">Continue the analysis</p><h3 className="mt-1 text-lg font-semibold">Related regulations</h3><p className="mt-1 text-sm text-muted-foreground">Most NBFC questions cross more than one direction. Open these next.</p></div><div className="mt-4 grid gap-2 sm:grid-cols-3">{selectedDetails.related.map((id) => { const related = regulations.find((item) => item.id === id); return related ? <Button key={id} variant="outline" className="h-auto justify-between whitespace-normal px-4 py-3 text-left" onClick={() => setSelected(related)}><span>{related.short}</span><ChevronRight className="size-4 shrink-0" /></Button> : null; })}</div></section>
             </div>
           </>}
         </SheetContent>
