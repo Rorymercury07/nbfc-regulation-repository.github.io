@@ -29,6 +29,10 @@ declare global {
   }
 }
 
+function Checkbox({ checked, onCheckedChange }: { checked: boolean; onCheckedChange: (checked: boolean) => void }) {
+  return <input type="checkbox" checked={checked} onChange={(event) => onCheckedChange(event.target.checked)} className="size-4 accent-primary" />;
+}
+
 const regulations: Regulation[] = [
   { id: 1, title: 'Registration & Scale Based Regulation', short: 'Registration', category: 'Perimeter', layers: ['BL','ML','UL'], status: 'Core', updated: '01 Jul 2026', summary: 'Determines registration, exemptions, category, layer and minimum net owned fund—the starting point for every analysis.', highlights: ['BL/ML threshold: ₹1,000 crore', 'UL threshold: ₹1,00,000 crore', 'Principal business: 50–50 test'] },
   { id: 2, title: 'Capital Adequacy', short: 'Capital', category: 'Prudential', layers: ['BL','ML','UL'], status: 'Core', updated: '28 Nov 2025', summary: 'Sets regulatory capital composition, deductions, risk weights, leverage and ICAAP expectations.', highlights: ['ML+: CRAR 15%', 'ML+: Tier 1 10%', 'UL: CET1 9%'] },
@@ -122,14 +126,11 @@ const issuePaths = [
   { title: 'Declare a dividend', chain: ['Three-year capital record', 'NNPA eligibility', 'Payout-ratio calculation', 'Exceptional-profit treatment', 'Board approval and reporting'], regulations: [19, 2, 3, 13] },
 ];
 
-function Checkbox({ checked, onCheckedChange }: { checked: boolean; onCheckedChange: (checked: boolean) => void }) {
-  return <input type="checkbox" checked={checked} onChange={(event) => onCheckedChange(event.target.checked)} className="size-4 accent-primary" />;
-}
-
 export default function Home() {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('All categories');
   const [layer, setLayer] = useState('All layers');
+  const [status, setStatus] = useState('All statuses');
   const [selected, setSelected] = useState<Regulation | null>(null);
   const [entityType, setEntityType] = useState('NBFC-ICC');
   const [depositStatus, setDepositStatus] = useState('Non-deposit taking');
@@ -171,6 +172,7 @@ export default function Home() {
           setQuery(nextQuery);
           setCategory(nextCategory);
           setLayer(nextLayer);
+          setStatus('All statuses');
           await afterPaint();
           const needle = nextQuery.trim().toLowerCase();
           const count = regulations.filter((reg) => (!needle || [reg.title, reg.short, reg.category, reg.summary, ...reg.highlights].join(' ').toLowerCase().includes(needle)) && (nextCategory === 'All categories' || reg.category === nextCategory) && (nextLayer === 'All layers' || reg.layers.includes(nextLayer))).length;
@@ -216,9 +218,9 @@ export default function Home() {
     const needle = query.trim().toLowerCase();
     return regulations.filter((reg) => {
       const matchesText = !needle || [reg.title, reg.short, reg.category, reg.summary, ...reg.highlights].join(' ').toLowerCase().includes(needle);
-      return matchesText && (category === 'All categories' || reg.category === category) && (layer === 'All layers' || reg.layers.includes(layer));
+      return matchesText && (category === 'All categories' || reg.category === category) && (layer === 'All layers' || reg.layers.includes(layer)) && (status === 'All statuses' || reg.status === status);
     });
-  }, [query, category, layer]);
+  }, [query, category, layer, status]);
   const selectedDetails = selected ? regulationDetails[selected.id] : null;
 
   return (
@@ -235,10 +237,11 @@ export default function Home() {
         <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_390px]">
           <div className="command-panel overflow-hidden rounded-3xl border border-slate-200 bg-[#07182b] p-6 text-white shadow-[0_24px_70px_-42px_rgba(2,12,27,.8)] sm:p-8">
             <div className="relative z-10 max-w-3xl"><div className="mb-6 flex items-center gap-2 text-sm text-cyan-200"><Landmark className="size-4" />Regulatory command centre</div><h1 className="max-w-2xl text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">Start with applicability. Then trace the obligation.</h1><p className="mt-3 max-w-2xl text-base leading-7 text-slate-300">Build the NBFC identity, research by issue and test every provision through A–T–O–E–R.</p>
-              <div className="mt-7 grid gap-3 sm:grid-cols-[minmax(0,1fr)_190px_150px]">
+              <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_175px_130px_130px]">
                 <div className="relative"><Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" /><Input aria-label="Search regulations" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search NPA, KYC, DLG, deposits…" className="h-11 border-white/15 bg-white/10 pl-10 text-[15px] text-white placeholder:text-slate-400 focus-visible:border-cyan-300" /></div>
                 <NativeSelect aria-label="Filter by category" value={category} onChange={(e) => setCategory(e.target.value)} className="w-full [&_select]:h-11 [&_select]:border-white/15 [&_select]:bg-white/10 [&_select]:text-white">{categoryOptions.map((option) => <NativeSelectOption key={option} value={option}>{option}</NativeSelectOption>)}</NativeSelect>
                 <NativeSelect aria-label="Filter by layer" value={layer} onChange={(e) => setLayer(e.target.value)} className="w-full [&_select]:h-11 [&_select]:border-white/15 [&_select]:bg-white/10 [&_select]:text-white">{['All layers','BL','ML','UL','Reference'].map((option) => <NativeSelectOption key={option} value={option}>{option}</NativeSelectOption>)}</NativeSelect>
+                <NativeSelect aria-label="Filter by status" value={status} onChange={(e) => setStatus(e.target.value)} className="w-full [&_select]:h-11 [&_select]:border-white/15 [&_select]:bg-white/10 [&_select]:text-white">{['All statuses','Core','Specialist','Reference'].map((option) => <NativeSelectOption key={option} value={option}>{option}</NativeSelectOption>)}</NativeSelect>
               </div>
             </div>
           </div>
@@ -249,7 +252,20 @@ export default function Home() {
 
         <Tabs defaultValue="library" className="mt-8"><div className="flex flex-col gap-3 border-b border-border pb-3 sm:flex-row sm:items-end sm:justify-between"><div><p className="eyebrow">Regulatory workbench</p><h2 className="mt-1 text-2xl font-semibold tracking-tight">Applicability before interpretation</h2></div><TabsList variant="line"><TabsTrigger value="library"><BookOpen />Library ({filtered.length})</TabsTrigger><TabsTrigger value="issues"><Search />Issue paths</TabsTrigger><TabsTrigger value="decision"><ShieldCheck />Reading method</TabsTrigger></TabsList></div>
           <TabsContent value="library" className="pt-5">
-            {filtered.length > 0 ? <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{filtered.map((reg) => <button key={reg.id} onClick={() => setSelected(reg)} className="reg-card group min-h-[230px] rounded-2xl border border-border bg-card p-5 text-left transition-all hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-[0_18px_38px_-28px_rgba(2,20,40,.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><div className="flex items-start justify-between gap-3"><span className="grid size-10 place-items-center rounded-xl bg-secondary text-primary"><FileText className="size-5" /></span><Badge variant={reg.status === 'Core' ? 'default' : 'outline'} className={reg.status === 'Core' ? 'bg-primary' : ''}>{reg.status}</Badge></div><h3 className="mt-5 text-lg font-semibold leading-snug tracking-tight group-hover:text-primary">{reg.short}</h3><p className="mt-2 line-clamp-3 text-sm leading-6 text-muted-foreground">{reg.summary}</p><div className="mt-5 flex items-center gap-2 border-t border-border/70 pt-4 text-xs text-muted-foreground"><span>{reg.category}</span><span>·</span><span>{reg.layers.join(' / ')}</span><ChevronRight className="ml-auto size-4 transition-transform group-hover:translate-x-0.5" /></div></button>)}</div> : <div className="rounded-2xl border border-dashed border-border bg-card px-6 py-16 text-center"><Search className="mx-auto size-6 text-muted-foreground" /><h3 className="mt-3 font-semibold">No matching regulation</h3><p className="mt-1 text-sm text-muted-foreground">Try a broader term or reset one of the filters.</p><Button variant="outline" className="mt-4" onClick={() => { setQuery(''); setCategory('All categories'); setLayer('All layers'); }}>Clear filters</Button></div>}
+            {filtered.length > 0 ? (
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                {filtered.map((reg) => (
+                  <button key={reg.id} onClick={() => setSelected(reg)} className="reg-card group min-h-[230px] rounded-2xl border border-border bg-card p-5 text-left transition-all hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-[0_18px_38px_-28px_rgba(2,20,40,.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                    <div className="flex items-start justify-between gap-3"><span className="grid size-10 place-items-center rounded-xl bg-secondary text-primary"><FileText className="size-5" /></span><Badge variant={reg.status === 'Core' ? 'default' : 'outline'} className={reg.status === 'Core' ? 'bg-primary' : ''}>{reg.status}</Badge></div>
+                    <h3 className="mt-5 text-lg font-semibold leading-snug tracking-tight group-hover:text-primary">{reg.short}</h3>
+                    <p className="mt-2 line-clamp-3 text-sm leading-6 text-muted-foreground">{reg.summary}</p>
+                    <div className="mt-5 flex items-center gap-2 border-t border-border/70 pt-4 text-xs text-muted-foreground"><span>{reg.category}</span><span>·</span><span>{reg.layers.join(' / ')}</span><ChevronRight className="ml-auto size-4 transition-transform group-hover:translate-x-0.5" /></div>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-border bg-card px-6 py-16 text-center"><Search className="mx-auto size-6 text-muted-foreground" /><h3 className="mt-3 font-semibold">No matching regulation</h3><p className="mt-1 text-sm text-muted-foreground">Try a broader term or reset one of the filters.</p><Button variant="outline" className="mt-4" onClick={() => { setQuery(''); setCategory('All categories'); setLayer('All layers'); setStatus('All statuses'); }}>Clear filters</Button></div>
+            )}
           </TabsContent>
           <TabsContent value="issues" className="pt-5"><div className="grid gap-4 lg:grid-cols-[.82fr_1.18fr]"><div className="space-y-2">{issuePaths.map((issue, index) => <button key={issue.title} onClick={() => setIssueIndex(index)} className={`w-full rounded-xl border p-4 text-left transition-colors ${issueIndex === index ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-card hover:border-primary/30'}`}><p className="text-sm font-semibold leading-5">{issue.title}</p></button>)}</div><div className="rounded-2xl border border-border bg-card p-5 sm:p-7"><p className="eyebrow">Question-led research path</p><h3 className="mt-1 text-xl font-semibold">{issuePaths[issueIndex].title}</h3><div className="mt-6 space-y-3">{issuePaths[issueIndex].chain.map((step, index) => <div key={step} className="flex items-center gap-3"><span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary/10 font-mono text-xs font-semibold text-primary">{index + 1}</span><span className="text-sm font-medium">{step}</span>{index < issuePaths[issueIndex].chain.length - 1 && <ChevronRight className="ml-auto size-4 text-muted-foreground" />}</div>)}</div><div className="mt-7 border-t border-border pt-5"><p className="eyebrow">Open the governing directions</p><div className="mt-3 flex flex-wrap gap-2">{issuePaths[issueIndex].regulations.map((id) => { const reg = regulations.find((item) => item.id === id); return reg ? <Button key={id} variant="outline" size="sm" onClick={() => setSelected(reg)}>{reg.short}<ArrowUpRight className="size-3.5" /></Button> : null; })}</div></div></div></div></TabsContent>
           <TabsContent value="decision" className="pt-5"><div className="grid gap-4 xl:grid-cols-[1.2fr_.8fr]"><div className="rounded-2xl border border-border bg-card p-5 sm:p-7"><p className="eyebrow">Ten regulatory boxes</p><h3 className="mt-1 text-xl font-semibold">Remember subjects, not circular numbers</h3><div className="mt-5 grid gap-2 sm:grid-cols-2">{regulatoryBoxes.map(([title,body,ids], index) => <button key={title} onClick={() => { const reg = regulations.find((item) => item.id === ids[0]); if (reg) setSelected(reg); }} className="group flex items-start gap-3 rounded-xl border border-border p-3 text-left hover:border-primary/30 hover:bg-secondary/40"><span className="font-mono text-xs font-semibold text-primary">{String(index + 1).padStart(2,'0')}</span><span><span className="block text-sm font-semibold group-hover:text-primary">{title}</span><span className="mt-0.5 block text-xs leading-5 text-muted-foreground">{body}</span></span></button>)}</div></div><div className="rounded-2xl border border-primary/20 bg-[#07182b] p-5 text-white sm:p-7"><p className="text-xs font-semibold uppercase tracking-[.16em] text-cyan-200">A–T–O–E–R</p><h3 className="mt-2 text-xl font-semibold">How to read every paragraph</h3><div className="mt-5 space-y-3">{[['A','Applicability','Which category, layer, threshold or interface?'],['T','Trigger','What event activates the provision?'],['O','Obligation','What must the NBFC do?'],['E','Exception','What proviso, exemption or modification applies?'],['R','Reporting / record / remedy','What filing, evidence, deadline or consequence follows?']].map(([letter,title,body]) => <div key={letter} className="grid grid-cols-[32px_1fr] gap-3"><span className="grid size-8 place-items-center rounded-lg bg-cyan-300/15 font-mono text-sm font-semibold text-cyan-200">{letter}</span><div><p className="text-sm font-semibold">{title}</p><p className="mt-0.5 text-xs leading-5 text-slate-300">{body}</p></div></div>)}</div></div></div><div className="mt-4 grid gap-4 md:grid-cols-3"><div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5"><p className="font-semibold text-emerald-950">Continuous</p><p className="mt-2 text-sm leading-6 text-emerald-900">NOF, capital, KYC, FPC, provisioning, outsourcing and disclosures.</p></div><div className="rounded-2xl border border-blue-200 bg-blue-50 p-5"><p className="font-semibold text-blue-950">Periodic</p><p className="mt-2 text-sm leading-6 text-blue-900">Returns, Board reviews, certificates, financial statements and recurring reports.</p></div><div className="rounded-2xl border border-amber-200 bg-amber-50 p-5"><p className="font-semibold text-amber-950">Event-based</p><p className="mt-2 text-sm leading-6 text-amber-900">Control, directors, office, fraud, default, vendors, products and inspections.</p></div></div><div className="mt-4 rounded-2xl border border-border bg-card p-5 sm:p-7"><p className="eyebrow">Regulatory hierarchy</p><div className="mt-4 flex flex-wrap items-center gap-2 text-sm font-medium">{['RBI Act, 1934','Master Directions','SBR framework','Subject Directions','Circulars / amendments','FAQs','Operational reporting'].map((item,index,array) => <span key={item} className="contents"><span className="rounded-lg border border-border bg-secondary/50 px-3 py-2">{item}</span>{index < array.length - 1 && <ChevronRight className="size-4 text-muted-foreground" />}</span>)}</div><div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950"><strong>Working rule:</strong> subject → governing direction → applicability → obligation → timeline/reporting. Conclude “Applicable”, “Not applicable” or “Applicable with modification”.</div></div></TabsContent>
@@ -260,7 +276,7 @@ export default function Home() {
         <SheetContent className="w-full overflow-y-auto border-l-slate-200 bg-background sm:max-w-2xl">
           {selected && selectedDetails && <>
             <SheetHeader className="border-b border-border p-6 pr-14 sm:p-8 sm:pr-16">
-              <div className="mb-3 flex flex-wrap gap-2"><Badge>{selected.status}</Badge><Badge variant="outline">{selected.category}</Badge>{selected.layers.map((item) => <Badge key={item} variant="secondary">{item}</Badge>)}</div>
+              <div className="mb-3 flex flex-wrap gap-2"><button type="button" title={`Show all ${selected.status.toLowerCase()} regulations`} onClick={() => { setStatus(selected.status); setSelected(null); }} className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground transition-opacity hover:opacity-85">{selected.status}</button><button type="button" title={`Filter by ${selected.category}`} onClick={() => { setCategory(selected.category); setSelected(null); }} className="rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold text-foreground hover:border-primary/40 hover:text-primary">{selected.category}</button>{selected.layers.map((item) => <button type="button" key={item} title={`Show regulations applicable to ${item}`} onClick={() => { setLayer(item); setSelected(null); }} className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground hover:bg-primary hover:text-primary-foreground">{item}</button>)}</div>
               <SheetTitle className="text-2xl leading-tight sm:text-3xl">{selected.title}</SheetTitle>
               <SheetDescription className="text-base leading-7">{selected.summary}</SheetDescription>
               <div className="flex items-center gap-1.5 pt-1 text-xs text-muted-foreground"><Clock3 className="size-3.5" />Folder copy updated {selected.updated}</div>
