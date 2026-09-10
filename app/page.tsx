@@ -221,6 +221,87 @@ const beginnerSteps = [
   { number: '06', title: 'How do I reach a legal conclusion?', body: 'Use applicability, trigger, obligation, exception and reporting evidence before reading the final clause.', ids: [1] },
 ];
 
+type FoundationAnswer = {
+  question: string;
+  meaning: string;
+  source: string;
+  applicability: string;
+  how: string;
+  conditions: string[];
+  example: string;
+  impact: string;
+  relatedIds: number[];
+};
+
+const foundationAnswers: FoundationAnswer[] = [
+  {
+    question: 'What is an NBFC?',
+    meaning: 'An NBFC is a company whose principal business is a financial activity such as lending, making advances or acquiring securities, but which is not a bank. Being incorporated as a company is not enough: the nature and scale of the actual business determine whether the company falls within the NBFC perimeter.',
+    source: 'Sections 45-I(c), 45-I(f) and 45-IA of the Reserve Bank of India Act, 1934, read with the RBI (NBFC – Registration, Exemptions and Framework for Scale Based Regulation) Directions, 2025.',
+    applicability: 'Start with every company carrying on financing, investment, asset-finance or another financial activity. Then check statutory exemptions, RBI exemptions and whether another specialist regulatory category applies.',
+    how: 'Apply the principal-business test to both financial assets and income from financial assets. If the business falls within the statutory definition and no exemption applies, the company generally needs an RBI Certificate of Registration and the prescribed minimum Net Owned Fund before commencing or carrying on NBFC business.',
+    conditions: ['The entity must be a company.', 'Financial activity must be its principal business; the commonly used test examines whether financial assets exceed 50% of total assets and income from financial assets exceeds 50% of gross income.', 'A Certificate of Registration under section 45-IA is generally required unless a valid exemption applies.', 'An NBFC cannot accept demand deposits, issue cheques drawn on itself like a bank, or describe itself as a bank.'],
+    example: 'A company whose assets and income are mainly generated from MSME loans is likely within the NBFC perimeter. A manufacturing company that occasionally gives an inter-corporate loan is not automatically an NBFC merely because it earned some interest.',
+    impact: 'Before launching a product, taking funding or drafting a compliance checklist, document the principal-business calculation, registration status, NBFC category, deposit status and SBR layer. A wrong perimeter conclusion makes every later applicability conclusion unreliable.',
+    relatedIds: [1, 2, 7],
+  },
+  {
+    question: 'Which type of NBFC is it?',
+    meaning: '“NBFC” is the umbrella. The category identifies the permitted or principal activity and therefore the specialist rules that sit on top of the common NBFC framework.',
+    source: 'Paragraph 6 of the RBI Registration and Scale Based Regulation Directions, 2025, together with the relevant specialist directions for ICCs, MFIs, Factors, HFCs, CICs, IFCs, IDF-NBFCs, P2P platforms and Account Aggregators.',
+    applicability: 'Every registered NBFC must identify its correct activity-based category. Category is determined from the business actually carried on, regulatory conditions and prescribed asset or income tests—not simply from the name appearing in corporate records.',
+    how: 'Begin with the business model. A general lender or investor is normally an NBFC-ICC. Then test whether specialist criteria redirect it to MFI, Factor, HFC, CIC, IFC, IDF-NBFC, P2P, Account Aggregator, SPD or another category. After category, identify deposit status, asset size, SBR layer and operating overlays.',
+    conditions: ['Use current audited and management data to test activity, asset and income thresholds.', 'Check whether the proposed product is permitted for that category.', 'Apply the common directions plus every category-specific direction.', 'Reassess classification when the business mix, group structure, assets or customer interface changes.'],
+    example: 'A company making ordinary secured and unsecured business loans will usually begin with the NBFC-ICC definition. If at least the prescribed proportion of its assets is deployed toward infrastructure lending, the IFC category must be tested instead.',
+    impact: 'Keep a one-page identity record: category, CoR number, deposit status, layer, asset size, NOF, main products, digital lending, LSPs and group entities. This becomes the first page of every regulatory analysis.',
+    relatedIds: [1, 8, 9],
+  },
+  {
+    question: 'What is Scale Based Regulation?',
+    meaning: 'Scale Based Regulation places NBFCs into Base, Middle, Upper and Top Layers so that regulatory intensity increases with size, activity, complexity and perceived systemic risk.',
+    source: 'RBI (NBFC – Registration, Exemptions and Framework for Scale Based Regulation) Directions, 2025, particularly the layer framework and classification provisions.',
+    applicability: 'The framework applies across NBFC categories, but placement is not a single asset-size test. Deposit-taking status, activity-based placement, group aggregation and RBI identification can alter the result.',
+    how: 'Identify category and deposit status first; calculate asset size and relevant group assets; apply fixed category placement; then test whether RBI has identified the entity for Upper Layer. Higher layers generally inherit lower-layer requirements and add stricter obligations.',
+    conditions: ['A non-deposit-taking NBFC below the relevant threshold is generally BL unless activity rules place it elsewhere.', 'All deposit-taking NBFCs and specified categories are at least ML.', 'UL placement follows the applicable quantitative and RBI identification framework.', 'Layer changes require a documented transition plan and implementation of additional controls.'],
+    example: 'A non-deposit-taking NBFC-ICC below ₹1,000 crore will generally begin in BL. If it crosses ₹1,000 crore or group aggregation applies, ML requirements must be tested even though its products remain unchanged.',
+    impact: 'Maintain a layer-assessment file and a gap analysis covering capital, governance, concentration, liquidity, disclosures and reporting. Recheck it at every material asset or group-structure change.',
+    relatedIds: [1, 2, 5, 6],
+  },
+  {
+    question: 'What changes by layer?',
+    meaning: 'The layer determines regulatory intensity. Base Layer carries the common foundation; Middle Layer adds stronger prudential and governance controls; Upper Layer adds enhanced capital, governance, disclosure and supervisory expectations.',
+    source: 'The SBR provisions in the RBI Registration Directions, read with the Capital Adequacy, Concentration Risk, ALM, Governance and Financial Statement Directions.',
+    applicability: 'Compare only provisions that apply to the NBFC’s category and activity. A specialist direction may apply across layers, while a particular obligation may begin only at ML or UL.',
+    how: 'Build a matrix with BL, ML and UL as columns. For each subject—NOF, leverage, CRAR, concentration, LCR, governance, disclosures and reporting—record applicable, not applicable or applicable with modification.',
+    conditions: ['Do not assume that every BL requirement disappears in ML or UL; higher layers generally inherit it.', 'Check category-specific exclusions and thresholds.', 'Separate continuous requirements from periodic and event-based requirements.', 'Record the effective date and transition period for a layer movement.'],
+    example: 'A general ML NBFC must normally maintain the prescribed CRAR and Tier 1 minimum. A UL NBFC inherits those requirements and adds the applicable CET1 and enhanced governance or disclosure expectations.',
+    impact: 'Use a layer-wise compliance register with provision, owner, evidence, frequency and status. This prevents a headline threshold from being applied without its exceptions or transition rules.',
+    relatedIds: [1, 2, 5, 6, 10, 13],
+  },
+  {
+    question: 'How does an NBFC operate?',
+    meaning: 'An NBFC operates through connected compliance systems: product approval and underwriting, customer disclosures, KYC/AML, disbursement and servicing, asset classification, recovery, outsourcing, reporting and governance.',
+    source: 'The RBI Credit Facilities, Responsible Business Conduct, KYC, IRACP, Outsourcing, Governance and Credit Information Reporting Directions, 2025.',
+    applicability: 'The common controls apply to ordinary lending NBFCs, while product, customer, digital, outsourcing and funding features add overlays. The exact set depends on the identity profile and transaction.',
+    how: 'Trace a product through its lifecycle: authority to offer it → underwriting → KYC → sanction/KFS → disbursement → servicing → monitoring/NPA → recovery or resolution → CIC and regulatory reporting → closure and record retention.',
+    conditions: ['Obtain Board-approved policies and delegated authority before launch.', 'Give the borrower prescribed disclosures and fair treatment.', 'Keep regulated decisions and accountability with the NBFC even where an LSP or vendor is used.', 'Maintain evidence that operational systems match the regulatory rule.'],
+    example: 'An app-based MSME loan requires the ICC and layer analysis, underwriting controls, KFS and APR disclosure, digital-lending fund-flow and data controls, KYC, LSP oversight, grievance handling and CIC reporting.',
+    impact: 'Convert each direction into a regulation → requirement → action → owner → frequency → evidence register. Compliance becomes an operating system rather than a collection of PDF notes.',
+    relatedIds: [7, 8, 9, 11, 12],
+  },
+  {
+    question: 'How do I reach a regulatory conclusion?',
+    meaning: 'A reliable conclusion connects the legal source to the entity and facts. Finding a paragraph containing the right words is only the beginning.',
+    source: 'Use the RBI Act, the governing Master Direction, later amendments or circulars, applicable FAQs/clarifications and the NBFC’s implementing policy or SOP—in that order.',
+    applicability: 'Use this method for every NBFC question, including lending, NPA classification, recovery, KYC, digital lending, governance, outsourcing and reporting.',
+    how: 'First identify the subject and governing direction. Then apply the seven-part answer: Meaning → Regulatory source → Applicability → How it works → Key regulatory conditions → Example → Practical/compliance impact.',
+    conditions: ['Read the objective, applicability, definitions, operative provision and annexures first.', 'Classify the language as mandatory, prohibition, conditional or guidance.', 'Separate prudential classification from contractual or legal enforcement rights.', 'Check amendments, effective dates, exceptions, reporting and documentary evidence before concluding.'],
+    example: 'A 90-day NPA rule determines regulatory classification, income recognition and provisioning. It does not by itself say that contractual recovery action must wait for 90 days; that requires a separate legal and contractual analysis.',
+    impact: 'End every note with one of three outcomes—Applicable, Not applicable, or Applicable with modification—followed by the required action, owner, deadline and evidence to retain.',
+    relatedIds: [1, 3, 7],
+  },
+];
+
 const regulatoryMap = [
   { stage: 'Entry & identity', prompt: 'Can we become or remain an NBFC?', body: 'Registration, CoR, principal business, NOF, category and SBR layer.', ids: [1], tone: 'border-blue-200 bg-blue-50 text-blue-950' },
   { stage: 'Running the business', prompt: 'What must we do every day?', body: 'Capital, lending, NPA, KYC, conduct, governance, reporting, digital lending and outsourcing.', ids: [2, 3, 6, 7, 8, 9, 10, 11, 12, 13, 26], tone: 'border-emerald-200 bg-emerald-50 text-emerald-950' },
@@ -257,6 +338,7 @@ export default function Home() {
   const [workspaceTab, setWorkspaceTab] = useState('start');
   const [answeredQuestion, setAnsweredQuestion] = useState('');
   const [answerIds, setAnswerIds] = useState<number[]>([]);
+  const [foundationIndex, setFoundationIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const context = document.modelContext;
@@ -454,7 +536,7 @@ export default function Home() {
         <section aria-label="Key thresholds" className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">{thresholds.map((item) => <button type="button" key={item.label} onClick={() => setSelectedThreshold(item)} aria-label={`Explain ${item.value} ${item.label}, source clauses and layer applicability`} className={`threshold-card tone-${item.tone} group rounded-2xl border bg-card p-4 text-left transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:p-5`}><p className="text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">{item.value}</p><div className="mt-3 flex items-end justify-between gap-3"><div><p className="text-sm font-semibold">{item.label}</p><p className="mt-0.5 text-xs text-muted-foreground">{item.note}</p></div><span className="grid size-8 place-items-center rounded-full bg-secondary text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground"><ArrowUpRight className="size-4" /></span></div><p className="mt-3 border-t border-border/70 pt-3 text-xs font-medium text-primary">Open source, clauses and BL / ML / UL view</p></button>)}</section>
 
         <Tabs id="workbench" value={workspaceTab} onValueChange={setWorkspaceTab} className="mt-8 scroll-mt-20"><div className="flex flex-col gap-4 border-b border-border pb-3"><div><p className="eyebrow">Learn, find and apply</p><h2 className="mt-1 text-2xl font-semibold tracking-tight">Choose where you are starting from</h2></div><TabsList variant="line" className="h-auto w-full justify-start overflow-x-auto"><TabsTrigger value="start"><GraduationCap />Start here</TabsTrigger><TabsTrigger value="map"><Route />Regulatory map</TabsTrigger><TabsTrigger value="problems"><Search />Find by problem</TabsTrigger><TabsTrigger value="library"><BookOpen />Library ({filtered.length})</TabsTrigger><TabsTrigger value="learn"><Compass />Learning path</TabsTrigger><TabsTrigger value="decision"><ShieldCheck />How to read</TabsTrigger></TabsList></div>
-          <TabsContent value="start" className="pt-5"><div className="rounded-3xl border border-border bg-card p-5 sm:p-8"><div className="max-w-3xl"><p className="eyebrow">NBFC regulation from zero</p><h3 className="mt-1 text-2xl font-semibold tracking-tight">Six foundations before the Master Directions</h3><p className="mt-2 text-base leading-7 text-muted-foreground">Follow these in order. Each step opens the regulation that answers the question, but the sequence first gives you a mental map of the system.</p></div><div className="mt-7 grid gap-3 md:grid-cols-2 xl:grid-cols-3">{beginnerSteps.map((step, index) => <button type="button" key={step.number} onClick={() => { const reg = regulations.find((item) => item.id === step.ids[0]); if (reg) setSelected(reg); }} className="group rounded-2xl border border-border p-5 text-left hover:border-primary/30 hover:bg-secondary/30"><div className="flex items-center justify-between"><span className="font-mono text-sm font-semibold text-primary">{step.number}</span><ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-1" /></div><h4 className="mt-5 text-lg font-semibold group-hover:text-primary">{step.title}</h4><p className="mt-2 text-sm leading-6 text-muted-foreground">{step.body}</p>{index < beginnerSteps.length - 1 && <p className="mt-4 text-xs font-semibold text-primary">Continue to step {String(index + 2).padStart(2,'0')}</p>}</button>)}</div></div></TabsContent>
+          <TabsContent value="start" className="pt-5"><div className="rounded-3xl border border-border bg-card p-5 sm:p-8"><div className="max-w-3xl"><p className="eyebrow">NBFC regulation from zero</p><h3 className="mt-1 text-2xl font-semibold tracking-tight">Six foundations before the Master Directions</h3><p className="mt-2 text-base leading-7 text-muted-foreground">Follow these in order. Each question opens its own seven-part explanation with the source, applicability, example and practical impact.</p></div><div className="mt-7 grid gap-3 md:grid-cols-2 xl:grid-cols-3">{beginnerSteps.map((step, index) => <button type="button" key={step.number} onClick={() => setFoundationIndex(index)} className="group rounded-2xl border border-border p-5 text-left hover:border-primary/30 hover:bg-secondary/30"><div className="flex items-center justify-between"><span className="font-mono text-sm font-semibold text-primary">{step.number}</span><ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-1" /></div><h4 className="mt-5 text-lg font-semibold group-hover:text-primary">{step.title}</h4><p className="mt-2 text-sm leading-6 text-muted-foreground">{step.body}</p><p className="mt-4 text-xs font-semibold text-primary">Open structured answer</p></button>)}</div></div></TabsContent>
           <TabsContent value="map" className="pt-5"><div className="rounded-3xl border border-border bg-card p-5 sm:p-8"><div className="max-w-3xl"><p className="eyebrow">The whole system on one screen</p><h3 className="mt-1 text-2xl font-semibold tracking-tight">NBFC regulatory map</h3><p className="mt-2 text-base leading-7 text-muted-foreground">Start with where the institution is in its lifecycle. Then open the subject—not a circular number.</p></div><div className="mt-7 grid gap-4 xl:grid-cols-4">{regulatoryMap.map((group, index) => <section key={group.stage} className={`rounded-2xl border p-5 ${group.tone}`}><div className="flex items-center justify-between"><span className="font-mono text-xs font-semibold">0{index + 1}</span><ArrowRight className="size-4" /></div><h4 className="mt-4 text-lg font-semibold">{group.stage}</h4><p className="mt-1 text-sm font-semibold leading-5">{group.prompt}</p><p className="mt-2 text-sm leading-6 opacity-80">{group.body}</p><div className="mt-4 flex flex-wrap gap-1.5">{group.ids.slice(0,6).map((id) => { const reg = regulations.find((item) => item.id === id); return reg ? <button type="button" key={id} onClick={() => setSelected(reg)} className="rounded-full border border-current/15 bg-white/70 px-2.5 py-1 text-xs font-semibold hover:bg-white">{reg.short}</button> : null; })}</div></section>)}</div></div></TabsContent>
           <TabsContent value="library" className="pt-5">
             {filtered.length > 0 ? (
@@ -479,8 +561,34 @@ export default function Home() {
         </Tabs>
       </div>
 
+      <Sheet open={foundationIndex !== null} onOpenChange={(open) => !open && setFoundationIndex(null)}>
+        <SheetContent className="!w-[min(98vw,1240px)] !max-w-none overflow-y-auto border-l-slate-200 bg-background xl:!w-[min(92vw,1240px)]">
+          {foundationIndex !== null && (() => { const answer = foundationAnswers[foundationIndex]; return <>
+            <SheetHeader className="border-b border-border bg-card p-6 pr-14 sm:p-9 sm:pr-16">
+              <div className="flex flex-wrap gap-2"><Badge className="bg-primary">Foundation {String(foundationIndex + 1).padStart(2,'0')}</Badge><Badge variant="outline">Seven-part answer</Badge></div>
+              <SheetTitle className="mt-3 max-w-4xl text-3xl leading-tight sm:text-4xl">{answer.question}</SheetTitle>
+              <SheetDescription className="max-w-4xl text-base leading-7">A practical explanation connected to the governing source, the relevant NBFC profile and the action a compliance team should take.</SheetDescription>
+            </SheetHeader>
+            <div className="space-y-5 p-6 sm:p-9">
+              <section className="rounded-2xl border border-primary/15 bg-primary/[.045] p-5 sm:p-6"><p className="eyebrow text-primary">1 · Meaning</p><p className="mt-3 text-lg font-medium leading-8">{answer.meaning}</p></section>
+              <div className="grid gap-5 lg:grid-cols-2">
+                <section className="rounded-2xl border border-border bg-card p-5 sm:p-6"><p className="eyebrow">2 · Regulatory source</p><p className="mt-3 text-[15px] font-semibold leading-7 text-primary">{answer.source}</p></section>
+                <section className="rounded-2xl border border-border bg-card p-5 sm:p-6"><p className="eyebrow">3 · Applicability</p><p className="mt-3 text-[15px] leading-7">{answer.applicability}</p></section>
+              </div>
+              <section className="rounded-2xl border border-border bg-card p-5 sm:p-6"><p className="eyebrow">4 · How it works</p><p className="mt-3 text-[15px] leading-7">{answer.how}</p></section>
+              <section><p className="eyebrow">5 · Key regulatory conditions</p><div className="mt-4 grid gap-3 sm:grid-cols-2">{answer.conditions.map((item, index) => <div key={item} className="flex gap-3 rounded-xl border border-border bg-card p-4 text-[15px] leading-6"><span className="grid size-7 shrink-0 place-items-center rounded-lg bg-primary/10 font-mono text-xs font-semibold text-primary">{index + 1}</span><span>{item}</span></div>)}</div></section>
+              <div className="grid gap-5 lg:grid-cols-2">
+                <section className="rounded-2xl border border-blue-200 bg-blue-50 p-5 sm:p-6"><p className="eyebrow text-blue-800">6 · Example</p><p className="mt-3 text-[15px] leading-7 text-blue-950">{answer.example}</p></section>
+                <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 sm:p-6"><p className="eyebrow text-emerald-800">7 · Practical / compliance impact</p><p className="mt-3 text-[15px] leading-7 text-emerald-950">{answer.impact}</p></section>
+              </div>
+              <section className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-semibold">Open the governing directions</p><p className="mt-1 text-sm text-muted-foreground">Continue from the explanation to detailed obligations, timelines and evidence.</p><div className="mt-3 flex flex-wrap gap-2">{answer.relatedIds.map((id) => { const reg = regulations.find((item) => item.id === id); return reg ? <Button key={id} variant="outline" size="sm" onClick={() => setSelected(reg)}>{reg.short}<ArrowUpRight className="size-3.5" /></Button> : null; })}</div></div><div className="flex shrink-0 gap-2"><Button variant="outline" disabled={foundationIndex === 0} onClick={() => setFoundationIndex((current) => current === null ? 0 : Math.max(0, current - 1))}>Previous</Button><Button disabled={foundationIndex === foundationAnswers.length - 1} onClick={() => setFoundationIndex((current) => current === null ? 0 : Math.min(foundationAnswers.length - 1, current + 1))}>Next answer<ChevronRight /></Button></div></section>
+            </div>
+          </>; })()}
+        </SheetContent>
+      </Sheet>
+
       <Sheet open={Boolean(selectedThreshold)} onOpenChange={(open) => !open && setSelectedThreshold(null)}>
-        <SheetContent className="w-[min(96vw,1040px)] max-w-none overflow-y-auto border-l-slate-200 bg-background sm:max-w-5xl">
+        <SheetContent className="!w-[min(98vw,1240px)] !max-w-none overflow-y-auto border-l-slate-200 bg-background xl:!w-[min(92vw,1240px)]">
           {selectedThreshold && <>
             <SheetHeader className="border-b border-border bg-card p-6 pr-14 sm:p-9 sm:pr-16">
               <div className="flex flex-wrap items-center gap-2"><Badge className="bg-primary">Key threshold</Badge><Badge variant="outline">{selectedThreshold.label}</Badge></div>
@@ -502,7 +610,7 @@ export default function Home() {
       </Sheet>
 
       <Sheet open={Boolean(selected)} onOpenChange={(open) => !open && setSelected(null)}>
-        <SheetContent className="w-[min(96vw,960px)] max-w-none overflow-y-auto border-l-slate-200 bg-background sm:max-w-4xl">
+        <SheetContent className="!w-[min(98vw,1240px)] !max-w-none overflow-y-auto border-l-slate-200 bg-background xl:!w-[min(92vw,1240px)]">
           {selected && selectedDetails && <>
             <SheetHeader className="border-b border-border bg-card p-6 pr-14 sm:p-9 sm:pr-16">
               <div className="mb-3 flex flex-wrap gap-2"><button type="button" title={`Show all ${selected.status.toLowerCase()} regulations`} onClick={() => { setStatus(selected.status); setSelected(null); }} className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground transition-opacity hover:opacity-85">{selected.status}</button><button type="button" title={`Filter by ${selected.category}`} onClick={() => { setCategory(selected.category); setSelected(null); }} className="rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold text-foreground hover:border-primary/40 hover:text-primary">{selected.category}</button>{selected.layers.map((item) => <button type="button" key={item} title={`Show regulations applicable to ${item}`} onClick={() => { setLayer(item); setSelected(null); }} className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground hover:bg-primary hover:text-primary-foreground">{item}</button>)}</div>
