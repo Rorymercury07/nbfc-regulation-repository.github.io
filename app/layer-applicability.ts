@@ -63,6 +63,86 @@ const guide: Record<number, LayerGuide> = {
     ML: { position: 'Only if authorised deposit-taking', explanation: 'A non-deposit taking ML entity does not become covered merely by being ML.', clause: 'Paragraphs 3, 6' },
     UL: { position: 'Only if authorised deposit-taking', explanation: 'A non-deposit taking UL entity does not become covered merely by being UL.', clause: 'Paragraphs 3, 6' },
   } },
+  4: { source: 'Resolution of Stressed Assets Directions, 2025', scope: 'The direction covers listed lender categories across layers unless a particular part/paragraph sets a narrower asset-size or activity test.', rules: {
+    BL: { position: 'If stress or restructuring occurs', explanation: 'BL is not automatically outside the direction; use the applicable part for the account and entity size.', clause: 'Paragraph 3; relevant resolution chapter' },
+    ML: { position: 'If stress or restructuring occurs', explanation: 'A covered ML lender tests default, review, restructuring and reporting provisions against the specific account.', clause: 'Paragraph 3; relevant resolution chapter' },
+    UL: { position: 'If stress or restructuring occurs', explanation: 'UL uses the relevant stress-resolution clauses; layer alone does not make every restructuring chapter relevant.', clause: 'Paragraph 3; relevant resolution chapter' },
+  } },
+  12: { source: 'Credit Information Reporting Directions, 2025', scope: 'Paragraph 3 lists the covered credit institutions, including P2P and CIC, and excludes entities without customer interface and several specialist categories.', rules: {
+    BL: { position: 'Reporting if a covered credit institution', explanation: 'The direction says all layers unless otherwise specified; test actual borrower/customer reporting activity.', clause: 'Paragraph 3(1)–(2)' },
+    ML: { position: 'Reporting if a covered credit institution', explanation: 'ML has the same paragraph 3 scope test; reporting duties are not generated simply by asset size.', clause: 'Paragraph 3(1)–(2)' },
+    UL: { position: 'Reporting if a covered credit institution', explanation: 'UL is covered when it is a listed credit institution with reportable borrower information.', clause: 'Paragraph 3(1)–(2)' },
+  } },
+  13: { source: 'Financial Statements: Presentation and Disclosures Directions, 2025', scope: 'Paragraphs 3–7 contain category-specific coverage; the Notes to Accounts annex adds ML/UL and UL disclosure sections.', rules: {
+    BL: { position: 'Core disclosures', explanation: 'Covered BL entities follow the applicable common presentation and Notes to Accounts requirements.', clause: 'Paragraphs 3–7; Annex I C.1' },
+    ML: { position: 'Core plus ML/UL disclosures', explanation: 'Covered ML entities add the annex section expressly written for ML and UL.', clause: 'Paragraphs 3–7; Annex I C.2' },
+    UL: { position: 'Core, ML/UL and UL disclosures', explanation: 'Covered UL entities also apply the UL-specific annex section.', clause: 'Paragraphs 3–7; Annex I C.2–C.3' },
+  } },
+  14: { source: 'Transfer and Distribution of Credit Risk Directions, 2025', scope: 'The transaction must be a permitted loan transfer/acquisition or co-lending arrangement; Part A uses the lender definition in paragraph 12(4).', rules: {
+    BL: { position: 'Transaction-triggered', explanation: 'A BL NBFC is not exempt merely because of layer; test whether it acts as a permitted transferor/transferee.', clause: 'Part A paragraphs 7–10, 12(4)' },
+    ML: { position: 'Transaction-triggered', explanation: 'A covered ML lender applies transfer rules only when acquiring, selling or participating in a loan exposure.', clause: 'Part A paragraphs 7–10, 12(4)' },
+    UL: { position: 'Transaction-triggered', explanation: 'A covered UL lender uses the same Part A transaction and role test.', clause: 'Part A paragraphs 7–10, 12(4)' },
+  } },
+  15: { source: 'Securitisation Transactions Directions, 2025', scope: 'Paragraph 3 covers listed lending categories across layers but excludes P2P, AA, CIC, SPD, NOFHC and specified no-public-funds profiles.', rules: {
+    BL: { position: 'If covered and securitising/investing', explanation: 'A BL entity must satisfy both paragraph 3 scope and a securitisation transaction role; customer-facing BL without public funds is excluded.', clause: 'Paragraph 3' },
+    ML: { position: 'If covered and securitising/investing', explanation: 'A listed ML originator or investor applies the transaction requirements when it has a securitisation exposure.', clause: 'Paragraph 3' },
+    UL: { position: 'If covered and securitising/investing', explanation: 'The direction applies to listed UL originators/investors; transaction provisions control the detail.', clause: 'Paragraph 3' },
+  } },
+  17: { source: 'Acceptance of Public Deposits Directions, 2025', scope: 'Paragraph 3 principally covers authorised NBFC-D, deposit-taking HFC and certain Government companies; non-deposit takers are generally outside it.', rules: {
+    BL: { position: 'Not a general BL permission', explanation: 'BL status does not permit acceptance of public deposits. Check authorisation and the non-deposit declaration requirement.', clause: 'Paragraph 3(1)–(2)' },
+    ML: { position: 'Only if authorised to take deposits', explanation: 'A non-deposit taking ML entity is not covered merely by being ML; deposit-taking HFC has specific paragraph carve-outs.', clause: 'Paragraph 3(1)–(2)' },
+    UL: { position: 'Only if authorised to take deposits', explanation: 'A non-deposit taking UL entity does not acquire deposit-taking permission from layer classification.', clause: 'Paragraph 3(1)–(2)' },
+  } },
+  18: { source: 'Credit Cards — Issuance and Conduct Directions, 2025', scope: 'Paragraph 3 lists ICC, Factor, MFI and HFC across layers; issuing a card requires the separate RBI permission.', rules: {
+    BL: { position: 'Only if card activity is permitted', explanation: 'A covered BL category must check RBI card-issuer permission and actual credit/co-branded card activity.', clause: 'Paragraphs 3–4; card-issuer definition 5(6)' },
+    ML: { position: 'Only if card activity is permitted', explanation: 'ML category coverage does not itself confer approval to issue cards.', clause: 'Paragraphs 3–4; 5(6)' },
+    UL: { position: 'Only if card activity is permitted', explanation: 'UL category coverage still requires the product and permission tests.', clause: 'Paragraphs 3–4; 5(6)' },
+  } },
+  19: { source: 'Prudential Norms on Declaration of Dividends Directions, 2025', scope: 'Paragraph 3 covers most registered NBFC categories across layers but excludes NOFHC; the dividend eligibility route depends on prudential facts.', rules: {
+    BL: { position: 'If proposing a dividend', explanation: 'Covered BL entities test the category-appropriate capital, asset-quality and payout conditions before declaration.', clause: 'Paragraph 3; relevant dividend eligibility paragraph' },
+    ML: { position: 'If proposing a dividend', explanation: 'Covered ML entities apply the direction with their ML prudential capital requirements.', clause: 'Paragraph 3; relevant dividend eligibility paragraph' },
+    UL: { position: 'If proposing a dividend', explanation: 'Covered UL entities apply the direction with applicable UL capital overlays.', clause: 'Paragraph 3; relevant dividend eligibility paragraph' },
+  } },
+  20: { source: 'Acquisition of Shareholding or Control Directions, 2025', scope: 'Paragraph 3 covers specified categories across layers, with restricted HFC/SPD paragraphs and MGC/NOFHC exclusions.', rules: {
+    BL: { position: 'If control or material holding changes', explanation: 'BL is in scope for listed categories when a triggering acquisition or control event occurs.', clause: 'Paragraph 3(1)–(2); paragraphs 6–13' },
+    ML: { position: 'If control or material holding changes', explanation: 'ML uses the same event test; separate HFC/SPD provisions must be checked.', clause: 'Paragraph 3(1)–(2); paragraphs 6–13' },
+    UL: { position: 'If control or material holding changes', explanation: 'UL uses the same scope/event test; layer alone does not trigger prior approval.', clause: 'Paragraph 3(1)–(2); paragraphs 6–13' },
+  } },
+  21: { source: 'Undertaking of Financial Services Directions, 2025', scope: 'Paragraph 3 allocates different paragraph sets by category; ICC with customer interface but no public funds has a BL proviso.', rules: {
+    BL: { position: 'Activity and paragraph-set test', explanation: 'Only the listed financial-service activity and category clauses apply; the BL ICC no-public-funds proviso removes paragraphs 7–14.', clause: 'Paragraph 3(2)–(3) and BL proviso' },
+    ML: { position: 'Common plus ML+ paragraphs', explanation: 'Covered ICC, Factor, MFI and IFC entities add paragraphs 53–57 to the cross-layer set, subject to category scope.', clause: 'Paragraph 3(2)–(4)' },
+    UL: { position: 'Common plus ML+ paragraphs', explanation: 'Covered UL entities use the ML+ set, but specialist categories have their own paragraph allocation.', clause: 'Paragraph 3(2)–(8)' },
+  } },
+  22: { source: 'Branch Authorisation Directions, 2025', scope: 'Paragraph 3 allocates different branch paragraphs to deposit takers, HFC, CIC, gold-loan ICC and other listed categories; P2P/AA etc are excluded.', rules: {
+    BL: { position: 'Branch type/category triggered', explanation: 'Only relevant branch-opening, closure or overseas-office clauses apply to a listed BL category.', clause: 'Paragraph 3(1)–(2)' },
+    ML: { position: 'Branch type/category triggered', explanation: 'ML does not make deposit-branch rules relevant to a non-deposit taker; test the paragraph allocation.', clause: 'Paragraph 3(1)–(2)' },
+    UL: { position: 'Branch type/category triggered', explanation: 'UL uses the same category and branch-event allocation.', clause: 'Paragraph 3(1)–(2)' },
+  } },
+  23: { source: 'Voluntary Amalgamation Directions, 2025', scope: 'Paragraph 3 covers all NBFC categories and layers; paragraph 6 requires an amalgamation involving an NBFC.', rules: {
+    BL: { position: 'If an amalgamation is proposed', explanation: 'A BL NBFC merging with another NBFC or an outside entity is within the stated scope.', clause: 'Paragraphs 3, 6' },
+    ML: { position: 'If an amalgamation is proposed', explanation: 'A proposed ML NBFC amalgamation is within the stated scope.', clause: 'Paragraphs 3, 6' },
+    UL: { position: 'If an amalgamation is proposed', explanation: 'A proposed UL NBFC amalgamation is within the stated scope.', clause: 'Paragraphs 3, 6' },
+  } },
+  24: { source: 'Classification, Valuation and Operation of Investment Portfolio Directions, 2025', scope: 'Paragraph 3 covers listed categories including CIC, with explicit specialist and no-public-funds exclusions.', rules: {
+    BL: { position: 'Chapter II', explanation: 'A covered BL investment portfolio follows Chapter II, not the ML/UL Chapter III overlay.', clause: 'Paragraph 3(1)–(3)' },
+    ML: { position: 'Chapters II and III', explanation: 'A covered ML entity adds Chapter III to the BL investment-portfolio rules.', clause: 'Paragraph 3(1)–(3)' },
+    UL: { position: 'Chapters II and III', explanation: 'A covered UL entity follows Chapters II and III.', clause: 'Paragraph 3(1)–(3)' },
+  } },
+  26: { source: 'Credit Risk Management Directions, 2025', scope: 'Paragraph 3 excludes CIC, P2P, AA, MGC, SPD, NOFHC and specified no-public-funds profiles; paragraphs 6–8 depend on a notified-NBFC test.', rules: {
+    BL: { position: 'Common rules plus BL paragraph 13', explanation: 'Covered BL entities follow the common direction and the BL-only paragraph; notified-NBFC provisions need a separate trigger.', clause: 'Paragraph 3(1)–(3); paragraphs 6–8, 13' },
+    ML: { position: 'Common rules plus paragraphs 9–12', explanation: 'Covered ML entities follow the common rules and the ML+ set, with 6–8 only if notified.', clause: 'Paragraph 3(1)–(3); paragraphs 6–12' },
+    UL: { position: 'Common rules plus paragraphs 9–12', explanation: 'Covered UL entities use the ML+ set; paragraph 13 is BL only.', clause: 'Paragraph 3(1)–(3); paragraphs 6–13' },
+  } },
+  27: { source: 'Miscellaneous Directions, 2026', scope: 'Paragraph 3 has category-specific partial coverage and specialist chapters for factoring and IDF; not every miscellaneous provision applies to every NBFC.', rules: {
+    BL: { position: 'Chapter II generally', explanation: 'Covered BL entities apply Chapter II, subject to the direction’s category/paragraph allocation.', clause: 'Paragraph 3(1)(i)–(x)' },
+    ML: { position: 'Chapters II and III generally', explanation: 'Covered ML entities add Chapter III unless a specialist paragraph allocation says otherwise.', clause: 'Paragraph 3(1)(i)–(x)' },
+    UL: { position: 'Chapters II and III generally', explanation: 'Covered UL entities also follow Chapters II and III, subject to category-specific coverage.', clause: 'Paragraph 3(1)(i)–(x)' },
+  } },
+  28: { source: 'Payment and Settlement Systems Act, 2007', scope: 'This is a statute about payment-system operators/participants, not an SBR-layer direction. Determine whether the activity is a payment system under the Act.', rules: {
+    BL: { position: 'Activity test, not SBR layer', explanation: 'BL status neither grants payment-system authorisation nor creates a blanket exemption.', clause: 'Payment and Settlement Systems Act, 2007, section 4(1); check the section 4 provisos' },
+    ML: { position: 'Activity test, not SBR layer', explanation: 'ML status does not replace the statutory payment-system operator/participant test.', clause: 'Payment and Settlement Systems Act, 2007, section 4(1); check the section 4 provisos' },
+    UL: { position: 'Activity test, not SBR layer', explanation: 'UL status does not by itself determine statutory coverage.', clause: 'Payment and Settlement Systems Act, 2007, section 4(1); check the section 4 provisos' },
+  } },
 };
 
 export function getLayerGuide(id: number): LayerGuide | null { return guide[id] ?? null; }
