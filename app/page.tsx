@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { AlertTriangle, ArrowRight, ArrowUpRight, BadgeIndianRupee, BookOpen, CalendarDays, CheckCircle2, ChevronRight, Clock3, Compass, FileText, GraduationCap, Landmark, Network, Route, Scale, Search, ShieldCheck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -351,6 +351,10 @@ export default function Home() {
   const [answerIds, setAnswerIds] = useState<number[]>([]);
   const [foundationIndex, setFoundationIndex] = useState<number | null>(null);
   const foundationDrawerRef = useRef<HTMLDivElement>(null);
+  const attachFoundationDrawer = useCallback((node: HTMLDivElement | null) => {
+    foundationDrawerRef.current = node;
+    if (node) node.scrollTop = 0;
+  }, []);
 
   useLayoutEffect(() => {
     if (foundationIndex === null) return;
@@ -358,8 +362,9 @@ export default function Home() {
       if (foundationDrawerRef.current) foundationDrawerRef.current.scrollTop = 0;
     };
     resetScroll();
-    const frame = requestAnimationFrame(resetScroll);
-    return () => cancelAnimationFrame(frame);
+    const frame = requestAnimationFrame(() => requestAnimationFrame(resetScroll));
+    const afterOpen = window.setTimeout(resetScroll, 240);
+    return () => { cancelAnimationFrame(frame); window.clearTimeout(afterOpen); };
   }, [foundationIndex]);
 
   useEffect(() => {
@@ -588,7 +593,7 @@ export default function Home() {
       </div>
 
       <Sheet open={foundationIndex !== null} onOpenChange={(open) => !open && setFoundationIndex(null)}>
-        <SheetContent key={foundationIndex ?? 'closed'} ref={foundationDrawerRef} className="!w-[min(98vw,1240px)] !max-w-none overflow-y-auto border-l-slate-200 bg-background xl:!w-[min(92vw,1240px)]">
+        <SheetContent key={foundationIndex ?? 'closed'} ref={attachFoundationDrawer} className="!w-[min(98vw,1240px)] !max-w-none overflow-y-auto border-l-slate-200 bg-background xl:!w-[min(92vw,1240px)]">
           {foundationIndex !== null && (() => { const answer = foundationAnswers[foundationIndex]; return <>
             <SheetHeader className="border-b border-border bg-card p-6 pr-14 sm:p-9 sm:pr-16">
               <div className="flex flex-wrap gap-2"><Badge className="bg-primary">Foundation {String(foundationIndex + 1).padStart(2,'0')}</Badge><Badge variant="outline">Seven-part answer</Badge></div>
