@@ -456,7 +456,7 @@ export default function Home() {
   ].filter(Boolean) as string[];
   const answerRegulations = answerIds.map((id) => regulations.find((item) => item.id === id)).filter(Boolean) as Regulation[];
   const primaryAnswer = answerRegulations[0];
-  const researchAnswer = answeredQuestion ? frameResearchAnswer(answeredQuestion, { category: entityType, layer: profileLayer, deposits: depositStatus, digital: characteristics.digital }, primaryAnswer?.id ?? 0) : null;
+  const researchAnswer = answeredQuestion ? frameResearchAnswer(answeredQuestion, { category: entityType, layer: profileLayer, deposits: depositStatus, digital: characteristics.digital, customer: characteristics.customer }, primaryAnswer?.id ?? 0) : null;
 
   const answerQuestion = () => {
     const question = query.trim();

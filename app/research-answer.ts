@@ -13,18 +13,68 @@ export type ResearchAnswer = {
   supported: boolean;
 };
 
-type Profile = { category: string; layer: string; deposits: string; digital: boolean };
+type Profile = { category: string; layer: string; deposits: string; digital: boolean; customer: boolean };
 
 const credit = 'Reserve Bank of India (Non-Banking Financial Companies – Credit Facilities) Directions, 2025';
 const capital = 'Reserve Bank of India (Non-Banking Financial Companies – Prudential Norms on Capital Adequacy) Directions, 2025';
 const iracp = 'Reserve Bank of India (Non-Banking Financial Companies – Income Recognition, Asset Classification and Provisioning) Directions, 2025';
 const sbr = 'Reserve Bank of India (Non-Banking Financial Companies – Registration, Exemptions and Framework for Scale Based Regulation) Directions, 2025';
 
+export type QuestionIntent = 'concept' | 'applicability' | 'compliance' | 'specific' | 'timeline' | 'comparison';
+
+export function classifyQuestion(question: string): QuestionIntent {
+  const q = question.trim().toLowerCase();
+  if (/\\bvs\\b|versus|difference between|compare/.test(q)) return 'comparison';
+  if (/when|deadline|frequency|how often|how long|within|after \\d+ day/.test(q)) return 'timeline';
+  if (/does .* apply|applicable|base layer|middle layer|upper layer|which nbfc|who can/.test(q)) return 'applicability';
+  if (/can |may |is .* allowed|is .* permitted|prohibited|must |required to/.test(q)) return 'specific';
+  if (/requirements|conditions|what do we need|documents|reporting|comply|what should/.test(q)) return 'compliance';
+  return 'concept';
+}
+
+export type ConceptPrimer = { title: string; meaning: string; simple: string; why: string; example?: string; flow?: string; related: string[] };
+
+export function getConceptPrimer(regulationId: number): ConceptPrimer | null {
+  switch (regulationId) {
+    case 8: return { title: 'DLG — Default Loss Guarantee', meaning: 'A DLG is a promise by a qualifying service provider to compensate an NBFC for a pre-agreed share of defaults in a specified loan portfolio. It is a portfolio-level arrangement, not a waiver of the borrower’s debt.', simple: 'The NBFC makes and manages the loans. If borrowers default, the provider covers some loss up to the agreed limit. The NBFC still assesses credit and classifies each loan correctly.', why: 'DLG can share limited default risk, but it can also hide poor underwriting if misused. RBI therefore controls who can provide it, its form, its size and when it can be invoked.', example: 'Illustration: if ₹4 crore has been disbursed from a fixed DLG set, a 5% ceiling permits at most ₹20 lakh of cover at that point (₹4 crore × 5%). This is not a separate regulatory threshold.', flow: 'NBFC lends → fixed DLG set → qualifying provider gives cover → borrower defaults → NBFC recognises NPA/provision → NBFC invokes DLG', related: ['Digital lending', 'LSP', 'Credit underwriting', 'NPA', 'Provisioning'] };
+    case 9: return { title: 'KYC / AML — Know Your Customer / Anti-Money Laundering', meaning: 'KYC is how an NBFC identifies its customers and understands who really owns or controls a legal-entity customer. AML controls use that information and transaction monitoring to reduce money-laundering and terrorist-financing risk.', simple: 'Before and during a customer relationship, the NBFC checks identity, assigns a risk category, updates information and monitors activity according to risk.', why: 'Reliable customer information helps prevent misuse of the financial system and supports lawful reporting and supervision.', related: ['CDD', 'Beneficial owner', 'Risk categorisation', 'Periodic KYC', 'Transaction monitoring'] };
+    case 2: return { title: 'CRAR — Capital to Risk-Weighted Assets Ratio', meaning: 'CRAR compares an NBFC’s eligible regulatory capital with its risk-weighted assets. It indicates how much loss-absorbing capital supports the risks the NBFC has taken.', simple: 'A riskier loan can carry a larger risk weight. The ratio is not simply accounting equity divided by loan book.', why: 'Minimum capital buffers help an NBFC withstand credit and other losses.', related: ['Tier 1 capital', 'Tier 2 capital', 'Risk weights', 'CET1'] };
+    case 3: return { title: 'NPA — Non-Performing Asset', meaning: 'An NPA is a credit asset that has crossed the applicable overdue test and must be treated as impaired under the asset-classification rules.', simple: 'When a borrower has not paid for long enough, the NBFC stops treating the loan as a normal performing asset and applies the required income and provisioning treatment.', why: 'NPA recognition prevents unpaid income and credit losses from being hidden.', related: ['Days past due', 'Income recognition', 'Provisioning', 'Restructuring'] };
+    case 1: return { title: 'SBR — Scale-Based Regulation', meaning: 'SBR places NBFCs in regulatory layers based on size, category and risk-related criteria. Different layers carry different obligations.', simple: 'First establish the type of NBFC and its correct layer; only then test whether a particular rule applies.', why: 'A rule for Middle Layer or Upper Layer must not automatically be applied to Base Layer.', related: ['Base Layer', 'Middle Layer', 'Upper Layer', 'NBFC category', 'Asset size'] };
+    default: return null;
+  }
+}
+
 export function frameResearchAnswer(question: string, profile: Profile, regulationId: number): ResearchAnswer {
   const q = question.toLowerCase();
   const identity = `${profile.category} · ${profile.layer} · ${profile.deposits.toLowerCase()}`;
 
+  if (/\\bdlg\\b|default loss guarantee|loss sharing arrangement/.test(q) && /invoke|invocation/.test(q) && /120|after|deadline|when/.test(q)) {
+    return {
+      issue: 'Can DLG be invoked after 120 days overdue?',
+      short: 'NO. Paragraph 27(1) requires the NBFC to invoke DLG within a maximum overdue period of 120 days, unless the borrower makes good the dues earlier. An invocation after that limit is not supported by this provision.',
+      applicability: `This rule concerns an NBFC lender with a DLG arrangement governed by ${credit}. The selected profile is ${identity}; category coverage must first be checked under paragraph 3.`,
+      rows: [{ source: credit, provision: '3; 27(1)', requirement: 'Covered lender must invoke DLG within a maximum overdue period of 120 days, unless borrower dues are made good earlier.', applicability: 'Covered NBFC lender with an active DLG arrangement.' }],
+      analysis: ['RBI requirement: paragraph 27(1) fixes the maximum overdue period for invocation. It is not a 120-day period counted from the DLG agreement date.', 'What this means: monitor the loan’s overdue date and invoke within the limit if borrower dues remain unpaid.', 'Recommended practice: create an escalation well before day 120. This internal buffer is not itself a stated RBI deadline.'],
+      exceptions: ['The paragraph expressly qualifies invocation where the borrower makes good the dues before that point. Check the contract’s invocation timeline under paragraph 22(3).'],
+      actions: ['Operations/risk: calculate overdue days and document the invocation date and borrower-payment position.', 'Legal/compliance: verify that the enforceable contract includes the invocation timeline (paragraph 22(3)).'],
+      conclusion: 'NO — paragraph 27(1) does not permit invocation beyond the maximum 120-day overdue period.',
+      sources: [`${credit}, Chapter I paragraph 3; Chapter III paragraphs 22(3) and 27(1) (folder copy).`], regulationId: 8, supported: true,
+    };
+  }
+
   if (/\bdlg\b|default loss guarantee|loss sharing arrangement/.test(q)) {
+    if (profile.category === 'NBFC-P2P') return {
+      issue: 'Can this NBFC-P2P enter a DLG arrangement?',
+      short: 'NO. An NBFC-P2P must not enter into DLG arrangements for loans facilitated over its platform (paragraph 21(2)).',
+      applicability: 'The selected profile is NBFC-P2P. Paragraph 3(2)(iii) makes paragraph 21(2), but no other Credit Facilities provision, applicable to NBFC-P2P.',
+      rows: [{ source: credit, provision: '3(2)(iii), 21(2)', requirement: 'Prohibits NBFC-P2P DLG for loans facilitated over its platform.', applicability: 'NBFC-P2P platform loans.' }],
+      analysis: ['RBI requirement: paragraph 21(2) expressly bars the arrangement. Do not infer that the general 5% DLG permission for other covered NBFCs overrides this specific prohibition.'],
+      exceptions: ['This conclusion is for loans facilitated over the P2P platform. No wider proposition about other activities is inferred.'],
+      actions: ['Compliance/product: do not offer DLG on platform loans; document the paragraph 3 and 21(2) applicability decision.'],
+      conclusion: 'NO — DLG on NBFC-P2P platform loans is prohibited.',
+      sources: [credit + ', Chapter I paragraph 3(2)(iii); Chapter III paragraph 21(2) (folder copy).'], regulationId: 8, supported: true,
+    };
     const eligibleCategory = ['NBFC-ICC', 'NBFC-MFI', 'NBFC-Factor', 'NBFC-IFC', 'NBFC-D', 'HFC', 'IDF-NBFC'].includes(profile.category);
     const limitedBL = profile.layer === 'BL';
     const applicability = eligibleCategory
@@ -33,7 +83,7 @@ export function frameResearchAnswer(question: string, profile: Profile, regulati
     return {
       issue: 'Whether this NBFC can use a Default Loss Guarantee, and under what conditions',
       short: eligibleCategory
-        ? `DEPENDS. A ${identity} NBFC may use DLG only if the provider, portfolio, contract and other conditions in paragraphs 19–28 are met. The permitted cover is capped at 5% of the amount disbursed from the fixed DLG set at any time (paragraph 24(1)–(2)).`
+        ? `GENERALLY YES, SUBJECT TO CONDITIONS. A covered ${identity} NBFC can enter into a DLG arrangement with a qualifying provider. RBI limits cover to 5% of amounts disbursed from the fixed DLG set at any time and prescribes provider, contract, underwriting, invocation and disclosure controls (paragraphs 19–28).`
         : `DEPENDS. The selected category is not confirmed as fully covered by paragraph 3. Do not apply the 5% DLG rule or enter a DLG arrangement until category-specific applicability has been checked.`,
       applicability,
       rows: [
@@ -59,9 +109,31 @@ export function frameResearchAnswer(question: string, profile: Profile, regulati
         'Risk/finance: monitor the 5% disbursement-based limit, NPA and provisioning, invocation within 120 overdue days and non-reinstatement (paragraphs 24–27).',
         'LSP oversight: ensure portfolio disclosures are published monthly within seven working days after month-end (paragraph 28).',
       ],
-      conclusion: eligibleCategory ? 'DEPENDS — DLG is permitted only subject to the cited applicability and arrangement conditions. The 5% ceiling alone does not make the arrangement compliant.' : 'DEPENDS — category-specific applicability is unresolved on the selected profile.',
+      conclusion: eligibleCategory ? 'GENERALLY YES, SUBJECT TO CONDITIONS — DLG is permitted for covered NBFCs, but the 5% ceiling alone does not make an arrangement compliant.' : 'DEPENDS — category-specific applicability is unresolved on the selected profile.',
       sources: [`${credit}, Chapter I paragraphs 3 and 4(1)(viii); Chapter III paragraphs 19–29 (folder copy).`],
       regulationId: 8,
+      supported: true,
+    };
+  }
+
+  if (/\bkyc\b|\baml\b|know your customer|beneficial owner|customer due diligence|periodic updation|periodic update/.test(q)) {
+    const kyc = 'Reserve Bank of India (Non-Banking Financial Companies – Know Your Customer) Directions, 2025';
+    const applies = profile.customer;
+    return {
+      issue: 'KYC and AML requirements for this NBFC',
+      short: applies ? 'YES. KYC applies to customer-facing NBFCs across layers (paragraph 3). Periodic KYC is at least every 2, 8 or 10 years for high-, medium- or low-risk customers (paragraph 42(1)).' : 'NOT APPLICABLE only if the NBFC genuinely has no customer interface under paragraph 3.',
+      applicability: 'Selected profile: ' + identity + '. It is ' + (applies ? 'customer-facing.' : 'marked not customer-facing.') + ' Paragraph 3 covers all categories and layers but excludes an NBFC without customer interface.',
+      rows: [
+        { source: kyc, provision: '3', requirement: 'All categories/layers are covered except an NBFC with no customer interface.', applicability: 'Selected profile and actual customer interface.' },
+        { source: kyc, provision: '5(1)(iv)', requirement: 'Defines beneficial owner by legal form and ownership/control.', applicability: 'Legal-entity customers.' },
+        { source: kyc, provision: '41(1), 42(1)', requirement: 'Review account risk category at least every six months; update KYC on the 2/8/10-year risk schedule.', applicability: 'Covered customer accounts.' },
+      ],
+      analysis: ['RBI requirement: paragraph 3 uses customer interface, not ML status alone, as the key coverage test.', 'RBI requirement: paragraph 41(1) requires risk-category review at least every six months. Paragraph 42(1) requires a Board-approved, risk-based KYC update policy.', 'What this means: for an ML NBFC serving borrowers, identify relevant beneficial owners, monitor according to risk and apply the update schedule.', 'Recommended practice: keep case-level evidence and send internal reminders ahead of due dates. The reminder buffer is not itself an RBI timeline.'],
+      exceptions: ['Paragraph 3 excludes NBFCs without any customer interface.', 'Paragraph 42(2) contains a limited allowance for low-risk individual customers while requiring regular monitoring; it is not a general waiver.', 'Questions about FIU reporting, CKYCR or sanctions screening need their own operative provisions.'],
+      actions: ['Compliance: confirm customer-interface coverage and keep the Board-approved KYC policy.', 'Operations: identify beneficial owners of legal-entity customers.', 'AML/compliance: review risk categories six-monthly and track periodic KYC dates.'],
+      conclusion: applies ? 'YES — common KYC/AML duties apply to this customer-facing profile across layers.' : 'NOT APPLICABLE only if no customer interface exists in fact.',
+      sources: [kyc + ', Chapter I paragraphs 3 and 5(1)(iv); paragraphs 41(1), 42(1)–(2) (folder copy).'],
+      regulationId: 9,
       supported: true,
     };
   }
