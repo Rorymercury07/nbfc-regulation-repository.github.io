@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { AlertTriangle, ArrowRight, ArrowUpRight, BadgeIndianRupee, BookOpen, CalendarDays, CheckCircle2, ChevronRight, Clock3, Compass, FileText, GraduationCap, Landmark, Network, Route, Scale, Search, ShieldCheck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -339,6 +339,17 @@ export default function Home() {
   const [answeredQuestion, setAnsweredQuestion] = useState('');
   const [answerIds, setAnswerIds] = useState<number[]>([]);
   const [foundationIndex, setFoundationIndex] = useState<number | null>(null);
+  const foundationDrawerRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    if (foundationIndex === null) return;
+    const resetScroll = () => {
+      if (foundationDrawerRef.current) foundationDrawerRef.current.scrollTop = 0;
+    };
+    resetScroll();
+    const frame = requestAnimationFrame(resetScroll);
+    return () => cancelAnimationFrame(frame);
+  }, [foundationIndex]);
 
   useEffect(() => {
     const context = document.modelContext;
@@ -562,7 +573,7 @@ export default function Home() {
       </div>
 
       <Sheet open={foundationIndex !== null} onOpenChange={(open) => !open && setFoundationIndex(null)}>
-        <SheetContent className="!w-[min(98vw,1240px)] !max-w-none overflow-y-auto border-l-slate-200 bg-background xl:!w-[min(92vw,1240px)]">
+        <SheetContent key={foundationIndex ?? 'closed'} ref={foundationDrawerRef} className="!w-[min(98vw,1240px)] !max-w-none overflow-y-auto border-l-slate-200 bg-background xl:!w-[min(92vw,1240px)]">
           {foundationIndex !== null && (() => { const answer = foundationAnswers[foundationIndex]; return <>
             <SheetHeader className="border-b border-border bg-card p-6 pr-14 sm:p-9 sm:pr-16">
               <div className="flex flex-wrap gap-2"><Badge className="bg-primary">Foundation {String(foundationIndex + 1).padStart(2,'0')}</Badge><Badge variant="outline">Seven-part answer</Badge></div>
