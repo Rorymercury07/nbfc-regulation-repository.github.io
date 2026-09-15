@@ -14,6 +14,22 @@ function SourceTable({ answer }: { answer: ResearchAnswer }) {
   </div>;
 }
 
+function CalculationSection({ answer }: { answer: ResearchAnswer }) {
+  const guide = answer.calculation;
+  if (!guide) return null;
+  return <div className={section}>
+    <h3 className={heading}>Formula and calculation</h3>
+    <p className="mt-3 rounded-xl border border-cyan-200/25 bg-cyan-200/10 p-4 text-base font-semibold leading-7 text-white">{guide.formula}</p>
+    <h4 className="mt-5 text-sm font-semibold text-cyan-100">What goes into the formula?</h4>
+    <div className="mt-3 overflow-x-auto rounded-xl border border-white/15"><table className="w-full min-w-[620px] text-left text-sm leading-6"><thead className="bg-slate-950/30 text-slate-300"><tr><th className="p-3">Part</th><th className="p-3">Plain-English treatment</th><th className="p-3">Source</th></tr></thead><tbody>{guide.parts.map((part) => <tr key={part.name} className="border-t border-white/10 align-top"><td className="p-3 font-semibold text-cyan-100">{part.name}</td><td className="p-3 text-slate-200">{part.explanation}</td><td className="p-3 text-slate-300">{part.source}</td></tr>)}</tbody></table></div>
+    <h4 className="mt-5 text-sm font-semibold text-cyan-100">Calculate it step by step</h4>
+    <ol className="mt-2 space-y-2 text-base leading-7 text-slate-200">{guide.steps.map((step) => <li key={step}>{step}</li>)}</ol>
+    <h4 className="mt-5 text-sm font-semibold text-cyan-100">Worked example</h4>
+    <p className={body}>{guide.example}</p>
+    <p className="mt-3 text-sm leading-6 text-slate-400">{guide.caveat}</p>
+  </div>;
+}
+
 function SourceList({ answer, relatedTitle, onOpenRelated }: { answer: ResearchAnswer; relatedTitle?: string; onOpenRelated?: () => void }) {
   return <>{answer.sources.length ? <ul className="mt-2 list-disc space-y-2 pl-5 text-sm leading-6 text-slate-300">{answer.sources.map((item) => <li key={item}>{item}</li>)}</ul> : <p className={body}>The available regulatory material does not provide enough information to reach a definitive conclusion from this answer index. No paragraph number is inferred from a document overview.</p>}{relatedTitle && onOpenRelated && <button type="button" onClick={onOpenRelated} className="mt-4 rounded-lg border border-cyan-200/30 px-3 py-2 text-sm font-semibold text-cyan-100 hover:bg-cyan-200/10">Open related direction: {relatedTitle}</button>}</>;
 }
@@ -32,6 +48,7 @@ export function ResearchPanel({ question, answer, relatedTitle, onOpenRelated }:
       <div className={section}><h3 className={heading}>What is it?</h3><p className={body}>{primer.meaning}</p></div>
       <div className={section}><h3 className={heading}>In simple words</h3><p className={body}>{primer.simple}</p></div>
       <div className={section}><h3 className={heading}>Why does it matter?</h3><p className={body}>{primer.why}</p></div>
+      <CalculationSection answer={answer} />
       {primer.example && <div className={section}><h3 className={heading}>Simple example</h3><p className={body}>{primer.example}</p></div>}
       <div className={section}><h3 className={heading}>Does it apply to this NBFC?</h3><p className={body}>{answer.applicability}</p></div>
       <div className={section}><h3 className={heading}>Key RBI rules</h3><SourceTable answer={answer} /></div>
