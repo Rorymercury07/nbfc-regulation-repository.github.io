@@ -662,25 +662,6 @@ export default function Home() {
               </aside>
             </div>
 
-            <section className="rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
-              <div><p className="eyebrow">Decode the rules</p><h2 className="mt-1 text-2xl font-semibold tracking-tight">The questions everyone assumes you already know.</h2></div>
-              <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-                {[
-                  ['Can an NBFC take my deposit money?', 'Most cannot. Deposit-taking status changes the risk completely.', 'public deposit NBFC'],
-                  ['What if my NBFC shuts down?', 'There is no bank-style deposit insurance. The protection route is different.', 'NBFC cancellation borrower protection'],
-                  ['Why did my interest rate change?', 'Fair-practice and disclosure rules decide what must be told to you.', 'interest rate change fair practices NBFC'],
-                  ['Can I complain somewhere?', 'Yes. NBFC complaints can move through grievance channels and ombudsman routes.', 'NBFC complaint ombudsman'],
-                  ['Bank or NBFC, really?', 'One paragraph can tell you the difference. The details decide your rights.', 'bank vs NBFC difference'],
-                ].map(([title, body, search]) => (
-                  <button key={title} type="button" onClick={() => { setQuery(search); setPrimaryArea('regulations'); }} className="rounded-2xl border border-border p-4 text-left hover:border-primary/30 hover:bg-secondary/35">
-                    <h3 className="text-sm font-semibold leading-5">{title}</h3>
-                    <p className="mt-2 text-xs leading-5 text-muted-foreground">{body}</p>
-                    <p className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary">Read the answer <ArrowRight className="size-3.5" /></p>
-                  </button>
-                ))}
-              </div>
-            </section>
-
             <div className="grid gap-5 xl:grid-cols-[.9fr_1.1fr]">
               <section id="nbfc-quiz" className="scroll-mt-24 rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
                 <p className="eyebrow">Quick check</p>
