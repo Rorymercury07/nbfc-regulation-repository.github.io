@@ -352,6 +352,8 @@ export default function Home() {
   const [answeredQuestion, setAnsweredQuestion] = useState('');
   const [answerIds, setAnswerIds] = useState<number[]>([]);
   const [foundationIndex, setFoundationIndex] = useState<number | null>(null);
+  const [openScenario, setOpenScenario] = useState<string | null>(null);
+  const [activeGlossary, setActiveGlossary] = useState<string | null>(null);
   const foundationDrawerRef = useRef<HTMLDivElement>(null);
   const attachFoundationDrawer = useCallback((node: HTMLDivElement | null) => {
     foundationDrawerRef.current = node;
@@ -543,9 +545,9 @@ export default function Home() {
             <div className="overflow-hidden rounded-3xl border border-slate-200 bg-[#07182b] text-white shadow-[0_24px_70px_-42px_rgba(2,12,27,.8)]">
               <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[minmax(0,1.15fr)_.85fr] lg:p-10">
                 <div>
-                  <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-1.5 text-sm font-semibold text-cyan-100"><Landmark className="size-4" />Understanding NBFCs</div>
-                  <h1 className="max-w-3xl text-4xl font-semibold leading-tight tracking-[-0.04em] sm:text-5xl">NBFCs, explained without the jargon.</h1>
-                  <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300">They show up as gold loans, vehicle finance, instant loan apps, business credit and more. This desk helps you understand what an NBFC can do, what it cannot do, and how to read the rule behind it.</p>
+                  <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-1.5 text-sm font-semibold text-cyan-100"><Landmark className="size-4" />The NBFC Dossier</div>
+                  <h1 className="max-w-3xl text-4xl font-semibold leading-tight tracking-[-0.04em] sm:text-5xl">You have used an NBFC before. You just were not asked to notice.</h1>
+                  <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300">NBFCs fund the gold-loan counter, the five-minute lending app and a large part of India's two-wheeler finance. Open the case file: what they can do, what they cannot do, and how to tell a real one from a risky one.</p>
                   <div className="mt-6 max-w-2xl rounded-2xl border border-white/15 bg-white/[.08] p-2">
                     <div className="relative">
                       <Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
@@ -554,14 +556,27 @@ export default function Home() {
                     </div>
                   </div>
                   <button type="button" onClick={() => selectPrimaryArea('learn')} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-cyan-100 hover:text-white">New here? Start with the 2-minute basics <ArrowRight className="size-4" /></button>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {[
+                      ['Bank vs NBFC', 'bank-vs-nbfc'],
+                      ['Where you met one', 'nbfc-scenarios'],
+                      ['Check a lender', 'nbfc-checker'],
+                      ['Test yourself', 'nbfc-quiz'],
+                      ['Decode jargon', 'nbfc-glossary'],
+                    ].map(([label, target]) => (
+                      <button key={target} type="button" onClick={() => document.getElementById(target)?.scrollIntoView({ behavior: 'smooth', block: 'start' })} className="rounded-full border border-white/15 bg-white/[.08] px-3 py-1.5 text-xs font-semibold text-slate-200 hover:border-cyan-200 hover:text-white">{label} <span aria-hidden="true">→</span></button>
+                    ))}
+                  </div>
                 </div>
-                <div className="rounded-2xl border border-cyan-300/20 bg-white/[.06] p-5">
+                <div id="bank-vs-nbfc" className="scroll-mt-24 rounded-2xl border border-cyan-300/20 bg-white/[.06] p-5">
                   <p className="text-xs font-semibold uppercase tracking-[.14em] text-cyan-200">Bank vs NBFC</p>
                   <h2 className="mt-3 text-2xl font-semibold leading-tight">A bit like a bank. Except when it really matters.</h2>
                   <div className="mt-5 overflow-hidden rounded-xl border border-white/15">
                     {[
-                      ['Can it take your savings deposit?', 'Yes', 'Only some, with RBI permission'],
-                      ['Is your money DICGC-insured?', 'Up to ₹5 lakh', 'No'],
+                      ['Can it hold your savings account?', 'Yes', 'No'],
+                      ['Is your deposit insured?', 'DICGC cover up to ₹5 lakh', 'No deposit insurance'],
+                      ['Which rulebook applies?', 'Banking Regulation Act', 'RBI Act, Chapter IIIB'],
+                      ['Can it issue a cheque book?', 'Yes', 'No'],
                       ['Can it give you a loan?', 'Yes', 'Yes'],
                     ].map(([question, bank, nbfc]) => (
                       <div key={question} className="grid grid-cols-[1.3fr_.75fr_.9fr] border-b border-white/10 text-sm last:border-b-0">
@@ -577,29 +592,33 @@ export default function Home() {
             </div>
 
             <div className="grid gap-5 xl:grid-cols-[1fr_380px]">
-              <section className="rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
+              <section id="nbfc-scenarios" className="scroll-mt-24 rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                   <div><p className="eyebrow">Where you have already met one</p><h2 className="mt-1 text-2xl font-semibold tracking-tight">NBFCs hide in ordinary financial moments.</h2></div>
                   <button type="button" onClick={() => selectPrimaryArea('learn')} className="text-sm font-semibold text-primary hover:underline">Learn the basics</button>
                 </div>
                 <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                   {[
-                    ['Gold loan counter', 'Not a bank. Often an NBFC. What changes about interest and gold safety?', 'gold loan NBFC'],
-                    ['Instant loan app', 'Five-minute approval usually has a regulated lender behind the screen. Who is it?', 'digital lending LSP NBFC'],
-                    ['Vehicle finance', 'Dealer financing is one of the oldest NBFC use cases. Why is it everywhere?', 'vehicle finance NBFC'],
-                    ['Business loan', 'MSME credit increasingly runs through NBFCs. What does that mean for borrowers?', 'MSME loan NBFC'],
-                    ['Chit fund confusion', 'Near the NBFC world, but not the same. The difference matters when things go wrong.', 'chit fund NBFC difference'],
-                    ['Co-lending offer', 'Sometimes a bank and NBFC share the loan. Whose rule protects you?', 'co-lending NBFC'],
-                  ].map(([title, body, search]) => (
-                    <button key={title} type="button" onClick={() => { setQuery(search); setPrimaryArea('regulations'); }} className="group rounded-2xl border border-border p-4 text-left hover:border-primary/30 hover:bg-secondary/35">
-                      <div className="flex items-start justify-between gap-3"><h3 className="font-semibold group-hover:text-primary">{title}</h3><ArrowUpRight className="size-4 text-muted-foreground" /></div>
+                    ['Gold loan counter', 'Not a bank. Often an NBFC. What changes about interest and gold safety?', 'That local gold-loan chain is usually an NBFC. It may approve faster than a bank because it follows a different rulebook, but the rate, auction process and custody controls still need to be checked carefully.', 'gold loan NBFC'],
+                    ['Instant loan app', 'Five-minute approval usually has a regulated lender behind the screen. Who is it?', 'The app may only be the technology layer. The actual lender should be a bank or RBI-registered NBFC, and digital-lending rules require the lender name and total cost to be disclosed before you accept.', 'digital lending LSP NBFC'],
+                    ['Vehicle finance', 'Dealer financing is one of the oldest NBFC use cases. Why is it everywhere?', 'Vehicle-finance NBFCs grew around dealer networks. The offer may be convenient, but comparing the bank quote, processing fee and foreclosure conditions is still worth doing.', 'vehicle finance NBFC'],
+                    ['Business loan', 'MSME credit increasingly runs through NBFCs. What does that mean for borrowers?', 'NBFCs often lend to small businesses using cash-flow and invoice data where banks may ask for longer records or collateral. The trade-off is usually pricing and documentation.', 'MSME loan NBFC'],
+                    ['Chit fund confusion', 'Near the NBFC world, but not the same. The difference matters when things go wrong.', 'Chit funds are not ordinary RBI-regulated NBFCs. They sit under a different legal framework, so the complaint route and recovery path can be very different.', 'chit fund NBFC difference'],
+                    ['Co-lending offer', 'Sometimes a bank and NBFC share the loan. Whose rule protects you?', 'Co-lending lets a bank and an NBFC jointly fund one loan. The agreement should show both lenders and their shares so the borrower knows who is responsible for what.', 'co-lending NBFC'],
+                  ].map(([title, body, notes, search]) => (
+                    <article key={title} className="group rounded-2xl border border-border p-4 text-left hover:border-primary/30 hover:bg-secondary/35">
+                      <button type="button" onClick={() => setOpenScenario(openScenario === title ? null : title)} className="w-full text-left">
+                        <div className="flex items-start justify-between gap-3"><h3 className="font-semibold group-hover:text-primary">{title}</h3><ChevronRight className={`size-4 text-muted-foreground transition-transform ${openScenario === title ? 'rotate-90' : ''}`} /></div>
                       <p className="mt-2 text-sm leading-6 text-muted-foreground">{body}</p>
-                    </button>
+                        <p className="mt-3 text-xs font-semibold text-primary">{openScenario === title ? 'Close file ↑' : 'Open file →'}</p>
+                      </button>
+                      {openScenario === title && <div className="mt-4 rounded-xl border border-primary/15 bg-primary/[.045] p-4 text-sm leading-6 text-foreground/85"><p>{notes}</p><button type="button" onClick={() => { setQuery(search); setPrimaryArea('regulations'); }} className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">Trace the rule <ArrowRight className="size-3.5" /></button></div>}
+                    </article>
                   ))}
                 </div>
               </section>
 
-              <aside className="rounded-3xl border border-amber-200 bg-amber-50 p-5 shadow-sm sm:p-6">
+              <aside id="nbfc-checker" className="scroll-mt-24 rounded-3xl border border-amber-200 bg-amber-50 p-5 shadow-sm sm:p-6">
                 <AlertTriangle className="size-5 text-amber-700" />
                 <p className="mt-3 text-xs font-semibold uppercase tracking-[.12em] text-amber-800">Before you hand over documents</p>
                 <h2 className="mt-2 text-2xl font-semibold tracking-tight text-amber-950">Check if it is legit.</h2>
@@ -621,14 +640,14 @@ export default function Home() {
                   <button key={title} type="button" onClick={() => { setQuery(search); setPrimaryArea('regulations'); }} className="rounded-2xl border border-border p-4 text-left hover:border-primary/30 hover:bg-secondary/35">
                     <h3 className="text-sm font-semibold leading-5">{title}</h3>
                     <p className="mt-2 text-xs leading-5 text-muted-foreground">{body}</p>
-                    <p className="mt-3 text-xs font-semibold text-primary">Read the answer</p>
+                    <p className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary">Read the answer <ArrowRight className="size-3.5" /></p>
                   </button>
                 ))}
               </div>
             </section>
 
             <div className="grid gap-5 xl:grid-cols-[.9fr_1.1fr]">
-              <section className="rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
+              <section id="nbfc-quiz" className="scroll-mt-24 rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
                 <p className="eyebrow">Quick check</p>
                 <h2 className="mt-1 text-2xl font-semibold tracking-tight">Think you know NBFCs?</h2>
                 <div className="mt-5 space-y-3">
@@ -645,7 +664,7 @@ export default function Home() {
                 </div>
               </section>
 
-              <section className="rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
+              <section id="nbfc-glossary" className="scroll-mt-24 rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
                 <p className="eyebrow">Glossary preview</p>
                 <h2 className="mt-1 text-2xl font-semibold tracking-tight">Ten terms that show up everywhere.</h2>
                 <div className="mt-5 flex flex-wrap gap-2">
@@ -661,9 +680,24 @@ export default function Home() {
                     ['Ombudsman', 'A complaint escalation route.'],
                     ['LSP', 'A lending service provider used in digital lending.'],
                   ].map(([term, meaning]) => (
-                    <button key={term} type="button" title={meaning} onClick={() => { setQuery(term); setPrimaryArea('regulations'); }} className="rounded-full border border-primary/20 bg-primary/[.045] px-3 py-2 text-sm font-semibold text-primary hover:bg-primary hover:text-primary-foreground">{term}</button>
+                    <button key={term} type="button" title={meaning} aria-pressed={activeGlossary === term} onClick={() => setActiveGlossary(activeGlossary === term ? null : term)} className={`rounded-full border px-3 py-2 text-sm font-semibold ${activeGlossary === term ? 'border-primary bg-primary text-primary-foreground' : 'border-primary/20 bg-primary/[.045] text-primary hover:bg-primary hover:text-primary-foreground'}`}>{term}</button>
                   ))}
                 </div>
+                {activeGlossary && (() => {
+                  const item = [
+                    ['NBFC-D', 'Deposit-taking NBFC.'],
+                    ['NBFC-ND', 'Non-deposit-taking NBFC.'],
+                    ['Upper Layer', 'A higher-intensity SBR category.'],
+                    ['CRAR', 'Capital cushion against risk-weighted assets.'],
+                    ['KYC', 'Customer identity and AML checks.'],
+                    ['Fair Practices Code', 'Borrower-facing conduct rules.'],
+                    ['Co-lending', 'A bank and NBFC sharing a loan.'],
+                    ['Securitisation', 'Turning loan pools into tradable exposures.'],
+                    ['Ombudsman', 'A complaint escalation route.'],
+                    ['LSP', 'A lending service provider used in digital lending.'],
+                  ].find(([term]) => term === activeGlossary);
+                  return item ? <div className="mt-4 rounded-2xl border border-primary/15 bg-primary/[.045] p-4 text-sm leading-6"><span className="font-semibold text-primary">{item[0]} — </span>{item[1]}<button type="button" onClick={() => { setQuery(item[0]); setPrimaryArea('regulations'); }} className="ml-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">Open source <ArrowRight className="size-3" /></button></div> : null;
+                })()}
                 <div className="mt-6 rounded-2xl border border-border bg-secondary/35 p-4 text-sm leading-6 text-muted-foreground">All information here is based on RBI publications and public regulatory material. This site does not offer loans, take deposits or provide financial advice.</div>
               </section>
             </div>
