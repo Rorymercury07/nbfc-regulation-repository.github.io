@@ -498,7 +498,22 @@ export default function Home() {
     setAnswerIds(scored.slice(0, 3).map((item) => item.id));
   };
 
-  const selectPrimaryArea = (area: 'learn' | 'regulations' | 'compliance') => {
+  const goHome = () => {
+    setPrimaryArea(null);
+    setFoundationIndex(null);
+    setSelectedThreshold(null);
+    setSelected(null);
+    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const selectPrimaryArea = (area: 'learn' | 'regulations' | 'compliance' | null) => {
+    setFoundationIndex(null);
+    setSelectedThreshold(null);
+    setSelected(null);
+    if (area === null) {
+      goHome();
+      return;
+    }
     setPrimaryArea(area);
     if (area === 'learn') {
       setWorkspaceTab('start');
@@ -515,10 +530,14 @@ export default function Home() {
       <div className="regulatory-line" aria-hidden="true" />
       <header className="sticky top-0 z-40 border-b border-border/80 bg-background/92 backdrop-blur-xl">
         <div className="mx-auto flex max-w-[1500px] flex-col gap-3 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-          <div className="flex items-center gap-3"><div className="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground shadow-sm"><Scale className="size-5" /></div><div><p className="text-[15px] font-semibold leading-none tracking-tight">NBFC Regulatory Desk</p><p className="mt-1 text-xs text-muted-foreground">RBI consolidated directions · working index</p></div></div>
+          <button type="button" onClick={goHome} className="flex items-center gap-3 rounded-2xl text-left transition-opacity hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Return to homepage">
+            <div className="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground shadow-sm"><Scale className="size-5" /></div>
+            <div><p className="text-[15px] font-semibold leading-none tracking-tight">NBFC Regulatory Desk</p><p className="mt-1 text-xs text-muted-foreground">RBI consolidated directions · working index</p></div>
+          </button>
           <nav aria-label="Primary product areas" className="flex flex-col gap-2 lg:flex-row lg:items-center">
-            <div className="grid grid-cols-3 gap-1 rounded-xl border border-border bg-secondary/65 p-1">
+            <div className="grid grid-cols-2 gap-1 rounded-xl border border-border bg-secondary/65 p-1 sm:grid-cols-4">
               {([
+                [null, 'Home', Landmark],
                 ['learn', 'Learn NBFCs', GraduationCap],
                 ['regulations', 'Regulations', BookOpen],
                 ['compliance', 'Compliance', ShieldCheck],
@@ -800,6 +819,9 @@ export default function Home() {
         <SheetContent key={foundationIndex ?? 'closed'} ref={attachFoundationDrawer} className="!w-[min(98vw,1240px)] !max-w-none overflow-y-auto border-l-slate-200 bg-background xl:!w-[min(92vw,1240px)]">
           {foundationIndex !== null && (() => { const answer = foundationAnswers[foundationIndex]; return <>
             <SheetHeader className="border-b border-border bg-card p-6 pr-14 sm:p-9 sm:pr-16">
+              <div className="mb-3">
+                <Button type="button" variant="outline" size="sm" onClick={goHome} className="gap-2"><Landmark className="size-4" />Back to Home</Button>
+              </div>
               <div className="flex flex-wrap gap-2"><Badge className="bg-primary">Foundation {String(foundationIndex + 1).padStart(2,'0')}</Badge><Badge variant="outline">Seven-part answer</Badge></div>
               <SheetTitle className="mt-3 max-w-4xl text-3xl leading-tight sm:text-4xl">{answer.question}</SheetTitle>
               <SheetDescription className="max-w-4xl text-base leading-7">A practical explanation connected to the governing source, the relevant NBFC profile and the action a compliance team should take.</SheetDescription>
@@ -826,6 +848,9 @@ export default function Home() {
         <SheetContent className="!w-[min(98vw,1240px)] !max-w-none overflow-y-auto border-l-slate-200 bg-background xl:!w-[min(92vw,1240px)]">
           {selectedThreshold && <>
             <SheetHeader className="border-b border-border bg-card p-6 pr-14 sm:p-9 sm:pr-16">
+              <div className="mb-3">
+                <Button type="button" variant="outline" size="sm" onClick={goHome} className="gap-2"><Landmark className="size-4" />Back to Home</Button>
+              </div>
               <div className="flex flex-wrap items-center gap-2"><Badge className="bg-primary">Key threshold</Badge><Badge variant="outline">{selectedThreshold.label}</Badge></div>
               <div className="mt-2 flex items-baseline gap-3"><span className="text-4xl font-semibold tracking-[-.04em] text-primary sm:text-5xl">{selectedThreshold.value}</span></div>
               <SheetTitle className="text-2xl leading-tight">What this number means—and when it applies</SheetTitle>
@@ -848,6 +873,9 @@ export default function Home() {
         <SheetContent className="!w-[min(98vw,1240px)] !max-w-none overflow-y-auto border-l-slate-200 bg-background xl:!w-[min(92vw,1240px)]">
           {selected && selectedDetails && <>
             <SheetHeader className="border-b border-border bg-card p-6 pr-14 sm:p-9 sm:pr-16">
+              <div className="mb-3">
+                <Button type="button" variant="outline" size="sm" onClick={goHome} className="gap-2"><Landmark className="size-4" />Back to Home</Button>
+              </div>
               <div className="mb-3 flex flex-wrap gap-2"><button type="button" title={`Show all ${selected.status.toLowerCase()} regulations`} onClick={() => { setStatus(selected.status); setSelected(null); }} className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground transition-opacity hover:opacity-85">{selected.status}</button><button type="button" title={`Filter by ${selected.category}`} onClick={() => { setCategory(selected.category); setSelected(null); }} className="rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold text-foreground hover:border-primary/40 hover:text-primary">{selected.category}</button>{selected.layers.map((item) => <button type="button" key={item} title={`Filter the library by ${item}; see the clause-based comparison below`} onClick={() => { setLayer(item); setSelected(null); }} className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground hover:bg-primary hover:text-primary-foreground">{item}</button>)}</div>
               <SheetTitle className="max-w-3xl text-2xl leading-tight sm:text-3xl">{selected.title}</SheetTitle>
               <SheetDescription className="max-w-3xl text-sm leading-6">A practical explanation of who must follow this direction, what it requires and what evidence should be kept.</SheetDescription>
