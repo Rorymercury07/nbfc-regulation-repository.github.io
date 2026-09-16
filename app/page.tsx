@@ -566,7 +566,7 @@ export default function Home() {
                 <div>
                   <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-1.5 text-sm font-semibold text-cyan-100"><Landmark className="size-4" />The NBFC Dossier</div>
                   <h1 className="max-w-3xl text-4xl font-semibold leading-tight tracking-[-0.04em] sm:text-5xl">You have used an NBFC before. You just were not asked to notice.</h1>
-                  <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300">NBFCs fund the gold-loan counter, the five-minute lending app and a large part of India's two-wheeler finance. Open the case file: what they can do, what they cannot do, and how to tell a real one from a risky one.</p>
+                  <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300">NBFCs fund the gold-loan counter, the five-minute lending app, and a large part of India's two-wheeler finance. Open the case file: what they can do, what they can't, and how to tell a real one from a risky one.</p>
                   <div className="mt-6 max-w-2xl rounded-2xl border border-white/15 bg-white/[.08] p-2">
                     <div className="relative">
                       <Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
@@ -647,7 +647,6 @@ export default function Home() {
                   {[
                     ['1', 'Match the exact legal name.', 'Take the name precisely as it appears on the lender’s paperwork or app — not a shortened or marketing name. A name close to a well-known NBFC, such as an extra word or swapped letter, is itself a common impersonation tactic. RBI records are matched by exact legal entity name, so this step makes the rest of the check meaningful.'],
                     ['2', 'Ask for the CoR number.', 'Every registered NBFC has a Certificate of Registration number issued by RBI. A legitimate lender should produce this without hesitation — it is usually printed on loan agreements and often disclosed on the lender’s own website. Reluctance or a vague answer is itself informative.'],
-                    ['3', 'Cross-check against RBI’s public list.', 'RBI publishes and periodically updates a public list of registered NBFCs. Match both the name and CoR number, and check the category where relevant. For digital lending, the app should also disclose the actual regulated entity behind the loan before acceptance.'],
                   ].map(([step, title, body]) => (
                     <div key={step} className="rounded-2xl border border-amber-200 bg-white/55 p-4">
                       <div className="flex items-start gap-3">
@@ -658,8 +657,7 @@ export default function Home() {
                   ))}
                 </div>
                 <div className="mt-4 rounded-2xl border border-amber-300 bg-white/60 p-4 text-xs leading-5 text-amber-950">
-                  <p><strong>If it doesn&apos;t check out:</strong> don&apos;t share further KYC documents or make any upfront payment. Screenshot what the app or agent has shown you and report it through RBI&apos;s Sachet portal, or approach your local police cyber-crime cell if money has already changed hands.</p>
-                  <p className="mt-3"><strong>Keep visible caveat:</strong> RBI&apos;s site structure and portal names can change, so use RBI&apos;s official domain and revisit the link periodically.</p>
+                  <p><strong>Step 3 happens on RBI&apos;s public list:</strong> cross-check the exact legal name and CoR number together. RBI&apos;s site structure can change, so this page links to the official RBI domain rather than relying on a hidden third-party source.</p>
                 </div>
               </aside>
             </div>
@@ -687,18 +685,11 @@ export default function Home() {
               <section id="nbfc-quiz" className="scroll-mt-24 rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
                 <p className="eyebrow">Quick check</p>
                 <h2 className="mt-1 text-2xl font-semibold tracking-tight">Think you know NBFCs?</h2>
-                <div className="mt-5 space-y-3">
-                  {[
-                    ['All NBFCs are regulated exactly the same way.', 'False. Category, activity and layer can change the rule.'],
-                    ['Can an NBFC use the word bank in its name?', 'No. That is a useful warning sign.'],
-                    ['A promise of 3% monthly returns should worry you.', 'Yes. High fixed-return promises deserve extra checking.'],
-                  ].map(([question, answer]) => (
-                    <details key={question} className="rounded-2xl border border-border bg-secondary/30 p-4">
-                      <summary className="cursor-pointer text-sm font-semibold">{question}</summary>
-                      <p className="mt-3 border-t border-border pt-3 text-sm leading-6 text-muted-foreground">{answer}</p>
-                    </details>
-                  ))}
-                </div>
+                <details className="mt-5 rounded-2xl border border-border bg-secondary/30 p-4">
+                  <summary className="cursor-pointer text-sm font-semibold">All NBFCs are regulated exactly the same way.</summary>
+                  <p className="mt-3 border-t border-border pt-3 text-sm leading-6 text-muted-foreground">False — regulatory obligations scale up sharply from the Base Layer to the Upper Layer under RBI&apos;s Scale-Based Regulation framework.</p>
+                </details>
+                <button type="button" onClick={() => selectPrimaryArea('learn')} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">Get that one wrong? The full quiz — and why — is in Learn NBFCs <ArrowRight className="size-4" /></button>
               </section>
 
               <section id="nbfc-glossary" className="scroll-mt-24 rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
@@ -715,7 +706,7 @@ export default function Home() {
                     ['Co-lending', 'A bank and NBFC sharing a loan.'],
                     ['Securitisation', 'Turning loan pools into tradable exposures.'],
                     ['Ombudsman', 'A complaint escalation route.'],
-                    ['LSP', 'A lending service provider used in digital lending.'],
+                    ['Systemically Important', 'Large or interconnected NBFCs that attract tighter supervision.'],
                   ].map(([term, meaning]) => (
                     <button key={term} type="button" title={meaning} aria-pressed={activeGlossary === term} onClick={() => setActiveGlossary(activeGlossary === term ? null : term)} className={`rounded-full border px-3 py-2 text-sm font-semibold ${activeGlossary === term ? 'border-primary bg-primary text-primary-foreground' : 'border-primary/20 bg-primary/[.045] text-primary hover:bg-primary hover:text-primary-foreground'}`}>{term}</button>
                   ))}
@@ -731,13 +722,49 @@ export default function Home() {
                     ['Co-lending', 'A bank and NBFC sharing a loan.'],
                     ['Securitisation', 'Turning loan pools into tradable exposures.'],
                     ['Ombudsman', 'A complaint escalation route.'],
-                    ['LSP', 'A lending service provider used in digital lending.'],
+                    ['Systemically Important', 'Large or interconnected NBFCs that attract tighter supervision.'],
                   ].find(([term]) => term === activeGlossary);
                   return item ? <div className="mt-4 rounded-2xl border border-primary/15 bg-primary/[.045] p-4 text-sm leading-6"><span className="font-semibold text-primary">{item[0]} — </span>{item[1]}<button type="button" onClick={() => { setQuery(item[0]); setPrimaryArea('regulations'); }} className="ml-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">Open source <ArrowRight className="size-3" /></button></div> : null;
                 })()}
-                <div className="mt-6 rounded-2xl border border-border bg-secondary/35 p-4 text-sm leading-6 text-muted-foreground">All information here is based on RBI publications and public regulatory material. This site does not offer loans, take deposits or provide financial advice.</div>
+                <button type="button" onClick={() => selectPrimaryArea('learn')} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">Full glossary, with examples → Learn NBFCs</button>
               </section>
             </div>
+
+            <section className="rounded-3xl border border-border bg-[#07182b] p-5 text-white shadow-[0_24px_70px_-42px_rgba(2,12,27,.8)] sm:p-7">
+              <p className="text-xs font-semibold uppercase tracking-[.16em] text-cyan-200">Want to go deeper?</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight">Explore ends here. Three ways to keep going.</h2>
+              <div className="mt-6 grid gap-3 md:grid-cols-3">
+                {[
+                  ['🎓', 'Learn it', 'Start from zero: what an NBFC actually is, the ten terms that matter, and every scenario in full.', 'Learn NBFCs', () => selectPrimaryArea('learn')],
+                  ['📋', 'Find the rule', 'Search RBI’s actual directions and circulars, plain-language summaries attached.', 'Regulations', () => selectPrimaryArea('regulations')],
+                  ['⚖', 'Apply it', 'Tell us about a specific NBFC or loan, and see exactly what applies to it.', 'Compliance', () => selectPrimaryArea('compliance')],
+                ].map(([icon, title, body, label, action]) => (
+                  <button key={title as string} type="button" onClick={action as () => void} className="group rounded-2xl border border-white/15 bg-white/[.06] p-5 text-left hover:border-cyan-200/60 hover:bg-white/[.1]">
+                    <span className="text-2xl" aria-hidden="true">{icon as string}</span>
+                    <h3 className="mt-4 text-lg font-semibold group-hover:text-cyan-100">{title as string}</h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-300">{body as string}</p>
+                    <p className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-cyan-100">{label as string} <ArrowRight className="size-4" /></p>
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <footer className="rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
+              <p className="text-sm leading-6 text-muted-foreground">Written for general understanding, sourced from public RBI records. This site does not lend, take deposits, or give financial advice.</p>
+              <div className="mt-6 grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
+                {[
+                  ['Just starting out', 'Bank vs NBFC · Glossary'],
+                  ['Dealing with one now', 'Check registration · Know your rights'],
+                  ['Go deeper', 'Test yourself · Types of NBFCs'],
+                  ['About this desk', 'Sources · Corrections'],
+                ].map(([title, body]) => (
+                  <div key={title}>
+                    <p className="font-semibold text-foreground">{title}</p>
+                    <p className="mt-1 text-muted-foreground">{body}</p>
+                  </div>
+                ))}
+              </div>
+            </footer>
           </section>
         )}
 
