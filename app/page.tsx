@@ -640,9 +640,27 @@ export default function Home() {
               <aside id="nbfc-checker" className="scroll-mt-24 rounded-3xl border border-amber-200 bg-amber-50 p-5 shadow-sm sm:p-6">
                 <AlertTriangle className="size-5 text-amber-700" />
                 <p className="mt-3 text-xs font-semibold uppercase tracking-[.12em] text-amber-800">Before you hand over documents</p>
-                <h2 className="mt-2 text-2xl font-semibold tracking-tight text-amber-950">Check if it is legit.</h2>
-                <p className="mt-3 text-sm leading-6 text-amber-950">A legal NBFC should appear in RBI's public records. The next step is learning how to check the name, category and registration before trusting an app, agent or branch counter.</p>
-                <button type="button" onClick={() => { setQuery('NBFC registration certificate RBI check'); setPrimaryArea('regulations'); }} className="mt-5 inline-flex items-center gap-2 rounded-xl bg-amber-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-amber-800">Check registration route <ArrowRight className="size-4" /></button>
+                <h2 className="mt-2 text-2xl font-semibold tracking-tight text-amber-950">Check if it&apos;s legit.</h2>
+                <p className="mt-3 text-sm leading-6 text-amber-950">A genuine NBFC carries an RBI Certificate of Registration and appears in RBI&apos;s public records. Before you share KYC documents with an app, agent, or branch counter, three checks take less than five minutes.</p>
+                <a href="https://rbi.org.in/Scripts/BS_NBFCList.aspx" target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 rounded-xl bg-amber-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-amber-800">Check registration route <ArrowRight className="size-4" /></a>
+                <div className="mt-5 space-y-3 border-t border-amber-200 pt-5">
+                  {[
+                    ['1', 'Match the exact legal name.', 'Take the name precisely as it appears on the lender’s paperwork or app — not a shortened or marketing name. A name close to a well-known NBFC, such as an extra word or swapped letter, is itself a common impersonation tactic. RBI records are matched by exact legal entity name, so this step makes the rest of the check meaningful.'],
+                    ['2', 'Ask for the CoR number.', 'Every registered NBFC has a Certificate of Registration number issued by RBI. A legitimate lender should produce this without hesitation — it is usually printed on loan agreements and often disclosed on the lender’s own website. Reluctance or a vague answer is itself informative.'],
+                    ['3', 'Cross-check against RBI’s public list.', 'RBI publishes and periodically updates a public list of registered NBFCs. Match both the name and CoR number, and check the category where relevant. For digital lending, the app should also disclose the actual regulated entity behind the loan before acceptance.'],
+                  ].map(([step, title, body]) => (
+                    <div key={step} className="rounded-2xl border border-amber-200 bg-white/55 p-4">
+                      <div className="flex items-start gap-3">
+                        <span className="grid size-7 shrink-0 place-items-center rounded-full bg-amber-900 font-mono text-xs font-semibold text-white">{step}</span>
+                        <div><p className="text-sm font-semibold text-amber-950">{title}</p><p className="mt-1 text-xs leading-5 text-amber-950/85">{body}</p></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 rounded-2xl border border-amber-300 bg-white/60 p-4 text-xs leading-5 text-amber-950">
+                  <p><strong>If it doesn&apos;t check out:</strong> don&apos;t share further KYC documents or make any upfront payment. Screenshot what the app or agent has shown you and report it through RBI&apos;s Sachet portal, or approach your local police cyber-crime cell if money has already changed hands.</p>
+                  <p className="mt-3"><strong>Keep visible caveat:</strong> RBI&apos;s site structure and portal names can change, so use RBI&apos;s official domain and revisit the link periodically.</p>
+                </div>
               </aside>
             </div>
 
