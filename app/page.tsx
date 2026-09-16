@@ -354,6 +354,8 @@ export default function Home() {
   const [foundationIndex, setFoundationIndex] = useState<number | null>(null);
   const [openScenario, setOpenScenario] = useState<string | null>(null);
   const [activeGlossary, setActiveGlossary] = useState<string | null>(null);
+  const [activeBasic, setActiveBasic] = useState<'meaning' | 'types' | 'classified' | 'regulated'>('meaning');
+  const [openUpdate, setOpenUpdate] = useState<number | null>(0);
   const foundationDrawerRef = useRef<HTMLDivElement>(null);
   const attachFoundationDrawer = useCallback((node: HTMLDivElement | null) => {
     foundationDrawerRef.current = node;
@@ -574,17 +576,26 @@ export default function Home() {
                       <button type="button" onClick={() => { setPrimaryArea('regulations'); answerQuestion(); }} className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-lg bg-cyan-200 px-3 py-2 text-xs font-semibold text-slate-950 hover:bg-cyan-100">Search</button>
                     </div>
                   </div>
-                  <button type="button" onClick={() => selectPrimaryArea('learn')} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-cyan-100 hover:text-white">New here? Start with the 2-minute basics <ArrowRight className="size-4" /></button>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {[
-                      ['Bank vs NBFC', 'bank-vs-nbfc'],
-                      ['Where you met one', 'nbfc-scenarios'],
-                      ['Check a lender', 'nbfc-checker'],
-                      ['Test yourself', 'nbfc-quiz'],
-                      ['Decode jargon', 'nbfc-glossary'],
-                    ].map(([label, target]) => (
-                      <button key={target} type="button" onClick={() => document.getElementById(target)?.scrollIntoView({ behavior: 'smooth', block: 'start' })} className="rounded-full border border-white/15 bg-white/[.08] px-3 py-1.5 text-xs font-semibold text-slate-200 hover:border-cyan-200 hover:text-white">{label} <span aria-hidden="true">→</span></button>
-                    ))}
+                  <div className="mt-5 max-w-2xl rounded-2xl border border-white/15 bg-white/[.07] p-4">
+                    <p className="text-sm font-semibold text-cyan-100">New to NBFCs?</p>
+                    <h2 className="mt-1 text-xl font-semibold tracking-tight">Get the basics in 2 minutes.</h2>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {([
+                        ['meaning', 'What is an NBFC?'],
+                        ['types', 'Types of NBFCs'],
+                        ['classified', 'How are they classified?'],
+                        ['regulated', 'How are they regulated?'],
+                      ] as const).map(([key, label]) => (
+                        <button key={key} type="button" aria-pressed={activeBasic === key} onClick={() => setActiveBasic(key)} className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${activeBasic === key ? 'border-cyan-200 bg-cyan-200 text-slate-950' : 'border-white/15 bg-white/[.08] text-slate-200 hover:border-cyan-200 hover:text-white'}`}>{label} <span aria-hidden="true">→</span></button>
+                      ))}
+                    </div>
+                    <div className="mt-4 rounded-xl border border-white/15 bg-slate-950/25 p-4 text-sm leading-6 text-slate-200">
+                      {activeBasic === 'meaning' && <div><h3 className="font-semibold text-white">What is an NBFC?</h3><p className="mt-2">An NBFC is a company carrying on specified financial activities such as lending, investment or other regulated financial business.</p><p className="mt-2"><span className="font-semibold text-cyan-100">In simple words:</span> it can perform many financial activities you associate with banks, but it is not a bank and operates under a different regulatory framework.</p></div>}
+                      {activeBasic === 'types' && <div><h3 className="font-semibold text-white">Not every NBFC does the same thing.</h3><div className="mt-3 flex flex-wrap gap-2">{['ICC','MFI','HFC','CIC','Factor','P2P','AA','IFC'].map((type) => <span key={type} className="rounded-full border border-cyan-200/25 bg-cyan-200/10 px-2.5 py-1 text-xs font-semibold text-cyan-100">{type}</span>)}</div><p className="mt-3">Each label points to a different business model or regulatory category. Select a type in Learn to see what it does.</p></div>}
+                      {activeBasic === 'classified' && <div><h3 className="font-semibold text-white">How are NBFCs classified?</h3><p className="mt-2">Start with what the company does, then check whether it takes deposits, its asset size, customer interface and its Scale Based Regulation layer: Base, Middle, Upper or Top.</p></div>}
+                      {activeBasic === 'regulated' && <div><h3 className="font-semibold text-white">How does RBI regulate them?</h3><p className="mt-2">RBI regulation starts with registration, then applies prudential, conduct, governance, KYC, reporting and product rules depending on category, layer and activity.</p></div>}
+                      <button type="button" onClick={() => selectPrimaryArea('learn')} className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-cyan-100 hover:text-white">Want to understand NBFCs in detail? Explore the learning centre <ArrowRight className="size-3.5" /></button>
+                    </div>
                   </div>
                 </div>
                 <div id="bank-vs-nbfc" className="scroll-mt-24 rounded-2xl border border-cyan-300/20 bg-white/[.06] p-5">
@@ -609,6 +620,32 @@ export default function Home() {
                 </div>
               </div>
             </div>
+
+            <section className="rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="eyebrow">What&apos;s new in NBFC regulation</p>
+                  <h2 className="mt-1 text-2xl font-semibold tracking-tight">Recent RBI directions, amendments and regulatory updates.</h2>
+                </div>
+                <p className="max-w-md text-xs leading-5 text-muted-foreground">Showing the most recent items indexed in this desk. Verify the RBI source before filing or issuing formal advice.</p>
+              </div>
+              <div className="mt-6 divide-y divide-border rounded-2xl border border-border">
+                {[
+                  { tag: 'NEW', date: '01 JUL 2026', title: 'Registration and Scale Based Regulation directions indexed', summary: 'The desk starts every NBFC analysis with registration perimeter, exemptions, category and SBR layer.', applies: 'NBFC-ICC · BL · ML · UL', effective: '01 July 2026', changed: 'The practical change is analytical: every question should first identify whether the entity is an RBI-registered NBFC, what category it falls into, and which SBR layer applies. This avoids applying Middle or Upper Layer obligations to a Base Layer entity without checking the trigger.', id: 1 },
+                  { tag: 'AMENDED', date: '26 FEB 2026', title: 'Miscellaneous operating directions updated', summary: 'Operational reference items such as NCD private placement, factoring and electronic payment rules were refreshed in the index.', applies: 'NBFCs using covered products or operating routes', effective: '26 February 2026', changed: 'The update is useful as a reminder that product-specific and operating instructions can sit outside the obvious prudential chapters. When an NBFC uses NCDs, factoring, electronic payments or similar routes, the specialist rule should be checked separately.', id: 27 },
+                  { tag: 'CLARIFICATION', date: '29 DEC 2025', title: 'KYC / AML requirements retained as a core check', summary: 'Customer identification, beneficial ownership, monitoring and FIU reporting remain a universal compliance gate.', applies: 'Customer-facing NBFCs', effective: '29 December 2025', changed: 'For practical work, KYC is not just onboarding paperwork. It affects customer acceptance, beneficial-owner checks, sanctions screening, ongoing monitoring, record retention and reporting to FIU where required.', id: 9 },
+                ].map((item, index) => (
+                  <article key={item.title} className="p-4 sm:p-5">
+                    <div className="grid gap-3 lg:grid-cols-[150px_1fr_auto] lg:items-start">
+                      <div><span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">{item.tag}</span><p className="mt-2 font-mono text-xs font-semibold text-muted-foreground">{item.date}</p></div>
+                      <div><h3 className="font-semibold">{item.title}</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">{item.summary}</p><div className="mt-3 grid gap-1 text-xs text-muted-foreground sm:grid-cols-2"><p><span className="font-semibold text-foreground">Applies to:</span> {item.applies}</p><p><span className="font-semibold text-foreground">Effective:</span> {item.effective}</p></div></div>
+                      <button type="button" onClick={() => setOpenUpdate(openUpdate === index ? null : index)} className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">What changed? <span aria-hidden="true">{openUpdate === index ? '↑' : '↓'}</span></button>
+                    </div>
+                    {openUpdate === index && <div className="mt-4 rounded-2xl border border-primary/15 bg-primary/[.045] p-4 text-sm leading-6"><p className="font-semibold text-primary">What changed?</p><p className="mt-2 text-foreground/85">{item.changed}</p><p className="mt-3"><span className="font-semibold">Effective from:</span> {item.effective}</p><p><span className="font-semibold">Applies to:</span> {item.applies}</p><button type="button" onClick={() => { const reg = regulations.find((entry) => entry.id === item.id); if (reg) setSelected(reg); }} className="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-primary hover:underline">Read the indexed RBI update <ArrowRight className="size-3.5" /></button></div>}
+                  </article>
+                ))}
+              </div>
+            </section>
 
             <div className="grid gap-5 xl:grid-cols-[1fr_380px]">
               <section id="nbfc-scenarios" className="scroll-mt-24 rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
