@@ -662,17 +662,7 @@ export default function Home() {
               </aside>
             </div>
 
-            <div className="grid gap-5 xl:grid-cols-[.9fr_1.1fr]">
-              <section id="nbfc-quiz" className="scroll-mt-24 rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
-                <p className="eyebrow">Quick check</p>
-                <h2 className="mt-1 text-2xl font-semibold tracking-tight">Think you know NBFCs?</h2>
-                <details className="mt-5 rounded-2xl border border-border bg-secondary/30 p-4">
-                  <summary className="cursor-pointer text-sm font-semibold">All NBFCs are regulated exactly the same way.</summary>
-                  <p className="mt-3 border-t border-border pt-3 text-sm leading-6 text-muted-foreground">False — regulatory obligations scale up sharply from the Base Layer to the Upper Layer under RBI&apos;s Scale-Based Regulation framework.</p>
-                </details>
-                <button type="button" onClick={() => selectPrimaryArea('learn')} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">Get that one wrong? The full quiz — and why — is in Learn NBFCs <ArrowRight className="size-4" /></button>
-              </section>
-
+            <div className="grid gap-5">
               <section id="nbfc-glossary" className="scroll-mt-24 rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
                 <p className="eyebrow">Glossary preview</p>
                 <h2 className="mt-1 text-2xl font-semibold tracking-tight">Ten terms that show up everywhere.</h2>
