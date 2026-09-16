@@ -631,7 +631,7 @@ export default function Home() {
                       <p className="mt-2 text-sm leading-6 text-muted-foreground">{body}</p>
                         <p className="mt-3 text-xs font-semibold text-primary">{openScenario === title ? 'Close file ↑' : 'Open file →'}</p>
                       </button>
-                      {openScenario === title && <div className="mt-4 rounded-xl border border-primary/15 bg-primary/[.045] p-4 text-sm leading-6 text-foreground/85"><p>{notes}</p><button type="button" onClick={() => { setQuery(search); setPrimaryArea('regulations'); }} className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">Trace the rule <ArrowRight className="size-3.5" /></button></div>}
+                      {openScenario === title && <div className="mt-4 rounded-xl border border-primary/15 bg-primary/[.045] p-4 text-sm leading-6 text-foreground/85"><p>{notes}</p></div>}
                     </article>
                   ))}
                 </div>
