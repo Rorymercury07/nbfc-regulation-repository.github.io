@@ -143,6 +143,11 @@ const guide: Record<number, LayerGuide> = {
     ML: { position: 'Activity test, not SBR layer', explanation: 'ML status does not replace the statutory payment-system operator/participant test.', clause: 'Payment and Settlement Systems Act, 2007, section 4(1); check the section 4 provisos' },
     UL: { position: 'Activity test, not SBR layer', explanation: 'UL status does not by itself determine statutory coverage.', clause: 'Payment and Settlement Systems Act, 2007, section 4(1); check the section 4 provisos' },
   } },
+  29: { source: 'Reserve Bank of India (Non-Banking Financial Companies - Internal Ombudsman) Directions, 2026', scope: 'SBR layer is not the legal trigger. Deposit status, branch count, asset size, public customer interface and the express exclusions in clause 3 decide applicability.', rules: {
+    BL: { position: 'Ordinarily outside the threshold', explanation: 'A non-deposit taking BL NBFC is ordinarily below ₹1,000 crore and therefore cannot meet the ₹5,000 crore NBFC-ND threshold. Deposit-taking NBFCs are placed at least in ML under SBR. Still verify the facts and any later RBI direction.', clause: 'Clause 3; read with the SBR layer rules' },
+    ML: { position: 'Conditional—not every ML NBFC', explanation: 'It applies to an NBFC-D with 10 or more branches, or an NBFC-ND with assets of ₹5,000 crore or more and a public customer interface, unless an express exclusion applies.', clause: 'Clause 3(1)–(3)' },
+    UL: { position: 'Usually triggered for covered customer-facing types', explanation: 'A non-deposit taking UL NBFC will exceed the ₹5,000 crore size test, but must still have a public customer interface and must not be an excluded category. A deposit taker still needs 10 or more branches.', clause: 'Clause 3(1)–(3)' },
+  } },
 };
 
 export function getLayerGuide(id: number): LayerGuide | null { return guide[id] ?? null; }
