@@ -148,6 +148,11 @@ const guide: Record<number, LayerGuide> = {
     ML: { position: 'Conditional—not every ML NBFC', explanation: 'It applies to an NBFC-D with 10 or more branches, or an NBFC-ND with assets of ₹5,000 crore or more and a public customer interface, unless an express exclusion applies.', clause: 'Clause 3(1)–(3)' },
     UL: { position: 'Usually triggered for covered customer-facing types', explanation: 'A non-deposit taking UL NBFC will exceed the ₹5,000 crore size test, but must still have a public customer interface and must not be an excluded category. A deposit taker still needs 10 or more branches.', clause: 'Clause 3(1)–(3)' },
   } },
+  30: { source: 'Reserve Bank of India (Non-Banking Financial Companies - Compliance Function) Directions, 2026', scope: 'Clause 3 uses SBR layer as the direct applicability test: the Direction applies to RBI Act or Factoring Regulation Act-registered NBFCs in ML and UL.', rules: {
+    BL: { position: 'Not applicable under this Direction', explanation: 'Clause 3 names Middle and Upper Layer only. A BL NBFC should not be shown as covered by these 2026 Directions merely because it has compliance obligations under other laws or RBI instructions.', clause: 'Clause 3' },
+    ML: { position: 'Direction applies', explanation: 'An ML NBFC must implement the independent Compliance function and CCO framework. The CCO stature rule may be relaxed by one additional organisational level for ML.', clause: 'Clause 3; clauses 6–33, especially clause 23 proviso' },
+    UL: { position: 'Direction applies in full', explanation: 'A UL NBFC follows the complete governance, Compliance function, CCO and technology framework. Its CCO must be positioned not below two levels from the CEO.', clause: 'Clause 3; clauses 6–33, especially clause 23' },
+  } },
 };
 
 export function getLayerGuide(id: number): LayerGuide | null { return guide[id] ?? null; }
