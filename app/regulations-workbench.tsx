@@ -13,6 +13,37 @@ type RegulationDetail = { applies: string; requirements: string[]; timing: strin
 
 const registrationSecondAmendmentUrl = 'https://rbi.org.in/scripts/NotificationUser.aspx?Mode=0&Id=13539';
 
+const exactRegulationNames: Record<number, string> = {
+  1: 'Reserve Bank of India (Non-Banking Financial Companies – Registration, Exemptions and Framework for Scale Based Regulation) Directions, 2025',
+  2: 'Reserve Bank of India (Non-Banking Financial Companies – Prudential Norms on Capital Adequacy) Directions, 2025',
+  3: 'Reserve Bank of India (Non-Banking Financial Companies – Income Recognition, Asset Classification and Provisioning) Directions, 2025',
+  4: 'Reserve Bank of India (Non-Banking Financial Companies – Resolution of Stressed Assets) Directions, 2025',
+  5: 'Reserve Bank of India (Non-Banking Financial Companies – Concentration Risk Management) Directions, 2025',
+  6: 'Reserve Bank of India (Non-Banking Financial Companies – Asset Liability Management) Directions, 2025',
+  7: 'Reserve Bank of India (Non-Banking Financial Companies – Responsible Business Conduct) Directions, 2025',
+  8: 'Reserve Bank of India (Non-Banking Financial Companies – Credit Facilities) Directions, 2025',
+  9: 'Reserve Bank of India (Non-Banking Financial Companies – Know Your Customer) Directions, 2025',
+  10: 'Reserve Bank of India (Non-Banking Financial Companies – Governance) Directions',
+  11: 'Reserve Bank of India (Non-Banking Financial Companies – Managing Risks in Outsourcing) Directions, 2025',
+  12: 'Reserve Bank of India (Non-Banking Financial Companies – Credit Information Reporting) Directions, 2025',
+  13: 'Reserve Bank of India (Non-Banking Financial Companies – Financial Statements: Presentation and Disclosures) Directions, 2025',
+  14: 'Reserve Bank of India (Non-Banking Financial Companies – Transfer and Distribution of Credit Risk) Directions, 2025',
+  15: 'Reserve Bank of India (Non-Banking Financial Companies – Securitisation Transactions) Directions, 2025',
+  16: 'Reserve Bank of India (Non-Banking Financial Companies – Treatment of Wilful Defaulters and Large Defaulters) Directions, 2025',
+  17: 'Reserve Bank of India (Non-Banking Financial Companies – Acceptance of Public Deposits) Directions, 2025',
+  18: 'Reserve Bank of India (Non-Banking Financial Companies – Credit Cards: Issuance and Conduct) Directions, 2025',
+  19: 'Reserve Bank of India (Non-Banking Financial Companies – Prudential Norms on Declaration of Dividends) Directions, 2025',
+  20: 'Reserve Bank of India (Non-Banking Financial Companies – Acquisition of Shareholding or Control) Directions, 2025',
+  21: 'Reserve Bank of India (Non-Banking Financial Companies – Undertaking of Financial Services) Directions, 2025',
+  22: 'Reserve Bank of India (Non-Banking Financial Companies – Branch Authorisation) Directions, 2025',
+  23: 'Reserve Bank of India (Non-Banking Financial Companies – Voluntary Amalgamation) Directions, 2025',
+  24: 'Reserve Bank of India (Non-Banking Financial Companies – Classification, Valuation and Operation of Investment Portfolio) Directions, 2025',
+  25: 'Reserve Bank of India (Non-Banking Financial Companies – Climate Finance and Management of Climate Change Risks) Directions, 2025',
+  26: 'Reserve Bank of India (Non-Banking Financial Companies – Credit Risk Management) Directions, 2025',
+  27: 'Reserve Bank of India (Non-Banking Financial Companies – Miscellaneous) Directions, 2025',
+  28: 'The Payment and Settlement Systems Act, 2007',
+};
+
 const syllabus = [
   ['NBFC Regulatory Architecture', 'RBI Act, Companies Act, RBI Directions, circulars, notifications and FAQs', [1]],
   ['How to Read an RBI Direction', 'Applicability → definitions → operative provisions → reporting → annexures', [1, 2, 7]],
@@ -255,6 +286,7 @@ export function RegulationsWorkbench({ regulations, details, onOpenRegulation }:
         <button type="button" onClick={() => setView('library')} className="inline-flex items-center gap-2 text-sm font-semibold text-cyan-200 hover:underline">← Back to master library</button>
         <div className="mt-6 flex flex-wrap items-center gap-2"><Badge className="bg-cyan-200 text-slate-950">{selectedRegulation.status}</Badge><Badge variant="outline" className="border-white/20 text-white">{selectedRegulation.category}</Badge><span className="text-sm text-slate-300">Indexed source copy: {selectedRegulation.updated}</span></div>
         <h2 className="mt-4 max-w-4xl text-3xl font-semibold leading-tight tracking-[-.04em] sm:text-4xl">{selectedRegulation.title}</h2>
+        <div className="mt-4 max-w-4xl rounded-2xl border border-white/15 bg-white/[.06] px-4 py-3"><p className="text-xs font-semibold uppercase tracking-[.12em] text-cyan-200">Exact regulation name</p><p className="mt-1 text-sm font-medium leading-6 text-white sm:text-base">{exactRegulationNames[selectedRegulation.id] ?? selectedRegulation.title}</p></div>
         <p className="mt-4 max-w-4xl text-lg leading-8 text-slate-200">{selectedRegulation.summary}</p>
         <div className="mt-6 flex flex-wrap gap-2"><LayerBadges layers={selectedRegulation.layers} />{selectedRegulation.id === 1 && <><Button size="sm" className="ml-1 bg-cyan-200 text-slate-950 hover:bg-cyan-100" onClick={() => openStudy()}>Open complete SBR study<ArrowRight /></Button><a href={registrationSecondAmendmentUrl} target="_blank" rel="noreferrer"><Button size="sm" variant="outline" className="border-white/30 bg-white/5 text-white hover:bg-white/10">View RBI notification<ArrowRight /></Button></a></>}</div>
       </header>
@@ -350,7 +382,7 @@ export function RegulationsWorkbench({ regulations, details, onOpenRegulation }:
           </>}
           {selectedRegulation.id !== 1 && detailSection === 'source' && <>
             <section><p className="eyebrow">Verify the source</p><h3 className="mt-1 text-2xl font-semibold">Do not rely on the summary alone</h3></section>
-            <div className="grid gap-4 md:grid-cols-2"><section className="rounded-2xl border border-border p-5"><p className="text-xs font-semibold uppercase tracking-[.1em] text-muted-foreground">Primary indexed source</p><p className="mt-3 font-semibold leading-7">{layerGuide?.source ?? selectedRegulation.title}</p><p className="mt-3 text-sm text-muted-foreground">Source copy indexed: {selectedRegulation.updated}</p></section><section className="rounded-2xl border border-border p-5"><p className="text-xs font-semibold uppercase tracking-[.1em] text-muted-foreground">Start with these paragraphs</p><p className="mt-3 text-sm font-semibold leading-7 text-primary">{layerGuide ? `BL: ${layerGuide.rules.BL.clause} · ML: ${layerGuide.rules.ML.clause} · UL: ${layerGuide.rules.UL.clause}` : 'Read the applicability clause and operative chapter in the indexed source.'}</p></section></div>
+            <div className="grid gap-4 md:grid-cols-2"><section className="rounded-2xl border border-border p-5"><p className="text-xs font-semibold uppercase tracking-[.1em] text-muted-foreground">Exact name of the primary source</p><p className="mt-3 font-semibold leading-7">{exactRegulationNames[selectedRegulation.id] ?? layerGuide?.source ?? selectedRegulation.title}</p><p className="mt-3 text-sm text-muted-foreground">Source copy indexed: {selectedRegulation.updated}</p></section><section className="rounded-2xl border border-border p-5"><p className="text-xs font-semibold uppercase tracking-[.1em] text-muted-foreground">Start with these paragraphs</p><p className="mt-3 text-sm font-semibold leading-7 text-primary">{layerGuide ? `BL: ${layerGuide.rules.BL.clause} · ML: ${layerGuide.rules.ML.clause} · UL: ${layerGuide.rules.UL.clause}` : 'Read the applicability clause and operative chapter in the indexed source.'}</p></section></div>
             <section className="rounded-2xl border border-amber-200 bg-amber-50 p-5"><div className="flex gap-3"><AlertTriangle className="mt-1 size-5 shrink-0 text-amber-700" /><div><p className="font-semibold text-amber-950">Current-law check</p><p className="mt-2 text-sm leading-7 text-amber-950">This desk explains the source copy stored in the uploaded library. Before filing, approving or issuing formal advice, check the RBI website for a later amendment, circular, FAQ, transition provision or supervisory communication.</p></div></div></section>
             <div className="flex flex-wrap gap-3"><a href="https://www.rbi.org.in/" target="_blank" rel="noreferrer"><Button>Open RBI official website<ArrowRight /></Button></a><Button variant="outline" onClick={()=>onOpenRegulation(selectedRegulation)}>Open full indexed detail sheet<FileSearch /></Button></div>
           </>}
