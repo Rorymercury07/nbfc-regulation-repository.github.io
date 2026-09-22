@@ -7,8 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
 import { getLayerGuide } from './layer-applicability';
+import { newRegulationNames, newRegulationFiles } from './new-regulations';
 
-type Regulation = { id: number; title: string; short: string; category: string; layers: string[]; status: string; updated: string; summary: string; highlights: string[] };
+type Regulation = { id: number; title: string; short: string; category: string; layers: string[]; status: 'Core' | 'Specialist' | 'Reference'; updated: string; summary: string; highlights: string[] };
 type RegulationDetail = { applies: string; requirements: string[]; timing: string[]; checks: string[]; related: number[] };
 
 const registrationSecondAmendmentUrl = 'https://rbi.org.in/scripts/NotificationUser.aspx?Mode=0&Id=13539';
@@ -46,6 +47,7 @@ const exactRegulationNames: Record<number, string> = {
   26: 'Reserve Bank of India (Non-Banking Financial Companies – Credit Risk Management) Directions, 2025',
   27: 'Reserve Bank of India (Non-Banking Financial Companies – Miscellaneous) Directions, 2025',
   28: 'The Payment and Settlement Systems Act, 2007',
+  ...newRegulationNames,
 };
 
 const syllabus = [
@@ -62,13 +64,13 @@ const syllabus = [
   ['Credit Information Regulation', 'CIC membership, reporting, corrections and complaints', [12]],
   ['Outsourcing Regulation', 'Vendor responsibility, due diligence, monitoring, audit and exit', [11]],
   ['Recovery Regulation', 'Recovery agents, customer conduct and permissible practices', [7]],
-  ['Governance Regulation', 'Board governance, committees, compliance and risk requirements', [10, 30]],
-  ['IT & Cybersecurity Regulation', 'IT governance, information security, resilience and incident reporting', [11, 10]],
+  ['Governance Regulation', 'Board governance, committees, compliance, audit and risk requirements', [10, 30, 34, 35]],
+  ['IT & Cybersecurity Regulation', 'IT governance, information security, resilience and incident reporting', [31, 32, 11]],
   ['Liquidity & ALM', 'Liquidity risk, maturity mismatches, ALM and LCR', [6]],
-  ['Fraud & Financial Crime', 'Fraud monitoring, AML controls and regulatory reporting', [9, 16]],
-  ['RBI Returns & Reporting Framework', 'DNBS and other regulatory reporting requirements', [12, 13]],
+  ['Fraud & Financial Crime', 'Fraud monitoring, AML controls and regulatory reporting', [33, 9, 16]],
+  ['RBI Returns & Reporting Framework', 'DNBS and other regulatory reporting requirements', [36, 38, 12]],
   ['Corporate Actions', 'Control, shareholding, directors, offices and restructuring', [20, 22, 23]],
-  ['RBI Supervision & Enforcement', 'Inspection, observations, penalties and CoR implications', [1, 16]],
+  ['RBI Supervision & Enforcement', 'Inspection, observations, penalties and CoR implications', [37, 1, 16]],
   ['Master Regulatory Library', 'All indexed directions organised by subject, layer and source-copy date', []],
 ] as const;
 
@@ -298,7 +300,7 @@ export function RegulationsWorkbench({ regulations, details, onOpenRegulation }:
     {view === 'start' && <div className="overflow-hidden rounded-3xl border border-slate-800 bg-[#07182b] text-white">
       <div className="grid gap-8 p-6 sm:p-9 lg:grid-cols-[1.15fr_.85fr]">
         <div><p className="text-xs font-semibold uppercase tracking-[.18em] text-cyan-200">Regulatory law library + course</p><h2 className="mt-3 max-w-3xl text-3xl font-semibold tracking-[-.04em] sm:text-4xl">Find the rule. Test who it applies to. Reach the exact RBI source.</h2><p className="mt-4 max-w-3xl text-base leading-7 text-slate-300">Learn how NBFC law is organised, then study each indexed direction through applicability, operative rule, trigger, threshold, exception, amendment and source.</p><div className="mt-6 flex flex-wrap gap-3"><Button className="bg-cyan-200 text-slate-950 hover:bg-cyan-100" onClick={() => setView('course')}>Begin the regulatory course<ArrowRight /></Button><Button variant="outline" className="border-white/20 bg-white/5 text-white hover:bg-white/10" onClick={() => openStudy()}>Study Scale Based Regulation</Button></div></div>
-        <div className="grid grid-cols-2 gap-3"><div className="rounded-2xl border border-white/10 bg-white/[.06] p-5"><p className="text-3xl font-semibold">28</p><p className="mt-1 text-sm text-slate-300">indexed source documents</p></div><div className="rounded-2xl border border-white/10 bg-white/[.06] p-5"><p className="text-3xl font-semibold">21</p><p className="mt-1 text-sm text-slate-300">connected study modules</p></div><div className="col-span-2 rounded-2xl border border-cyan-200/20 bg-cyan-200/10 p-5"><p className="text-xs font-semibold uppercase tracking-[.14em] text-cyan-200">Latest indexed consolidation</p><p className="mt-2 text-xl font-semibold">01 July 2026</p><p className="mt-1 text-sm leading-6 text-slate-300">Registration/SBR source copy. Dates describe the uploaded library, not an assurance that no later RBI material exists.</p></div></div>
+        <div className="grid grid-cols-2 gap-3"><div className="rounded-2xl border border-white/10 bg-white/[.06] p-5"><p className="text-3xl font-semibold">{regulations.length}</p><p className="mt-1 text-sm text-slate-300">indexed regulations and reference sources</p></div><div className="rounded-2xl border border-white/10 bg-white/[.06] p-5"><p className="text-3xl font-semibold">{syllabus.length}</p><p className="mt-1 text-sm text-slate-300">connected study modules</p></div><div className="col-span-2 rounded-2xl border border-cyan-200/20 bg-cyan-200/10 p-5"><p className="text-xs font-semibold uppercase tracking-[.14em] text-cyan-200">Newest source copies indexed</p><p className="mt-2 text-xl font-semibold">31 July 2026</p><p className="mt-1 text-sm leading-6 text-slate-300">Department of Supervision directions added from the uploaded folder. This is not an assurance that no later RBI amendment exists.</p></div></div>
       </div>
       <div className="border-t border-white/10 bg-white/[.035] p-6 sm:p-9"><p className="text-xs font-semibold uppercase tracking-[.15em] text-cyan-200">Use the five-question legal test</p><div className="mt-4 grid gap-3 md:grid-cols-5">{['What is the rule?','Who does it apply to?','Which paragraph says it?','Effective from when?','Has it been amended?'].map((item,index) => <div key={item} className="rounded-xl border border-white/10 bg-white/[.04] p-4"><span className="font-mono text-xs text-cyan-200">0{index+1}</span><p className="mt-2 text-sm font-semibold leading-5">{item}</p></div>)}</div></div>
     </div>}
@@ -545,7 +547,7 @@ export function RegulationsWorkbench({ regulations, details, onOpenRegulation }:
           </>}
           {selectedRegulation.id !== 1 && selectedRegulation.id !== 2 && detailSection === 'source' && <>
             <section><p className="eyebrow">Verify the source</p><h3 className="mt-1 text-2xl font-semibold">Do not rely on the summary alone</h3></section>
-            <div className="grid gap-4 md:grid-cols-2"><section className="rounded-2xl border border-border p-5"><p className="text-xs font-semibold uppercase tracking-[.1em] text-muted-foreground">Exact name of the primary source</p><p className="mt-3 font-semibold leading-7">{exactRegulationNames[selectedRegulation.id] ?? layerGuide?.source ?? selectedRegulation.title}</p><p className="mt-3 text-sm text-muted-foreground">Source copy indexed: {selectedRegulation.updated}</p></section><section className="rounded-2xl border border-border p-5"><p className="text-xs font-semibold uppercase tracking-[.1em] text-muted-foreground">Start with these paragraphs</p><p className="mt-3 text-sm font-semibold leading-7 text-primary">{layerGuide ? `BL: ${layerGuide.rules.BL.clause} · ML: ${layerGuide.rules.ML.clause} · UL: ${layerGuide.rules.UL.clause}` : 'Read the applicability clause and operative chapter in the indexed source.'}</p></section></div>
+            <div className="grid gap-4 md:grid-cols-2"><section className="rounded-2xl border border-border p-5"><p className="text-xs font-semibold uppercase tracking-[.1em] text-muted-foreground">Exact name of the primary source</p><p className="mt-3 font-semibold leading-7">{exactRegulationNames[selectedRegulation.id] ?? layerGuide?.source ?? selectedRegulation.title}</p><p className="mt-3 text-sm text-muted-foreground">Source copy indexed: {selectedRegulation.updated}</p>{newRegulationFiles[selectedRegulation.id] && <p className="mt-2 break-words text-sm text-muted-foreground"><strong>PDF in your NBFC Regulations folder:</strong> {newRegulationFiles[selectedRegulation.id]}</p>}</section><section className="rounded-2xl border border-border p-5"><p className="text-xs font-semibold uppercase tracking-[.1em] text-muted-foreground">Start with these paragraphs</p><p className="mt-3 text-sm font-semibold leading-7 text-primary">{layerGuide ? `BL: ${layerGuide.rules.BL.clause} · ML: ${layerGuide.rules.ML.clause} · UL: ${layerGuide.rules.UL.clause}` : 'Read the applicability clause and operative chapter in the indexed source.'}</p></section></div>
             <section className="rounded-2xl border border-amber-200 bg-amber-50 p-5"><div className="flex gap-3"><AlertTriangle className="mt-1 size-5 shrink-0 text-amber-700" /><div><p className="font-semibold text-amber-950">Current-law check</p><p className="mt-2 text-sm leading-7 text-amber-950">This desk explains the source copy stored in the uploaded library. Before filing, approving or issuing formal advice, check the RBI website for a later amendment, circular, FAQ, transition provision or supervisory communication.</p></div></div></section>
             <div className="flex flex-wrap gap-3"><a href={selectedRegulation.id === 29 ? internalOmbudsmanUrl : selectedRegulation.id === 30 ? complianceFunctionUrl : 'https://www.rbi.org.in/'} target="_blank" rel="noreferrer"><Button>{selectedRegulation.id === 29 || selectedRegulation.id === 30 ? 'Open the RBI Direction' : 'Open RBI official website'}<ArrowRight /></Button></a><Button variant="outline" onClick={()=>onOpenRegulation(selectedRegulation)}>Open full indexed detail sheet<FileSearch /></Button></div>
           </>}

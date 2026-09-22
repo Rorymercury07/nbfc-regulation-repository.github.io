@@ -153,6 +153,46 @@ const guide: Record<number, LayerGuide> = {
     ML: { position: 'Direction applies', explanation: 'An ML NBFC must implement the independent Compliance function and CCO framework. The CCO stature rule may be relaxed by one additional organisational level for ML.', clause: 'Clause 3; clauses 6–33, especially clause 23 proviso' },
     UL: { position: 'Direction applies in full', explanation: 'A UL NBFC follows the complete governance, Compliance function, CCO and technology framework. Its CCO must be positioned not below two levels from the CEO.', clause: 'Clause 3; clauses 6–33, especially clause 23' },
   } },
+  31: { source: 'RBI (NBFCs – Cybersecurity, Technology: Risk, Resilience and Assurance Framework) Directions, 2026', scope: 'Paragraph 3 sends CICs to Chapter III even if their SBR layer would otherwise suggest Chapter V.', rules: {
+    BL: { position: 'Two size-based routes', explanation: 'Below ₹500 crore, Chapter III baseline applies; at ₹500 crore or above, Chapter IV applies.', clause: 'Paragraph 3(2)–(3); Chapters III–IV' },
+    ML: { position: 'Chapter V, except CICs', explanation: 'ML NBFCs other than CICs use Chapter V. CICs use Chapter III instead.', clause: 'Paragraph 3(2), 3(4); Chapter V' },
+    UL: { position: 'Chapter V, except CICs', explanation: 'UL NBFCs other than CICs use Chapter V. CICs remain on the expressly stated Chapter III route.', clause: 'Paragraph 3(2), 3(4); Chapter V' },
+  } },
+  32: { source: 'RBI (NBFCs – Digital Payment Security Controls) Directions, 2026', scope: 'Issuer and product are the decisive tests; the Direction is not a general digital-lending rule.', rules: {
+    BL: { position: 'Only if a credit-card issuer', explanation: 'A BL NBFC is covered only if it issues credit cards and provides a covered digital payment service.', clause: 'Paragraphs 3–4' },
+    ML: { position: 'Only if a credit-card issuer', explanation: 'An ML lender without credit-card issuing activity is not covered merely because it offers digital loans.', clause: 'Paragraphs 3–4' },
+    UL: { position: 'Only if a credit-card issuer', explanation: 'UL classification does not replace the credit-card-issuer and digital-payment-product tests.', clause: 'Paragraphs 3–4' },
+  } },
+  33: { source: 'RBI (NBFCs – Fraud Risk Management) Directions, 2026', scope: 'BL has an asset threshold; ML/UL also have a separate Early Warning Signals chapter. HFC reporting uses the stated NHB route.', rules: {
+    BL: { position: 'Only at ₹500 crore or more', explanation: 'A BL NBFC below ₹500 crore is outside this Direction; assets are measured from the immediately preceding 31 March audited balance sheet.', clause: 'Paragraph 3 and note' },
+    ML: { position: 'Direction plus EWS', explanation: 'Covered ML entities apply the general fraud framework and the Chapter III early-warning-signals requirements.', clause: 'Paragraph 3; paragraphs 13–23' },
+    UL: { position: 'Direction plus EWS', explanation: 'Covered UL entities apply the general fraud framework and the Chapter III early-warning-signals requirements.', clause: 'Paragraph 3; paragraphs 13–23' },
+  } },
+  34: { source: 'RBI (NBFCs – Internal Audit Function) Directions, 2026', scope: 'Deposit status or the ₹5,000 crore size test—not layer alone—determines coverage.', rules: {
+    BL: { position: 'Ordinarily outside scope', explanation: 'A non-deposit taking BL entity is ordinarily below the ₹5,000 crore threshold; deposit-taking NBFCs are at least ML under SBR.', clause: 'Paragraph 3(1)–(4); SBR layer rules' },
+    ML: { position: 'Conditional', explanation: 'Every deposit-taking ML NBFC is covered. A non-deposit taking ML NBFC is covered only at ₹5,000 crore or more.', clause: 'Paragraph 3(1)–(4)' },
+    UL: { position: 'Usually covered; verify status', explanation: 'A covered non-deposit taking UL entity normally exceeds the size test, while deposit-taking entities are covered regardless of size.', clause: 'Paragraph 3(1)–(4)' },
+  } },
+  35: { source: 'RBI (NBFCs – Statutory Audit) Directions, 2026', scope: 'The smaller non-deposit-taking option is not a blanket exemption from statutory audit.', rules: {
+    BL: { position: 'Existing-procedure option', explanation: 'A non-deposit taking entity below ₹1,000 crore may continue its extant auditor-appointment procedure; statutory audit itself still applies under law.', clause: 'Paragraph 3 proviso' },
+    ML: { position: 'Direction generally applies', explanation: 'Apply the appointment and independence framework; joint audit is triggered at ₹15,000 crore of prior-year assets.', clause: 'Paragraph 3; paragraph 11' },
+    UL: { position: 'Direction generally applies', explanation: 'Apply the appointment and independence framework; the asset-based joint-audit test must also be checked.', clause: 'Paragraph 3; paragraph 11' },
+  } },
+  36: { source: 'RBI (NBFCs – Supervisory Returns) Directions, 2026', scope: 'HFCs are excluded; individual return rows have their own category, layer and frequency tests.', rules: {
+    BL: { position: 'Applicable return rows only', explanation: 'BL entities use the paragraph 21 return matrix to identify which returns actually apply.', clause: 'Paragraph 3; paragraphs 21–23' },
+    ML: { position: 'Applicable return rows only', explanation: 'ML entities apply the same data-quality framework and file the ML/category-specific return rows.', clause: 'Paragraph 3; paragraphs 21–23' },
+    UL: { position: 'Applicable return rows only', explanation: 'UL entities apply the framework and the UL/category-specific rows, not every return in the table.', clause: 'Paragraph 3; paragraphs 21–23' },
+  } },
+  37: { source: 'RBI (NBFCs – Miscellaneous) Supervisory Directions, 2026', scope: 'Do not confuse these supervisory directions with the separate 2025 Miscellaneous operating Direction.', rules: {
+    BL: { position: 'Fair-interest chapter; other chapters conditional', explanation: 'A BL entity is generally within the fair-interest chapter, but CFSS is optional and the nomination/PCA chapters have narrower scope.', clause: 'Paragraph 3; paragraphs 5, 7–9' },
+    ML: { position: 'Chapter-by-chapter test', explanation: 'CFSS is mandatory at 10+ qualifying service units; nomination requires NBFC-D status; PCA has the paragraph 3 public-funds and category exclusions.', clause: 'Paragraph 3; paragraphs 5–6, 10–21' },
+    UL: { position: 'Chapter-by-chapter test', explanation: 'Apply the same specific CFSS, nomination and PCA triggers; UL status alone does not make every chapter applicable.', clause: 'Paragraph 3; paragraphs 5–6, 10–21' },
+  } },
+  38: { source: 'RBI (NBFCs – Auditor’s Report) Directions, 2026', scope: 'The direct addressee is the statutory auditor, not the NBFC as a substitute for its own audit responsibilities. HFC auditors use the HFC direction.', rules: {
+    BL: { position: 'Auditor report if in scope', explanation: 'The auditor reports on CoR, principal business and NOF, plus non-deposit-taking matters where relevant.', clause: 'Paragraphs 3, 5–6, 8, 11' },
+    ML: { position: 'Auditor report if in scope', explanation: 'The same basic report applies; deposit-taking or non-deposit-taking additions depend on actual deposit status.', clause: 'Paragraphs 3, 5–8, 11' },
+    UL: { position: 'Auditor report if in scope', explanation: 'The same basic report applies; UL status does not replace the deposit and exemption tests.', clause: 'Paragraphs 3, 5–8, 11' },
+  } },
 };
 
 export function getLayerGuide(id: number): LayerGuide | null { return guide[id] ?? null; }
