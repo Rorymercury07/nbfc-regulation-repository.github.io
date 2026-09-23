@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
 import { getLayerGuide } from './layer-applicability';
 import { DepositsArticle } from './deposits-article';
+import { ComplianceReference } from './compliance-reference';
 import { newRegulationNames, newRegulationFiles } from './new-regulations';
 
 type Regulation = { id: number; title: string; short: string; category: string; layers: string[]; status: 'Core' | 'Specialist' | 'Reference'; updated: string; summary: string; highlights: string[] };
@@ -345,12 +346,13 @@ export function RegulationsWorkbench({ regulations, details, onOpenRegulation }:
         <p className="mt-4 max-w-4xl text-lg leading-8 text-slate-200">{selectedRegulation.id === 2 ? 'Explains how much genuine loss-absorbing capital an NBFC must keep, what is allowed to count, and how the answer changes with risk and regulatory layer.' : selectedRegulation.summary}</p>
         <div className="mt-6 flex flex-wrap gap-2"><LayerBadges layers={selectedRegulation.layers} />{selectedRegulation.id === 1 && <><Button size="sm" className="ml-1 bg-cyan-200 text-slate-950 hover:bg-cyan-100" onClick={() => openStudy()}>Open complete SBR study<ArrowRight /></Button><a href={registrationSecondAmendmentUrl} target="_blank" rel="noreferrer"><Button size="sm" variant="outline" className="border-white/30 bg-white/5 text-white hover:bg-white/10">View RBI notification<ArrowRight /></Button></a></>}</div>
       </header>
-      <div className={selectedRegulation.id === 17 ? 'block' : 'grid xl:grid-cols-[250px_minmax(0,1fr)]'}>
-        {selectedRegulation.id !== 17 && <aside className="border-b border-border bg-secondary/20 p-4 xl:border-b-0 xl:border-r">
+      <div className={selectedRegulation.id === 17 || selectedRegulation.id === 30 ? 'block' : 'grid xl:grid-cols-[250px_minmax(0,1fr)]'}>
+        {selectedRegulation.id !== 17 && selectedRegulation.id !== 30 && <aside className="border-b border-border bg-secondary/20 p-4 xl:border-b-0 xl:border-r">
           <p className="eyebrow px-2">Learn this regulation</p>
           <div className="mt-3 grid gap-1 sm:grid-cols-5 xl:grid-cols-1">{(selectedRegulation.id === 1 ? [['meaning','Begin here'],['applicability','Layers & applicability'],['rules','All 15 chapters'],['example','Worked examples'],['source','Source & amendments']] : selectedRegulation.id === 2 ? [['meaning','Capital basics'],['applicability','Who must comply?'],['rules','Rules & calculations'],['example','Worked examples'],['source','Source & currency']] : selectedRegulation.id === 17 ? [['meaning','Start with the story'],['applicability','Does it apply?'],['rules','Question-by-question rules'],['example','Try a calculation'],['source','Source & currency']] : selectedRegulation.id === 29 ? [['meaning','Meaning & purpose'],['applicability','Scope test'],['rules','Complaint workflow'],['example','Worked scenario'],['source','Source & transition']] : selectedRegulation.id === 30 ? [['meaning','What compliance means'],['applicability','Layer scope'],['rules','Board & CCO rules'],['example','Worked scenario'],['source','Source & repeal']] : [['meaning','Start from zero'],['applicability','Who does it apply to?'],['rules','What does it require?'],['example','See an example'],['source','Verify the source']] as const).map(([key,label],index)=><button type="button" key={key} onClick={()=>setDetailSection(key as typeof detailSection)} className={`flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold ${detailSection===key?'bg-primary text-primary-foreground':'hover:bg-background'}`}><span className="font-mono text-xs opacity-70">0{index+1}</span>{label}</button>)}</div>
         </aside>}
         <div className="min-w-0 space-y-8 p-6 sm:p-9">
+          {selectedRegulation.id === 30 ? <ComplianceReference /> : <>
           {selectedRegulation.id === 17 && <DepositsArticle />}
           {selectedRegulation.id === 1 && detailSection === 'meaning' && <>
             <section><p className="eyebrow">Start from zero</p><h3 className="mt-1 text-2xl font-semibold">What does this Direction actually do?</h3><p className="mt-4 text-lg leading-8">It is the gateway to the NBFC regulatory system. It answers three questions in order: <strong>is the company carrying on NBFC business, must it register with RBI, and which SBR layer applies?</strong> Once those questions are answered, the NBFC opens the subject-specific directions for capital, KYC, conduct, governance and other operating rules.</p></section>
@@ -554,6 +556,7 @@ export function RegulationsWorkbench({ regulations, details, onOpenRegulation }:
             <div className="flex flex-wrap gap-3"><a href={selectedRegulation.id === 29 ? internalOmbudsmanUrl : selectedRegulation.id === 30 ? complianceFunctionUrl : 'https://www.rbi.org.in/'} target="_blank" rel="noreferrer"><Button>{selectedRegulation.id === 29 || selectedRegulation.id === 30 ? 'Open the RBI Direction' : 'Open RBI official website'}<ArrowRight /></Button></a><Button variant="outline" onClick={()=>onOpenRegulation(selectedRegulation)}>Open full indexed detail sheet<FileSearch /></Button></div>
           </>}
           {selectedRegulation.id !== 17 && <footer className="flex flex-col gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between"><p className="text-xs leading-5 text-muted-foreground">Meaning → applicability → rule → example → source. Always conclude provision-by-provision.</p><div className="flex gap-2">{selectedDetail.related.slice(0,3).map((id)=>{const reg=regulations.find((item)=>item.id===id);return reg?<Button key={id} size="sm" variant="outline" onClick={()=>openRegulation(reg)}>{reg.short}<ChevronRight /></Button>:null})}</div></footer>}
+          </>}
         </div>
       </div>
     </div>}
