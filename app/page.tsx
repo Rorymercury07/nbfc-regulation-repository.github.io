@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { AlertTriangle, ArrowRight, ArrowUpRight, BadgeIndianRupee, BookOpen, CalendarDays, CheckCircle2, ChevronRight, Clock3, Compass, FileText, GraduationCap, Landmark, Network, Route, Scale, Search, ShieldCheck } from 'lucide-react';
+import { AlertTriangle, ArrowRight, ArrowUpRight, BadgeIndianRupee, BookOpen, CalendarDays, CheckCircle2, ChevronRight, Clock3, Compass, FileText, GraduationCap, Landmark, Network, Route, Scale, Search, ShieldCheck, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -400,6 +400,207 @@ const learnGlossary = [
   ['NBFC', 'A company whose principal business is a regulated financial activity, but which is not a bank.'], ['CoR', 'The RBI Certificate of Registration authorising the company to carry on the permitted NBFC business.'], ['NOF', 'Net Owned Fund—the regulatory measure of owned financial strength used for entry and other requirements.'], ['SBR', 'Scale Based Regulation, which places NBFCs in Base, Middle, Upper or Top Layer.'], ['CRAR', 'Eligible regulatory capital divided by risk-weighted assets.'], ['RWA', 'Assets and exposures adjusted by regulatory risk weights.'], ['KFS', 'Key Facts Statement summarising material loan terms, APR and charges.'], ['APR', 'Annual Percentage Rate—a standardised annual measure of the borrower’s credit cost.'], ['Conditions precedent', 'The documents, approvals or other steps that must be completed before the lender is required to disburse.'], ['Covenant', 'A continuing promise to do something, provide information or avoid a specified action while the loan remains outstanding.'], ['Event of default', 'A defined contractual trigger—such as non-payment or a serious breach—that may allow the lender to use agreed remedies.'], ['Acceleration', 'Making the full outstanding debt immediately due after a valid contractual default and the required process.'], ['Loan recall', 'A formal demand for repayment of the outstanding facility, made under the agreement and applicable law.'], ['Information Utility', 'An IBC-regulated system that receives, stores and authenticates prescribed financial information; NeSL operates an IU in India.'], ['CDD', 'Customer Due Diligence: identifying, verifying and understanding the customer and relationship.'], ['PEP', 'A Politically Exposed Person, requiring the applicable enhanced risk controls.'], ['CKYCR', 'The Central KYC Records Registry used to store and retrieve KYC records.'], ['CIC', 'Depending on context, a Credit Information Company or a Core Investment Company. Always check the surrounding rule.'], ['DPD', 'Days Past Due—the number of days a payment remains overdue.'], ['NPA', 'A Non-Performing Asset classified under the applicable RBI overdue and other triggers.'], ['LSP', 'A Lending Service Provider supporting one or more functions for a regulated digital lender.'], ['DLA', 'A Digital Lending App through which parts of the lending journey are delivered.'], ['DLG', 'A permitted Default Loss Guarantee subject to provider, cap, form, invocation and disclosure rules.'], ['FIU-IND', 'The Financial Intelligence Unit—India, which receives prescribed AML reports.'], ['CRO', 'Chief Risk Officer, responsible for independent risk oversight where required.'], ['CCO', 'Chief Compliance Officer, leading the independent compliance function where required.'], ['IO', 'Internal Ombudsman—the independent reviewer inside an eligible NBFC for complaints proposed to be rejected wholly or partly.'], ['RBIA', 'Risk-Based Internal Audit—an audit approach that gives more attention to areas carrying greater risk.'], ['ACB', 'Audit Committee of the Board, which oversees financial reporting, audit and related control matters.'], ['CIMS', 'RBI’s Centralised Information Management System, used for prescribed regulatory submissions.'], ['EWS', 'Early Warning Signals—indicators that help a covered NBFC detect possible fraud or deterioration early.'], ['CFSS', 'Core Financial Services Solution—the integrated operational system required for entities within the specific supervisory chapter.'],
 ] as const;
 
+type PersonnelLayer = 'BL' | 'ML' | 'UL';
+type PersonnelRequirement = {
+  role: string;
+  purpose: string;
+  composition: string;
+  source: string;
+  clause: string;
+  evidence: string;
+  layer: Record<PersonnelLayer, { label: 'Required' | 'Conditional' | 'Not layer-mandated'; detail: string }>;
+};
+
+const personnelRequirements: PersonnelRequirement[] = [
+  {
+    role: 'Board with relevant NBFC experience',
+    purpose: 'The Board remains responsible for the institution. RBI requires at least one director who has actually worked in a bank or an NBFC.',
+    composition: 'At least one director with relevant bank or NBFC work experience. The complete Board size, woman-director and independent-director requirements must also be checked under the Companies Act and, if listed, SEBI rules.',
+    source: 'Reserve Bank of India (Non-Banking Financial Companies – Governance) Directions, 2025',
+    clause: 'Paragraph 8; paragraph 41 adds the UL skills-mix rule',
+    evidence: 'Director profile, due-diligence file, Board-skills matrix and minutes recording the composition review.',
+    layer: {
+      BL: { label: 'Required', detail: 'At least one director must have relevant experience of working in a bank or NBFC.' },
+      ML: { label: 'Required', detail: 'The BL rule continues. Directors must also pass the RBI fit-and-proper process at appointment and continuously.' },
+      UL: { label: 'Required', detail: 'All ML duties continue. The Board must also contain an appropriate mix of education and experience, with expertise matched to the business.' },
+    },
+  },
+  {
+    role: 'Risk Management Committee (RMC)',
+    purpose: 'Looks across the NBFC’s major risks—including liquidity risk—and reports the overall risk position to the Board.',
+    composition: 'RBI permits the RMC to sit at Board level or executive level. The Direction does not prescribe a universal minimum headcount in paragraph 9; the NBFC should document membership, chair, quorum, reporting line and meeting frequency.',
+    source: 'Reserve Bank of India (Non-Banking Financial Companies – Governance) Directions, 2025',
+    clause: 'Paragraph 9',
+    evidence: 'Board-approved charter, member list, meeting calendar, risk reports and escalation minutes.',
+    layer: {
+      BL: { label: 'Required', detail: 'Required for covered BL entities; it may be a Board or executive committee.' },
+      ML: { label: 'Required', detail: 'Required, together with the enhanced ML governance framework and Board risk reviews.' },
+      UL: { label: 'Required', detail: 'Required and expected to operate within the more complex UL governance and risk structure.' },
+    },
+  },
+  {
+    role: 'Audit Committee of the Board (ACB)',
+    purpose: 'Oversees audit, financial reporting and control assurance, including the information-systems audit obligation specified by the Governance Direction.',
+    composition: 'At least three members of the Board. Where Section 177 of the Companies Act applies, the committee constituted under that section is used and its composition, powers and duties also govern.',
+    source: 'Reserve Bank of India (Non-Banking Financial Companies – Governance) Directions, 2025',
+    clause: 'Paragraph 17; Companies Act, 2013, section 177',
+    evidence: 'Board resolution, committee charter, member independence records, minutes and audit follow-up tracker.',
+    layer: {
+      BL: { label: 'Not layer-mandated', detail: 'The RBI Governance Direction does not impose paragraph 17 on ordinary BL entities. The Companies Act may still independently require an Audit Committee.' },
+      ML: { label: 'Required', detail: 'At least three Board members, with the Companies Act composition applied where relevant.' },
+      UL: { label: 'Required', detail: 'The same minimum applies, alongside UL Board competency and listed-company overlays.' },
+    },
+  },
+  {
+    role: 'Nomination and Remuneration Committee (NRC)',
+    purpose: 'Tests whether directors remain fit and proper and oversees nomination, remuneration and the risk alignment of senior pay.',
+    composition: 'Use the constitution required by Section 178 of the Companies Act. For covered public companies this generally means three or more non-executive directors, with at least half independent. A Government-owned NBFC forms the specified Nomination Committee instead.',
+    source: 'Reserve Bank of India (Non-Banking Financial Companies – Governance) Directions, 2025',
+    clause: 'Paragraphs 13, 18 and 29–31; Companies Act, 2013, section 178',
+    evidence: 'Committee charter, fit-and-proper scrutiny, annual director declarations, compensation policy and meeting minutes.',
+    layer: {
+      BL: { label: 'Not layer-mandated', detail: 'Not imposed on an ordinary BL entity by paragraph 18; check the Companies Act separately.' },
+      ML: { label: 'Required', detail: 'Required. It scrutinises director declarations and oversees the compensation framework.' },
+      UL: { label: 'Required', detail: 'Required, with the same ML duties and the additional UL Board-quality expectations.' },
+    },
+  },
+  {
+    role: 'Chief Compliance Officer (CCO)',
+    purpose: 'Leads an independent compliance function, maps new rules, tests controls, reports failures and acts as the RBI contact for compliance matters.',
+    composition: 'One sufficiently senior CCO, selected through a Board/ACB process. Minimum tenure is three years (relaxable by one year in exceptional cases). The role must be independent of business and cannot be dual-hatted with a conflicting function.',
+    source: 'Reserve Bank of India (Non-Banking Financial Companies – Compliance Function) Directions, 2026',
+    clause: 'Paragraphs 3, 18–31',
+    evidence: 'Appointment resolution, fit-and-proper certificate, RBI prior intimation, job description, reporting line, appraisal and quarterly one-to-one Board/ACB records where applicable.',
+    layer: {
+      BL: { label: 'Not layer-mandated', detail: 'The 2026 Compliance Function Direction applies to ML and UL, not BL. A BL NBFC still needs named owners for every law it must follow.' },
+      ML: { label: 'Required', detail: 'Required. The CCO may sit up to three levels below the CEO; all other independence and tenure conditions apply.' },
+      UL: { label: 'Required', detail: 'Required. The CCO must ordinarily be no more than two levels below the CEO and have direct access to the CEO and/or Board/ACB.' },
+    },
+  },
+  {
+    role: 'Chief Risk Officer (CRO)',
+    purpose: 'Provides independent risk oversight and vets every credit product for inherent and control risk without becoming the business owner.',
+    composition: 'One senior, professionally qualified/experienced CRO for an NBFC with assets above ₹5,000 crore. The CRO has a fixed Board-approved tenure, no business targets, no business reporting line and no other responsibility.',
+    source: 'Reserve Bank of India (Non-Banking Financial Companies – Governance) Directions, 2025',
+    clause: 'Paragraphs 19–24',
+    evidence: 'Asset-threshold assessment, Board appointment, fixed-tenure letter, reporting map, product-vetting records and any RBI/stock-exchange change report.',
+    layer: {
+      BL: { label: 'Not layer-mandated', detail: 'The CRO chapter is an ML/UL chapter. A BL risk head may be sensible, but it is not the paragraph 19 CRO mandate.' },
+      ML: { label: 'Conditional', detail: 'Mandatory only when asset size is more than ₹5,000 crore.' },
+      UL: { label: 'Required', detail: 'UL entities exceed the current ₹5,000 crore trigger; the independent CRO requirements therefore apply.' },
+    },
+  },
+  {
+    role: 'KYC Designated Director and Principal Officer',
+    purpose: 'The Designated Director owns overall PMLA/PML Rules compliance at Board level. The Principal Officer monitors transactions and makes prescribed reports to FIU-IND.',
+    composition: 'Two distinct appointments: a Board-nominated Designated Director (MD or whole-time director duly authorised) and a management-level Principal Officer. The Principal Officer cannot also be the Designated Director.',
+    source: 'Reserve Bank of India (Non-Banking Financial Companies – Know Your Customer) Directions, 2025',
+    clause: 'Paragraphs 14–15',
+    evidence: 'Board nomination, appointment letters, RBI/FIU-IND communication, reporting access and transaction-monitoring records.',
+    layer: {
+      BL: { label: 'Required', detail: 'Required where the KYC Direction applies; this is not relaxed merely because the NBFC is in BL.' },
+      ML: { label: 'Required', detail: 'Required, in addition to the CCO. The AML reporting role and the general compliance role should not be confused.' },
+      UL: { label: 'Required', detail: 'Required, with the same separation between Board-level ownership and operational AML reporting.' },
+    },
+  },
+  {
+    role: 'Head of Internal Audit (HIA)',
+    purpose: 'Leads independent, risk-based testing of whether governance, risk and operational controls are properly designed and actually working.',
+    composition: 'A senior executive able to exercise independent judgement. The HIA should ordinarily have a reasonably long tenure, preferably at least three years, and report directly to the Board/ACB/MD & CEO/WTD under the safeguards in the Direction.',
+    source: 'Reserve Bank of India (Non-Banking Financial Companies – Internal Audit Function) Directions, 2026',
+    clause: 'Paragraphs 3 and 40–42',
+    evidence: 'Applicability calculation, appointment letter, audit charter, reporting line, risk-based plan and issue-closure records.',
+    layer: {
+      BL: { label: 'Conditional', detail: 'Applies to every deposit-taking NBFC and to a non-deposit taking NBFC with assets of ₹5,000 crore or more. A smaller BL entity may fall outside this Direction.' },
+      ML: { label: 'Conditional', detail: 'Deposit-taking ML entities are covered. Non-deposit taking ML entities are covered on reaching ₹5,000 crore.' },
+      UL: { label: 'Required', detail: 'UL entities exceed the non-deposit taking asset trigger, so the Direction applies.' },
+    },
+  },
+  {
+    role: 'Internal Ombudsman (IO) and Deputy IO',
+    purpose: 'Provides an independent final review inside the NBFC before a customer complaint is rejected wholly or partly.',
+    composition: 'At least one IO for a covered NBFC. The Board decides annually whether more IOs or Deputy IOs are needed. The IO needs at least seven years’ relevant experience at GM-equivalent rank; a Deputy IO needs at least five years at DGM-equivalent rank. Independence and fixed-tenure conditions apply.',
+    source: 'Reserve Bank of India (Non-Banking Financial Companies – Internal Ombudsman) Directions, 2026',
+    clause: 'Clauses 3 and 5–8',
+    evidence: 'Threshold test, Board appointment, independence declaration, annual capacity review, complaint-escalation trail and IO decision records.',
+    layer: {
+      BL: { label: 'Conditional', detail: 'Applies to an NBFC-D with 10 or more branches, or an NBFC-ND with assets of ₹5,000 crore or more and a public customer interface, subject to category exclusions.' },
+      ML: { label: 'Conditional', detail: 'Layer alone is not enough. Apply the deposit/branch test or the ₹5,000 crore plus public-interface test and check exclusions.' },
+      UL: { label: 'Conditional', detail: 'A non-deposit taking UL entity normally meets the size limb, but still needs a public customer interface and must not fall within an excluded category.' },
+    },
+  },
+  {
+    role: 'IT Strategy Committee, Information Security Committee and CISO',
+    purpose: 'Creates Board-level technology oversight and a separate security chain that can challenge the IT operating function.',
+    composition: 'For ML/UL (excluding CICs): the Board-level ITSC has at least three directors; its chair is an independent director with at least seven years’ qualifying IT/cyber experience. The ISC includes the CISO and business/IT representatives and is headed from risk. The CISO is a senior executive, preferably GM-equivalent, separate from the Head of IT and without business targets.',
+    source: 'Reserve Bank of India (Non-Banking Financial Companies – Cybersecurity, Technology: Risk, Resilience and Assurance Framework) Directions, 2026',
+    clause: 'Paragraphs 3(4), 70–82',
+    evidence: 'Committee constitutions, chair expertise record, quarterly ITSC minutes, CISO appointment and separate reporting line, cyber budget and incident reports.',
+    layer: {
+      BL: { label: 'Not layer-mandated', detail: 'BL follows the separate technology chapter based on whether assets are below or at least ₹500 crore. The ML/UL ITSC and CISO provisions are not automatically imported.' },
+      ML: { label: 'Required', detail: 'Required under Chapter V for ML entities, except CICs.' },
+      UL: { label: 'Required', detail: 'Required under Chapter V for UL entities, except CICs.' },
+    },
+  },
+  {
+    role: 'Asset Liability Management Committee (ALCO)',
+    purpose: 'Manages funding and liquidity mismatches so that the NBFC can meet obligations when due, including under stress.',
+    composition: 'Headed by the CEO/MD or Executive Director. It includes the heads of Investment, Credit and Strategy, Treasury, Risk Management and Economic Research, plus other suitable members.',
+    source: 'Reserve Bank of India (Non-Banking Financial Companies – Asset Liability Management) Directions, 2025',
+    clause: 'Paragraphs 3–5, 8 and 17; Chapter II threshold',
+    evidence: 'Applicability note, Board constitution, ALCO charter, gap reports, limit approvals, stress results and minutes.',
+    layer: {
+      BL: { label: 'Conditional', detail: 'For covered entity types, Chapter II applies from ₹100 crore assets. Certain BL entities without public funds are excluded by paragraph 5.' },
+      ML: { label: 'Required', detail: 'Required for covered ML entity types; category exclusions must still be checked.' },
+      UL: { label: 'Required', detail: 'Required for covered UL entity types as part of the full liquidity-risk framework.' },
+    },
+  },
+  {
+    role: 'Statutory Central Auditor / Statutory Auditor',
+    purpose: 'Provides the legally independent external audit and the RBI-specific assurance required for the NBFC’s financial statements and reporting.',
+    composition: 'The number and firm eligibility depend on asset size, branches and joint-audit thresholds. The Board/ACB owns the appointment and independence process; it is not a management role.',
+    source: 'Reserve Bank of India (Non-Banking Financial Companies – Statutory Audit) Directions, 2026',
+    clause: 'Paragraphs 3, 7 and the appointment provisions in Chapter III',
+    evidence: 'Eligibility assessment, independence declaration, ACB/Board recommendation, shareholder approval where required, engagement terms and rotation tracker.',
+    layer: {
+      BL: { label: 'Required', detail: 'Every NBFC needs a statutory audit, but a non-deposit taking NBFC below ₹1,000 crore may continue its existing appointment procedure under paragraph 3.' },
+      ML: { label: 'Required', detail: 'The 2026 appointment, independence and rotation framework applies.' },
+      UL: { label: 'Required', detail: 'The full framework applies, together with listed-company audit overlays where relevant.' },
+    },
+  },
+  {
+    role: 'Nodal Grievance Redressal Officer for digital lending',
+    purpose: 'Gives borrowers a named person to contact when a complaint concerns a digital loan, lending app or Lending Service Provider.',
+    composition: 'The NBFC—and each LSP that interfaces with borrowers—designates a nodal grievance officer. Contact details must appear on the relevant websites, app and Key Facts Statement.',
+    source: 'Reserve Bank of India (Non-Banking Financial Companies – Credit Facilities) Directions, 2025',
+    clause: 'Paragraph 12 of the Digital Lending chapter',
+    evidence: 'Designation letter, public contact details, complaint register, response trail and LSP oversight records.',
+    layer: {
+      BL: { label: 'Conditional', detail: 'Required when the BL NBFC undertakes covered digital lending; layer does not remove the product rule.' },
+      ML: { label: 'Conditional', detail: 'Required when the ML NBFC undertakes covered digital lending.' },
+      UL: { label: 'Conditional', detail: 'Required when the UL NBFC undertakes covered digital lending.' },
+    },
+  },
+];
+
+const personnelLayerSummary: Record<PersonnelLayer, { title: string; plain: string; focus: string[] }> = {
+  BL: {
+    title: 'Base Layer: a lean structure, but not a no-governance structure',
+    plain: 'BL has the lightest SBR overlay. It still needs a competent Board, an RMC and the universal statutory owners relevant to its activities. Extra officers switch on when deposit status, assets, customer interface or a product crosses a trigger.',
+    focus: ['One director with bank/NBFC experience', 'Board or executive-level RMC', 'Separate KYC Designated Director and Principal Officer', 'Check ₹100 crore, ₹500 crore, ₹1,000 crore and ₹5,000 crore triggers'],
+  },
+  ML: {
+    title: 'Middle Layer: independent control functions become formal',
+    plain: 'ML keeps every applicable BL duty and adds a formal Audit Committee, NRC, fit-and-proper process and independent Compliance function. CRO, Internal Audit and Internal Ombudsman still depend on their own thresholds.',
+    focus: ['Audit Committee of at least three Board members', 'NRC using the Section 178 composition', 'Independent CCO and Compliance function', 'ITSC/ISC/CISO for non-CICs; CRO above ₹5,000 crore'],
+  },
+  UL: {
+    title: 'Upper Layer: the full governance and control architecture',
+    plain: 'UL inherits ML and adds an explicit Board skills-mix expectation and early reporting when an independent director leaves. Size generally activates CRO and Internal Audit, while Internal Ombudsman still needs the customer-interface test.',
+    focus: ['Full ML committee and officer structure', 'Board competency matched to the business', 'CRO, CCO, HIA and technology-security leadership', 'Independent-director exit reporting and listed-company readiness'],
+  },
+};
+
 const caseLabSteps = [
   { title: 'Receive the CoR', prompt: 'Confirm the company’s category, permitted business, NOF and Base Layer profile.', ids: [1] },
   { title: 'Raise funding', prompt: 'Decide the mix of shareholder capital and permitted borrowing; map cost, maturity and liquidity.', ids: [2, 6] },
@@ -447,6 +648,7 @@ export default function Home() {
   const [activeLearningModule, setActiveLearningModule] = useState(0);
   const [activeCaseStep, setActiveCaseStep] = useState(0);
   const [learningGlossaryTerm, setLearningGlossaryTerm] = useState<string | null>('NBFC');
+  const [personnelLayer, setPersonnelLayer] = useState<PersonnelLayer>('BL');
   const foundationDrawerRef = useRef<HTMLDivElement>(null);
   const attachFoundationDrawer = useCallback((node: HTMLDivElement | null) => {
     foundationDrawerRef.current = node;
@@ -926,9 +1128,10 @@ export default function Home() {
 
         <section aria-label="Key thresholds" className={`mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4 ${primaryArea === 'regulations' ? '' : 'hidden'}`}>{thresholds.map((item) => <button type="button" key={item.label} onClick={() => setSelectedThreshold(item)} aria-label={`Explain ${item.value} ${item.label}, source clauses and layer applicability`} className={`threshold-card tone-${item.tone} group rounded-2xl border bg-card p-4 text-left transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:p-5`}><p className="text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">{item.value}</p><div className="mt-3 flex items-end justify-between gap-3"><div><p className="text-sm font-semibold">{item.label}</p><p className="mt-0.5 text-xs text-muted-foreground">{item.note}</p></div><span className="grid size-8 place-items-center rounded-full bg-secondary text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground"><ArrowUpRight className="size-4" /></span></div><p className="mt-3 border-t border-border/70 pt-3 text-xs font-medium text-primary">Open source, clauses and BL / ML / UL view</p></button>)}</section>
 
-        <Tabs id="workbench" value={workspaceTab} onValueChange={(value) => { setWorkspaceTab(value); setPrimaryArea(value === 'regulations' ? 'regulations' : 'learn'); }} className={`mt-8 scroll-mt-20 ${primaryArea === 'learn' || primaryArea === 'regulations' ? '' : 'hidden'}`}><div className="flex flex-col gap-4 border-b border-border pb-3"><div><p className="eyebrow">{primaryArea === 'regulations' ? 'Regulatory law library' : 'Learn NBFCs'}</p><h2 className="mt-1 text-2xl font-semibold tracking-tight">{primaryArea === 'regulations' ? 'Learn how to find, read and apply the governing rule' : 'From first question to practical understanding'}</h2></div><TabsList variant="line" className="h-auto w-full justify-start overflow-x-auto"><TabsTrigger value="start" className={primaryArea === 'learn' ? '' : 'hidden'}><GraduationCap />Start here</TabsTrigger><TabsTrigger value="learn" className={primaryArea === 'learn' ? '' : 'hidden'}><Compass />Learning journey</TabsTrigger><TabsTrigger value="decision" className={primaryArea === 'learn' ? '' : 'hidden'}><BookOpen />Explore concepts</TabsTrigger><TabsTrigger value="examples" className={primaryArea === 'learn' ? '' : 'hidden'}><BadgeIndianRupee />Case lab</TabsTrigger><TabsTrigger value="history" className={primaryArea === 'learn' ? '' : 'hidden'}><FileText />Glossary</TabsTrigger><TabsTrigger value="regulations" className={primaryArea === 'regulations' ? '' : 'hidden'}><Scale />Regulations course & library</TabsTrigger></TabsList></div>
+        <Tabs id="workbench" value={workspaceTab} onValueChange={(value) => { setWorkspaceTab(value); setPrimaryArea(value === 'regulations' ? 'regulations' : 'learn'); }} className={`mt-8 scroll-mt-20 ${primaryArea === 'learn' || primaryArea === 'regulations' ? '' : 'hidden'}`}><div className="flex flex-col gap-4 border-b border-border pb-3"><div><p className="eyebrow">{primaryArea === 'regulations' ? 'Regulatory law library' : 'Learn NBFCs'}</p><h2 className="mt-1 text-2xl font-semibold tracking-tight">{primaryArea === 'regulations' ? 'Learn how to find, read and apply the governing rule' : 'From first question to practical understanding'}</h2></div><TabsList variant="line" className="h-auto w-full justify-start overflow-x-auto"><TabsTrigger value="start" className={primaryArea === 'learn' ? '' : 'hidden'}><GraduationCap />Start here</TabsTrigger><TabsTrigger value="learn" className={primaryArea === 'learn' ? '' : 'hidden'}><Compass />Learning journey</TabsTrigger><TabsTrigger value="decision" className={primaryArea === 'learn' ? '' : 'hidden'}><BookOpen />Explore concepts</TabsTrigger><TabsTrigger value="people" className={primaryArea === 'learn' ? '' : 'hidden'}><Users />People & governance</TabsTrigger><TabsTrigger value="examples" className={primaryArea === 'learn' ? '' : 'hidden'}><BadgeIndianRupee />Case lab</TabsTrigger><TabsTrigger value="history" className={primaryArea === 'learn' ? '' : 'hidden'}><FileText />Glossary</TabsTrigger><TabsTrigger value="regulations" className={primaryArea === 'regulations' ? '' : 'hidden'}><Scale />Regulations course & library</TabsTrigger></TabsList></div>
           <TabsContent value="regulations" className="pt-5"><RegulationsWorkbench regulations={regulations} details={regulationDetails} onOpenRegulation={(regulation) => setSelected(regulation)} /></TabsContent>
           <TabsContent value="history" className="pt-5">{(() => { const entry = learnGlossary.find(([term]) => term === learningGlossaryTerm); return <div className="grid gap-5 lg:grid-cols-[1fr_.85fr]"><section className="rounded-3xl border border-border bg-card p-5 sm:p-8"><p className="eyebrow">Plain-English glossary</p><h3 className="mt-1 text-2xl font-semibold">Decode the language of NBFCs</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Select any term. The definition appears beside the list without taking you away from the learning journey.</p><div className="mt-6 flex flex-wrap gap-2">{learnGlossary.map(([term]) => <button type="button" key={term} aria-pressed={learningGlossaryTerm === term} onClick={() => setLearningGlossaryTerm(term)} className={`rounded-full border px-3 py-2 text-sm font-semibold ${learningGlossaryTerm === term ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-background hover:border-primary/30 hover:text-primary'}`}>{term}</button>)}</div></section><aside className="rounded-3xl border border-primary/20 bg-[#07182b] p-6 text-white sm:p-8"><p className="text-xs font-semibold uppercase tracking-[.16em] text-cyan-200">Selected term</p><h3 className="mt-4 text-4xl font-semibold tracking-[-.04em]">{entry?.[0] ?? 'Choose a term'}</h3><p className="mt-5 text-lg leading-8 text-slate-200">{entry?.[1] ?? 'Select a term to see a plain-English explanation.'}</p><div className="mt-7 border-t border-white/10 pt-5"><button type="button" onClick={() => { const moduleIndex = learningModules.findIndex((module) => module.terms.includes(entry?.[0] ?? '')); if (moduleIndex >= 0) { setActiveLearningModule(moduleIndex); setWorkspaceTab('learn'); } }} className="inline-flex items-center gap-2 text-sm font-semibold text-cyan-200 hover:underline">See this term in the learning journey<ArrowRight /></button></div></aside></div>; })()}</TabsContent>
+          <TabsContent value="people" className="pt-5"><div className="overflow-hidden rounded-3xl border border-border bg-card"><header className="bg-[#07182b] p-6 text-white sm:p-8"><div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between"><div className="max-w-3xl"><p className="text-xs font-semibold uppercase tracking-[.18em] text-cyan-200">People & governance map</p><h3 className="mt-3 text-3xl font-semibold tracking-[-.04em] sm:text-4xl">Who must sit where—and when?</h3><p className="mt-4 text-base leading-7 text-slate-300">Choose a layer to see the RBI-required Board roles, committees and control officers in plain English. “Conditional” means the role switches on only after a separate test such as asset size, deposit status, customer interface or digital activity.</p></div><div className="flex w-fit rounded-xl border border-white/15 bg-white/[.06] p-1" aria-label="Choose SBR layer">{(['BL','ML','UL'] as PersonnelLayer[]).map((item) => <button key={item} type="button" aria-pressed={personnelLayer === item} onClick={() => setPersonnelLayer(item)} className={`rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors ${personnelLayer === item ? 'bg-cyan-200 text-slate-950' : 'text-slate-200 hover:bg-white/10 hover:text-white'}`}>{item}</button>)}</div></div><div className="mt-7 grid gap-3 border-t border-white/10 pt-6 sm:grid-cols-2 lg:grid-cols-4">{personnelLayerSummary[personnelLayer].focus.map((item) => <div key={item} className="flex gap-2 text-sm leading-6 text-slate-200"><CheckCircle2 className="mt-1 size-4 shrink-0 text-cyan-200" />{item}</div>)}</div></header><div className="p-5 sm:p-8"><section className="border-b border-border pb-7"><div className="flex flex-wrap items-center gap-3"><Badge className="bg-primary">{personnelLayer}</Badge><h4 className="text-2xl font-semibold tracking-tight">{personnelLayerSummary[personnelLayer].title}</h4></div><p className="mt-3 max-w-5xl text-base leading-7 text-foreground/80">{personnelLayerSummary[personnelLayer].plain}</p><div className="mt-5 border-l-4 border-amber-400 bg-amber-50 px-5 py-4 text-sm leading-6 text-amber-950"><span className="font-semibold">Read this before using the list.</span> SBR layer is only the first filter. Board size, independent directors, woman director, MD/CEO/WTD, CFO and Company Secretary can also arise under the Companies Act, SEBI listing rules and the NBFC’s own constitution. RBI duties may also turn on category, deposits, assets, public funds, customer interface and product. This section maps the RBI NBFC overlay; it does not replace the separate corporate-law check.</div></section><section className="mt-7"><div className="hidden grid-cols-[220px_140px_minmax(0,1fr)_minmax(0,1fr)] gap-5 border-b border-border px-3 pb-3 text-xs font-semibold uppercase tracking-[.12em] text-muted-foreground lg:grid"><span>Role or committee</span><span>{personnelLayer} position</span><span>Composition and purpose</span><span>Regulatory proof</span></div><div className="divide-y divide-border">{personnelRequirements.map((item) => { const position = item.layer[personnelLayer]; const tone = position.label === 'Required' ? 'border-emerald-200 bg-emerald-50 text-emerald-900' : position.label === 'Conditional' ? 'border-amber-200 bg-amber-50 text-amber-900' : 'border-slate-200 bg-slate-50 text-slate-700'; return <article key={item.role} className="grid gap-5 px-1 py-7 sm:px-3 lg:grid-cols-[220px_140px_minmax(0,1fr)_minmax(0,1fr)]"><div><h5 className="text-lg font-semibold leading-6">{item.role}</h5><p className="mt-2 text-sm leading-6 text-muted-foreground">{item.purpose}</p></div><div><span className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${tone}`}>{position.label}</span><p className="mt-3 text-sm leading-6 text-foreground/80">{position.detail}</p></div><div><p className="text-xs font-semibold uppercase tracking-[.12em] text-primary">Who and how many?</p><p className="mt-2 text-sm leading-7 text-foreground/85">{item.composition}</p></div><div><p className="text-sm font-semibold leading-6">{item.source}</p><p className="mt-2 text-sm font-medium leading-6 text-primary">{item.clause}</p><details className="mt-3 rounded-xl border border-border bg-secondary/25 px-4 py-3"><summary className="cursor-pointer text-sm font-semibold">Evidence to keep</summary><p className="mt-2 text-sm leading-6 text-muted-foreground">{item.evidence}</p></details></div></article>; })}</div></section><section className="mt-8 grid gap-4 border-t border-border pt-7 lg:grid-cols-3">{(['BL','ML','UL'] as PersonnelLayer[]).map((item) => <button type="button" key={item} onClick={() => { setPersonnelLayer(item); document.getElementById('workbench')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className={`rounded-2xl border p-5 text-left transition-colors ${personnelLayer === item ? 'border-primary bg-primary/[.045]' : 'border-border hover:border-primary/30 hover:bg-secondary/25'}`}><div className="flex items-center justify-between"><span className="font-mono text-sm font-semibold text-primary">{item}</span>{personnelLayer === item && <CheckCircle2 className="size-5 text-primary" />}</div><p className="mt-3 font-semibold leading-6">{personnelLayerSummary[item].title}</p><p className="mt-2 text-sm leading-6 text-muted-foreground">{personnelLayerSummary[item].plain}</p></button>)}</section><footer className="mt-7 rounded-2xl bg-secondary/35 p-5 text-sm leading-7 text-foreground/80"><span className="font-semibold text-foreground">Practical order:</span> first identify the exact NBFC type and layer; then test deposits, assets, public funds, customer interface and products; next apply the Companies Act and listing overlay; finally record each appointment, reporting line, committee charter, meeting frequency and evidence owner in one governance register.</footer></div></div></TabsContent>
           <TabsContent value="start" className="pt-5"><div className="overflow-hidden rounded-3xl border border-slate-800 bg-[#07182b] text-white shadow-[0_28px_80px_-48px_rgba(2,12,27,.9)]"><div className="grid gap-8 p-6 sm:p-9 lg:grid-cols-[1.15fr_.85fr] lg:items-end"><div><p className="text-xs font-semibold uppercase tracking-[.18em] text-cyan-200">Start from zero</p><h3 className="mt-3 max-w-2xl text-3xl font-semibold tracking-[-.04em] sm:text-4xl">How does an NBFC actually work?</h3><p className="mt-4 max-w-2xl text-base leading-7 text-slate-300">You do not need to know RBI regulations yet. Begin with one simple question and follow the institution from registration and lending through complaints, compliance, audit, fraud, cybersecurity and RBI supervision.</p><div className="mt-6 flex flex-wrap items-center gap-3"><Button className="bg-cyan-200 text-slate-950 hover:bg-cyan-100" onClick={() => { setActiveLearningModule(0); setWorkspaceTab('learn'); document.getElementById('workbench')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>Start with: What is an NBFC?<ArrowRight /></Button><span className="text-sm font-medium text-slate-300">{learningModules.length} modules · Beginner → practical understanding</span></div></div><div className="rounded-2xl border border-white/10 bg-white/[.06] p-5"><p className="text-xs font-semibold uppercase tracking-[.14em] text-cyan-200">You will finish able to</p><p className="mt-3 text-2xl font-semibold leading-tight">“Understand how an NBFC works.”</p><ul className="mt-5 space-y-3 text-sm leading-6 text-slate-300">{['Identify category, SBR layer and activity-specific rules','Follow a loan and complaint through their complete lifecycles','Connect business, compliance, audit, fraud, technology and reporting','Know which RBI source to open and what evidence to keep'].map((item) => <li key={item} className="flex gap-3"><CheckCircle2 className="mt-1 size-4 shrink-0 text-cyan-200" />{item}</li>)}</ul></div></div><div className="border-t border-white/10 bg-white/[.035] p-6 sm:p-9"><div className="flex items-end justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-[.16em] text-cyan-200">Your journey</p><h4 className="mt-1 text-xl font-semibold">Six chapters. {learningModules.length} connected questions.</h4></div><button type="button" onClick={() => setWorkspaceTab('decision')} className="hidden text-sm font-semibold text-cyan-200 hover:underline sm:block">View full syllabus →</button></div><div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">{learningPhases.map((phase) => <div key={phase.label} className="rounded-2xl border border-white/10 bg-white/[.04] p-4"><p className="font-semibold text-cyan-100">{phase.label}</p><p className="mt-1 text-xs font-semibold uppercase tracking-[.08em] text-slate-400">{phase.range}</p><p className="mt-3 text-sm leading-6 text-slate-300">{phase.body}</p></div>)}</div><div className="mt-5 flex gap-2 overflow-x-auto pb-2">{learningModules.map((module, index) => <button type="button" key={module.number} title={module.title} onClick={() => { setActiveLearningModule(index); setWorkspaceTab('learn'); }} className="group flex min-w-[150px] items-center gap-3 rounded-xl border border-white/10 bg-white/[.04] px-3 py-3 text-left hover:border-cyan-200/50 hover:bg-cyan-200/10"><span className="grid size-8 shrink-0 place-items-center rounded-lg bg-cyan-200/10 font-mono text-xs font-semibold text-cyan-100">{String(module.number).padStart(2,'0')}</span><span className="text-xs font-semibold leading-4 text-slate-200 group-hover:text-cyan-100">{module.title}</span></button>)}</div></div></div></TabsContent>
           <TabsContent value="examples" className="pt-5"><div className="grid gap-5 xl:grid-cols-[.75fr_1.25fr]"><aside className="rounded-3xl border border-border bg-card p-5 sm:p-6"><p className="eyebrow">Capstone · Base Layer NBFC-ICC</p><h3 className="mt-1 text-2xl font-semibold">Run an NBFC for a year</h3><p className="mt-3 text-sm leading-6 text-muted-foreground">Move from registration to an RBI question. Every decision connects to a module you have already learned.</p><div className="mt-6 max-h-[640px] space-y-2 overflow-y-auto pr-1">{caseLabSteps.map((step, index) => <button type="button" key={step.title} onClick={() => setActiveCaseStep(index)} className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-colors ${activeCaseStep === index ? 'border-primary bg-primary text-primary-foreground' : 'border-border hover:border-primary/30 hover:bg-secondary/40'}`}><span className={`grid size-8 shrink-0 place-items-center rounded-lg font-mono text-xs font-semibold ${activeCaseStep === index ? 'bg-white/15' : 'bg-primary/10 text-primary'}`}>{String(index + 1).padStart(2,'0')}</span><span className="text-sm font-semibold leading-5">{step.title}</span><ChevronRight className="ml-auto size-4 shrink-0" /></button>)}</div></aside><section className="rounded-3xl border border-border bg-card p-5 sm:p-8"><div className="flex flex-wrap items-center gap-2"><Badge className="bg-primary">Year-one decision {String(activeCaseStep + 1).padStart(2,'0')}</Badge><Badge variant="outline">NBFC-ICC · BL · Non-deposit taking</Badge></div><h3 className="mt-5 text-3xl font-semibold tracking-[-.035em]">{caseLabSteps[activeCaseStep].title}</h3><p className="mt-4 text-lg leading-8 text-foreground/85">{caseLabSteps[activeCaseStep].prompt}</p><div className="mt-7 grid gap-4 sm:grid-cols-3">{[['Ask','What fact or event activates the rule?'],['Decide','Which function owns the action and approval?'],['Prove','What document, system record or report shows compliance?']].map(([title,body], index) => <div key={title} className="rounded-2xl border border-border bg-secondary/25 p-4"><span className="font-mono text-xs font-semibold text-primary">0{index + 1}</span><p className="mt-2 font-semibold">{title}</p><p className="mt-1 text-sm leading-6 text-muted-foreground">{body}</p></div>)}</div><div className="mt-7 rounded-2xl border border-blue-200 bg-blue-50 p-5"><p className="eyebrow text-blue-800">Open the governing material</p><p className="mt-2 text-sm leading-6 text-blue-950">Use the detailed notes to test applicability, conditions, timelines and evidence for this decision.</p><div className="mt-4 flex flex-wrap gap-2">{caseLabSteps[activeCaseStep].ids.map((id) => { const reg = regulations.find((item) => item.id === id); return reg ? <Button key={id} variant="outline" className="border-blue-300 bg-white text-blue-950" onClick={() => setSelected(reg)}>{reg.short}<ArrowUpRight /></Button> : null; })}</div></div><div className="mt-7 flex items-center justify-between border-t border-border pt-5"><Button variant="outline" disabled={activeCaseStep === 0} onClick={() => setActiveCaseStep((current) => Math.max(0, current - 1))}>Previous decision</Button>{activeCaseStep < caseLabSteps.length - 1 ? <Button onClick={() => setActiveCaseStep((current) => Math.min(caseLabSteps.length - 1, current + 1))}>What happens next?<ArrowRight /></Button> : <div className="rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-900">You completed the year ✓</div>}</div></section></div></TabsContent>
           <TabsContent value="map" className="pt-5"><div className="rounded-3xl border border-border bg-card p-5 sm:p-8"><div className="max-w-3xl"><p className="eyebrow">The whole system on one screen</p><h3 className="mt-1 text-2xl font-semibold tracking-tight">NBFC regulatory map</h3><p className="mt-2 text-base leading-7 text-muted-foreground">Start with where the institution is in its lifecycle. Then open the subject—not a circular number.</p></div><div className="mt-7 grid gap-4 xl:grid-cols-4">{regulatoryMap.map((group, index) => <section key={group.stage} className={`rounded-2xl border p-5 ${group.tone}`}><div className="flex items-center justify-between"><span className="font-mono text-xs font-semibold">0{index + 1}</span><ArrowRight className="size-4" /></div><h4 className="mt-4 text-lg font-semibold">{group.stage}</h4><p className="mt-1 text-sm font-semibold leading-5">{group.prompt}</p><p className="mt-2 text-sm leading-6 opacity-80">{group.body}</p><div className="mt-4 flex flex-wrap gap-1.5">{group.ids.slice(0,6).map((id) => { const reg = regulations.find((item) => item.id === id); return reg ? <button type="button" key={id} onClick={() => setSelected(reg)} className="rounded-full border border-current/15 bg-white/70 px-2.5 py-1 text-xs font-semibold hover:bg-white">{reg.short}</button> : null; })}</div></section>)}</div></div></TabsContent>
