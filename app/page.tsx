@@ -13,6 +13,7 @@ import { ResearchPanel } from './research-panel';
 import { LayerPanel } from './layer-panel';
 import { RegulationsWorkbench } from './regulations-workbench';
 import { newRegulations, newRegulationDetails } from './new-regulations';
+import { CsirtFinAdvisory } from './csirt-fin-advisory';
 
 type Regulation = { id: number; title: string; short: string; category: string; layers: string[]; status: 'Core' | 'Specialist' | 'Reference'; updated: string; summary: string; highlights: string[] };
 type RegulationDetail = { applies: string; requirements: string[]; timing: string[]; checks: string[]; related: number[] };
@@ -1082,6 +1083,7 @@ export default function Home() {
               {researchAnswer && <ResearchPanel question={answeredQuestion} answer={researchAnswer} relatedTitle={primaryAnswer?.title} onOpenRelated={primaryAnswer ? () => setSelected(primaryAnswer) : undefined} />}
             </div>
           </div>
+          <div className={primaryArea === 'compliance' ? '' : 'hidden'}><CsirtFinAdvisory /></div>
           <section className={`rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7 ${primaryArea === 'compliance' ? '' : 'hidden'}`}>
             <div className="flex flex-col gap-3 border-b border-border pb-5 sm:flex-row sm:items-start sm:justify-between">
               <div><p className="eyebrow">Your regulatory starting point</p><h2 className="mt-1 text-xl font-semibold tracking-tight">Turn the identity card into a reading order</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">The selections on the right narrow the library. Use this summary to see what the profile changes and which directions to examine first.</p></div>
