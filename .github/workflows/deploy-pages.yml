@@ -40,6 +40,10 @@ jobs:
       - name: Build static website
         run: pnpm build
 
+      - name: Place Vinext assets at the Pages artifact root
+        run: |
+          cp -R "dist/client/${{ github.event.repository.name }}/_next" "dist/client/_next"
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
