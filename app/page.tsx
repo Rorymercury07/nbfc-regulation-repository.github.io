@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { AlertTriangle, ArrowRight, ArrowUpRight, BadgeIndianRupee, BookOpen, CalendarDays, CheckCircle2, ChevronRight, Clock3, Compass, FileText, GraduationCap, Landmark, Network, Route, Scale, Search, ShieldCheck, Users } from 'lucide-react';
+import { AlertTriangle, ArrowDown, ArrowRight, ArrowUpRight, BadgeIndianRupee, BookOpen, Building2, CalendarDays, CheckCircle2, ChevronRight, Clock3, Compass, FileText, GraduationCap, House, Landmark, LibraryBig, Network, Route, Scale, Search, ShieldCheck, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -637,7 +637,7 @@ export default function Home() {
   const [publicFundsStatus, setPublicFundsStatus] = useState('Not specified');
   const [characteristics, setCharacteristics] = useState({ customer: true, digital: false, outsourcing: false });
   const [issueIndex, setIssueIndex] = useState(0);
-  const [primaryArea, setPrimaryArea] = useState<'learn' | 'regulations' | 'compliance' | 'disclaimer' | null>(null);
+  const [primaryArea, setPrimaryArea] = useState<'home' | 'learn' | 'regulations' | 'establish' | 'compliance' | 'research' | 'disclaimer' | null>(null);
   const [workspaceTab, setWorkspaceTab] = useState('start');
   const [answeredQuestion, setAnsweredQuestion] = useState('');
   const [answerIds, setAnswerIds] = useState<number[]>([]);
@@ -802,7 +802,7 @@ export default function Home() {
     if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const selectPrimaryArea = (area: 'learn' | 'regulations' | 'compliance' | 'disclaimer' | null) => {
+  const selectPrimaryArea = (area: 'home' | 'learn' | 'regulations' | 'establish' | 'compliance' | 'research' | 'disclaimer' | null) => {
     setFoundationIndex(null);
     setSelectedThreshold(null);
     setSelected(null);
@@ -831,12 +831,14 @@ export default function Home() {
             <div><p className="text-[15px] font-semibold leading-none tracking-tight">NBFC Regulatory Desk</p><p className="mt-1 text-xs text-muted-foreground">RBI consolidated directions · working index</p></div>
           </button>
           <nav aria-label="Primary product areas" className="flex flex-col gap-2 lg:flex-row lg:items-center">
-            <div className="grid grid-cols-2 gap-1 rounded-xl border border-border bg-secondary/65 p-1 sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-1 rounded-xl border border-border bg-secondary/65 p-1 sm:grid-cols-3 xl:grid-cols-6">
               {([
-                [null, 'Home', Landmark],
-                ['learn', 'Learn NBFCs', GraduationCap],
-                ['regulations', 'Regulations', BookOpen],
+                ['home', 'Home', House],
+                ['learn', 'Understand', GraduationCap],
+                ['regulations', 'Library', LibraryBig],
+                ['establish', 'Establish', Building2],
                 ['compliance', 'Compliance', ShieldCheck],
+                ['research', 'Research', Search],
               ] as const).map(([area, label, Icon]) => (
                 <button
                   key={area}
@@ -856,7 +858,83 @@ export default function Home() {
 
       <div className="mx-auto max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
         {primaryArea === null && (
+          <section className="mx-auto max-w-5xl rounded-[32px] border border-slate-200 bg-white p-4 shadow-[0_26px_80px_-50px_rgba(15,23,42,.35)] sm:p-7 lg:p-9">
+            <div className="flex flex-col items-center px-4 pb-7 pt-3 text-center sm:pb-9">
+              <span className="grid size-11 place-items-center rounded-2xl bg-slate-950 text-white"><Landmark className="size-5" /></span>
+              <h1 className="mt-4 text-2xl font-semibold tracking-[-.03em] text-slate-950 sm:text-3xl">NBFC Regulatory Repository</h1>
+              <p className="mt-2 text-sm font-medium text-slate-500">Understand <span aria-hidden="true">•</span> Research <span aria-hidden="true">•</span> Comply</p>
+              <ArrowDown className="mt-6 size-5 text-slate-400" aria-hidden="true" />
+            </div>
+            <div className="grid gap-3 md:grid-cols-2">
+              {([
+                ['home', 'Home', 'Latest regulatory developments', House],
+                ['learn', 'Understand NBFCs', 'Fundamentals, history and business models', BookOpen],
+                ['regulations', 'Regulatory Library', 'RBI directions and connected laws', LibraryBig],
+                ['establish', 'Establish an NBFC', 'Requirements, registration and PRAVAAH', Building2],
+                ['compliance', 'Compliance & Governance', 'Officers, filings, policies and obligations', ShieldCheck],
+                ['research', 'Research & Resources', 'Search, checklists, comparisons and guides', Search],
+              ] as const).map(([area, title, description, Icon]) => (
+                <button key={area} type="button" onClick={() => selectPrimaryArea(area)} className="group min-h-28 rounded-2xl border border-slate-200 bg-white p-5 text-left transition-all hover:-translate-y-0.5 hover:border-slate-400 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                  <Icon className="size-5 text-slate-600 transition-colors group-hover:text-primary" />
+                  <h2 className="mt-3 text-lg font-semibold text-slate-950 group-hover:text-primary">{title}</h2>
+                  <p className="mt-1 text-sm leading-6 text-slate-500">{description}</p>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {primaryArea === 'home' && (
+          <section className="space-y-6">
+            <div className="rounded-3xl border border-slate-200 bg-[#07182b] p-6 text-white shadow-[0_24px_70px_-42px_rgba(2,12,27,.8)] sm:p-8">
+              <p className="text-xs font-semibold uppercase tracking-[.16em] text-cyan-200">Home</p>
+              <h1 className="mt-3 text-3xl font-semibold tracking-[-.035em] sm:text-4xl">Latest regulatory developments</h1>
+              <p className="mt-3 max-w-3xl text-base leading-7 text-slate-300">Begin with the newest RBI source copies indexed in this repository. Each entry explains the regulatory purpose, applicability and practical compliance consequence.</p>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {newRegulations.slice(0, 6).map((regulation) => (
+                <button key={regulation.id} type="button" onClick={() => { const full = regulations.find((item) => item.id === regulation.id); if (full) setSelected(full); }} className="rounded-2xl border border-border bg-card p-5 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md">
+                  <div className="flex items-center justify-between gap-3"><Badge variant="outline">{regulation.category}</Badge><span className="font-mono text-xs text-muted-foreground">{regulation.updated}</span></div>
+                  <h2 className="mt-4 text-lg font-semibold leading-6">{regulation.title}</h2>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{regulation.summary}</p>
+                  <p className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary">Open the regulation <ArrowRight className="size-4" /></p>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {primaryArea === 'establish' && (
+          <section className="space-y-6">
+            <div className="rounded-3xl border border-slate-200 bg-[#07182b] p-6 text-white shadow-[0_24px_70px_-42px_rgba(2,12,27,.8)] sm:p-8">
+              <p className="text-xs font-semibold uppercase tracking-[.16em] text-cyan-200">Establish an NBFC</p>
+              <h1 className="mt-3 text-3xl font-semibold tracking-[-.035em] sm:text-4xl">From business idea to regulatory readiness</h1>
+              <p className="mt-3 max-w-3xl text-base leading-7 text-slate-300">Use this pathway to identify the proposed activity, test whether RBI registration is required, prepare the company and application, and build the controls needed before operations begin.</p>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {[
+                ['01', 'Define the business model', 'State the financial activity, customers, products, funding model and whether another specialist category applies.'],
+                ['02', 'Test the regulatory perimeter', 'Apply the principal-business test, registration exemptions and category-specific conditions before assuming the company is an NBFC.'],
+                ['03', 'Incorporate and capitalise', 'Set up the company, governance and ownership structure and test the applicable Net Owned Fund requirement.'],
+                ['04', 'Prepare the RBI application', 'Compile the business plan, ownership, fit-and-proper, financial, technology and policy material required for the selected category and application route, including PRAVAAH where applicable.'],
+                ['05', 'Obtain and read the CoR', 'Confirm the Certificate of Registration, permitted activity, conditions and any restriction before commencing regulated NBFC business.'],
+                ['06', 'Build operational readiness', 'Put KYC, lending conduct, risk, accounting, reporting, complaints, technology, outsourcing and compliance controls into operation.'],
+              ].map(([number, title, body]) => (
+                <article key={number} className="rounded-2xl border border-border bg-card p-5 shadow-sm"><span className="font-mono text-xs font-semibold text-primary">STEP {number}</span><h2 className="mt-3 text-lg font-semibold">{title}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{body}</p></article>
+              ))}
+            </div>
+            <div className="rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
+              <p className="eyebrow">Start with the governing material</p>
+              <h2 className="mt-1 text-xl font-semibold">Four rulebooks to open first</h2>
+              <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{[1, 9, 10, 2].map((id) => { const reg = regulations.find((item) => item.id === id); return reg ? <button key={id} type="button" onClick={() => setSelected(reg)} className="rounded-xl border border-border p-4 text-left text-sm font-semibold hover:border-primary/30 hover:text-primary">{reg.title}<ArrowUpRight className="mt-3 size-4" /></button> : null; })}</div>
+              <p className="mt-5 text-sm leading-6 text-amber-800">This pathway is an orientation tool. Registration, exemption, NOF and commencement conclusions must be verified against the latest RBI directions and the facts of the proposed business.</p>
+            </div>
+          </section>
+        )}
+
+        {primaryArea === 'research' && (
           <section className="space-y-5">
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8"><p className="eyebrow">Research & Resources</p><h1 className="mt-2 text-3xl font-semibold tracking-[-.035em]">Search, compare and test the rule</h1><p className="mt-3 max-w-3xl text-base leading-7 text-muted-foreground">Use the practical explainers, comparisons, scenarios, glossary and research paths below when you need context before opening the governing direction.</p></div>
             <div className="overflow-hidden rounded-3xl border border-slate-200 bg-[#07182b] text-white shadow-[0_24px_70px_-42px_rgba(2,12,27,.8)]">
               <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[minmax(0,1.15fr)_.85fr] lg:p-10">
                 <div>
