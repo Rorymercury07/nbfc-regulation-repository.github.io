@@ -14,6 +14,7 @@ import { LayerPanel } from './layer-panel';
 import { RegulationsWorkbench } from './regulations-workbench';
 import { newRegulations, newRegulationDetails } from './new-regulations';
 import { CsirtFinAdvisory } from './csirt-fin-advisory';
+import { CompliancePageGuide, EstablishJourney, LearnPageGuide, LibraryPageGuide, RepositoryHome, ResearchPageGuide } from './repository-pages';
 
 type Regulation = { id: number; title: string; short: string; category: string; layers: string[]; status: 'Core' | 'Specialist' | 'Reference'; updated: string; summary: string; highlights: string[] };
 type RegulationDetail = { applies: string; requirements: string[]; timing: string[]; checks: string[]; related: number[] };
@@ -885,55 +886,23 @@ export default function Home() {
         )}
 
         {primaryArea === 'home' && (
-          <section className="space-y-6">
-            <div className="rounded-3xl border border-slate-200 bg-[#07182b] p-6 text-white shadow-[0_24px_70px_-42px_rgba(2,12,27,.8)] sm:p-8">
-              <p className="text-xs font-semibold uppercase tracking-[.16em] text-cyan-200">Home</p>
-              <h1 className="mt-3 text-3xl font-semibold tracking-[-.035em] sm:text-4xl">Latest regulatory developments</h1>
-              <p className="mt-3 max-w-3xl text-base leading-7 text-slate-300">Begin with the newest RBI source copies indexed in this repository. Each entry explains the regulatory purpose, applicability and practical compliance consequence.</p>
-            </div>
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {newRegulations.slice(0, 6).map((regulation) => (
-                <button key={regulation.id} type="button" onClick={() => { const full = regulations.find((item) => item.id === regulation.id); if (full) setSelected(full); }} className="rounded-2xl border border-border bg-card p-5 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md">
-                  <div className="flex items-center justify-between gap-3"><Badge variant="outline">{regulation.category}</Badge><span className="font-mono text-xs text-muted-foreground">{regulation.updated}</span></div>
-                  <h2 className="mt-4 text-lg font-semibold leading-6">{regulation.title}</h2>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{regulation.summary}</p>
-                  <p className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary">Open the regulation <ArrowRight className="size-4" /></p>
-                </button>
-              ))}
-            </div>
-          </section>
+          <RepositoryHome
+            updates={newRegulations}
+            query={query}
+            onQueryChange={setQuery}
+            onSearch={() => { setPrimaryArea('regulations'); answerQuestion(); }}
+            onNavigate={selectPrimaryArea}
+            onOpenUpdate={(id) => { const full = regulations.find((item) => item.id === id); if (full) setSelected(full); }}
+          />
         )}
 
         {primaryArea === 'establish' && (
-          <section className="space-y-6">
-            <div className="rounded-3xl border border-slate-200 bg-[#07182b] p-6 text-white shadow-[0_24px_70px_-42px_rgba(2,12,27,.8)] sm:p-8">
-              <p className="text-xs font-semibold uppercase tracking-[.16em] text-cyan-200">Establish an NBFC</p>
-              <h1 className="mt-3 text-3xl font-semibold tracking-[-.035em] sm:text-4xl">From business idea to regulatory readiness</h1>
-              <p className="mt-3 max-w-3xl text-base leading-7 text-slate-300">Use this pathway to identify the proposed activity, test whether RBI registration is required, prepare the company and application, and build the controls needed before operations begin.</p>
-            </div>
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {[
-                ['01', 'Define the business model', 'State the financial activity, customers, products, funding model and whether another specialist category applies.'],
-                ['02', 'Test the regulatory perimeter', 'Apply the principal-business test, registration exemptions and category-specific conditions before assuming the company is an NBFC.'],
-                ['03', 'Incorporate and capitalise', 'Set up the company, governance and ownership structure and test the applicable Net Owned Fund requirement.'],
-                ['04', 'Prepare the RBI application', 'Compile the business plan, ownership, fit-and-proper, financial, technology and policy material required for the selected category and application route, including PRAVAAH where applicable.'],
-                ['05', 'Obtain and read the CoR', 'Confirm the Certificate of Registration, permitted activity, conditions and any restriction before commencing regulated NBFC business.'],
-                ['06', 'Build operational readiness', 'Put KYC, lending conduct, risk, accounting, reporting, complaints, technology, outsourcing and compliance controls into operation.'],
-              ].map(([number, title, body]) => (
-                <article key={number} className="rounded-2xl border border-border bg-card p-5 shadow-sm"><span className="font-mono text-xs font-semibold text-primary">STEP {number}</span><h2 className="mt-3 text-lg font-semibold">{title}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{body}</p></article>
-              ))}
-            </div>
-            <div className="rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
-              <p className="eyebrow">Start with the governing material</p>
-              <h2 className="mt-1 text-xl font-semibold">Four rulebooks to open first</h2>
-              <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{[1, 9, 10, 2].map((id) => { const reg = regulations.find((item) => item.id === id); return reg ? <button key={id} type="button" onClick={() => setSelected(reg)} className="rounded-xl border border-border p-4 text-left text-sm font-semibold hover:border-primary/30 hover:text-primary">{reg.title}<ArrowUpRight className="mt-3 size-4" /></button> : null; })}</div>
-              <p className="mt-5 text-sm leading-6 text-amber-800">This pathway is an orientation tool. Registration, exemption, NOF and commencement conclusions must be verified against the latest RBI directions and the facts of the proposed business.</p>
-            </div>
-          </section>
+          <EstablishJourney onOpenRegulation={(id) => { const regulation = regulations.find((item) => item.id === id); if (regulation) setSelected(regulation); }} />
         )}
 
         {primaryArea === 'research' && (
           <section className="space-y-5">
+            <ResearchPageGuide onNavigate={selectPrimaryArea} />
             <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8"><p className="eyebrow">Research & Resources</p><h1 className="mt-2 text-3xl font-semibold tracking-[-.035em]">Search, compare and test the rule</h1><p className="mt-3 max-w-3xl text-base leading-7 text-muted-foreground">Use the practical explainers, comparisons, scenarios, glossary and research paths below when you need context before opening the governing direction.</p></div>
             <div className="overflow-hidden rounded-3xl border border-slate-200 bg-[#07182b] text-white shadow-[0_24px_70px_-42px_rgba(2,12,27,.8)]">
               <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[minmax(0,1.15fr)_.85fr] lg:p-10">
@@ -1173,6 +1142,10 @@ export default function Home() {
             </div>
           </article>
         )}
+
+        {primaryArea === 'learn' && <LearnPageGuide onNavigate={selectPrimaryArea} />}
+        {primaryArea === 'regulations' && <LibraryPageGuide />}
+        {primaryArea === 'compliance' && <CompliancePageGuide />}
 
         <section className={`grid items-start gap-4 ${primaryArea === 'regulations' ? 'xl:grid-cols-1' : primaryArea === 'compliance' ? 'xl:grid-cols-[minmax(0,1fr)_390px]' : 'hidden'}`}>
           <div className="grid self-start gap-4">
