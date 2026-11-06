@@ -14,6 +14,8 @@ import { LayerPanel } from './layer-panel';
 import { RegulationsWorkbench } from './regulations-workbench';
 import { newRegulations, newRegulationDetails } from './new-regulations';
 import { CsirtFinAdvisory } from './csirt-fin-advisory';
+import { FeedbackSection, feedbackConfigured } from './feedback-section';
+import { RegulatoryResearchAssistant } from './regulatory-research-assistant';
 import { CompliancePageGuide, EstablishJourney, LearnPageGuide, LibraryPageGuide, RepositoryHome, ResearchPageGuide } from './repository-pages';
 
 type Regulation = { id: number; title: string; short: string; category: string; layers: string[]; status: 'Core' | 'Specialist' | 'Reference'; updated: string; summary: string; highlights: string[] };
@@ -903,6 +905,7 @@ export default function Home() {
         {primaryArea === 'research' && (
           <section className="space-y-5">
             <ResearchPageGuide onNavigate={selectPrimaryArea} />
+            <RegulatoryResearchAssistant regulations={regulations} onOpenRegulation={(id) => { const regulation = regulations.find((item) => item.id === id); if (regulation) setSelected(regulation); }} onReportInaccuracy={() => { if (feedbackConfigured) document.getElementById('feedback')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); else selectPrimaryArea('disclaimer'); }} />
             <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8"><p className="eyebrow">Research & Resources</p><h1 className="mt-2 text-3xl font-semibold tracking-[-.035em]">Search, compare and test the rule</h1><p className="mt-3 max-w-3xl text-base leading-7 text-muted-foreground">Use the practical explainers, comparisons, scenarios, glossary and research paths below when you need context before opening the governing direction.</p></div>
             <div className="overflow-hidden rounded-3xl border border-slate-200 bg-[#07182b] text-white shadow-[0_24px_70px_-42px_rgba(2,12,27,.8)]">
               <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[minmax(0,1.15fr)_.85fr] lg:p-10">
@@ -1237,11 +1240,14 @@ export default function Home() {
         </Tabs>
       </div>
 
+      {feedbackConfigured && <FeedbackSection />}
+
       <footer className="border-t border-border bg-card/80">
         <div className="mx-auto flex max-w-[1500px] flex-col gap-3 px-4 py-5 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <p>Prepared and maintained by <button type="button" onClick={() => selectPrimaryArea('disclaimer')} className="font-semibold text-primary hover:underline">Aahana</button>.</p>
           <div className="flex flex-wrap items-center gap-4">
             <button type="button" onClick={goHome} className="font-semibold text-foreground hover:text-primary">Home</button>
+            {feedbackConfigured && <button type="button" onClick={() => document.getElementById('feedback')?.scrollIntoView({ behavior: 'smooth', block: 'start' })} className="font-semibold text-foreground hover:text-primary">Feedback &amp; Suggestions</button>}
             <button type="button" onClick={() => selectPrimaryArea('disclaimer')} className="font-semibold text-foreground hover:text-primary">Disclaimer</button>
           </div>
         </div>

@@ -39,6 +39,8 @@ jobs:
 
       - name: Build static website
         run: pnpm build
+        env:
+          NEXT_PUBLIC_FORMSPREE_ENDPOINT: ${{ vars.FORMSPREE_ENDPOINT }}
 
       - name: Place Vinext assets at the Pages artifact root
         run: |
