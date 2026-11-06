@@ -637,7 +637,7 @@ export default function Home() {
   const [publicFundsStatus, setPublicFundsStatus] = useState('Not specified');
   const [characteristics, setCharacteristics] = useState({ customer: true, digital: false, outsourcing: false });
   const [issueIndex, setIssueIndex] = useState(0);
-  const [primaryArea, setPrimaryArea] = useState<'learn' | 'regulations' | 'compliance' | null>(null);
+  const [primaryArea, setPrimaryArea] = useState<'learn' | 'regulations' | 'compliance' | 'disclaimer' | null>(null);
   const [workspaceTab, setWorkspaceTab] = useState('start');
   const [answeredQuestion, setAnsweredQuestion] = useState('');
   const [answerIds, setAnswerIds] = useState<number[]>([]);
@@ -802,7 +802,7 @@ export default function Home() {
     if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const selectPrimaryArea = (area: 'learn' | 'regulations' | 'compliance' | null) => {
+  const selectPrimaryArea = (area: 'learn' | 'regulations' | 'compliance' | 'disclaimer' | null) => {
     setFoundationIndex(null);
     setSelectedThreshold(null);
     setSelected(null);
@@ -919,12 +919,13 @@ export default function Home() {
               <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p className="eyebrow">What&apos;s new in NBFC regulation</p>
-                  <h2 className="mt-1 text-2xl font-semibold tracking-tight">Recent NBFC rules—explained in plain English.</h2>
+                  <h2 className="mt-1 text-2xl font-semibold tracking-tight">Recent NBFC rules and supervisory updates—explained in plain English.</h2>
                 </div>
                 <p className="max-w-md text-sm leading-6 text-muted-foreground">Each note tells you what the rule means, who should check it and the next compliance action. Verify the cited RBI direction before filing or issuing formal advice.</p>
               </div>
               <div className="mt-6 divide-y divide-border rounded-2xl border border-border">
                 {[
+                  { tag: 'URGENT SUPERVISORY REQUEST', date: '03 NOV 2026', title: 'RBI seeks same-day confirmation of cyber-advisory action', summary: 'An entity-specific Department of Supervision email asks the company to report action taken on three fund-transfer API advisories and one PHP vulnerability alert.', applies: 'The NBFC that received the RBI communication; not automatically every NBFC', effective: 'Response requested by 5:00 PM IST, 3 November 2026', changed: 'This is not a new Master Direction. It is an urgent supervisory information request asking the recipient to confirm its response to CSITEG Advisories 11, 12 and 13 of 2026 on unauthorised fund transfers through payment and disbursement APIs, and CSITEG Alert 6 of 2026 on critical PHP remote-code-execution vulnerabilities.', action: 'Verify the sender and submission route, obtain implementation evidence from Security, SOC, IT, API, Fraud Risk and Compliance, complete only the RBI-supplied Excel workbook, obtain authorised approval and retain submission proof.', source: 'Entity-specific RBI Department of Supervision communication dated 3 November 2026. Treat the original email and attached workbook as the controlling record.', id: null },
                   { tag: 'NEW IN LIBRARY', date: '31 JUL 2026', title: 'Cyber rules now follow three different NBFC routes', summary: 'The applicable cyber chapter depends on Base Layer asset size and whether the NBFC is a Core Investment Company.', applies: 'Registered NBFCs, Factors and HFCs; chapter varies by profile', effective: '31 July 2026', changed: 'BL entities below ₹500 crore and CICs use Chapter III. Other BL entities at ₹500 crore or more use Chapter IV. ML and UL entities other than CICs use Chapter V. The same word “cybersecurity” therefore does not mean the same checklist for every NBFC.', action: 'Confirm the 31 March assets, layer and CIC status, then map policies, incidents, audits and resilience testing to the correct chapter.', source: 'RBI (NBFCs – Cybersecurity, Technology: Risk, Resilience and Assurance Framework) Directions, 2026, paragraph 3.', id: 31 },
                   { tag: 'NEW IN LIBRARY', date: '31 JUL 2026', title: 'Fraud controls have a ₹500 crore Base Layer threshold', summary: 'The new fraud framework covers ML/UL and larger BL NBFCs, with an additional early-warning system for ML/UL.', applies: 'ML/UL and BL at ₹500 crore or more, subject to paragraph 3', effective: '31 July 2026', changed: 'A BL NBFC below ₹500 crore is outside this Direction. A covered entity needs a fraud policy and fair classification process; ML and UL must add an Early Warning Signals framework. HFC reporting follows the specific NHB route stated in the Direction.', action: 'Record the audited asset-size test, maintain the Board fraud policy, and evidence alert investigation, classification and reporting.', source: 'RBI (NBFCs – Fraud Risk Management) Directions, 2026, paragraphs 3, 5–7, 13–23 and 43.', id: 33 },
                   { tag: 'NEW IN LIBRARY', date: '31 JUL 2026', title: 'RBI returns: first choose the row that fits your NBFC', summary: 'The Supervisory Returns Direction lists who files each return and when; not every return applies to every NBFC.', applies: 'All NBFC layers except HFCs, with return-specific conditions', effective: '31 July 2026', changed: 'Paragraph 3 establishes the overall perimeter. Paragraph 21 then lists the individual return/category/layer combinations, and paragraphs 22–23 give timing. Good reporting also requires reconciliation to source data and management oversight.', action: 'Build a return calendar for your precise category, layer and deposit status, and keep reconciliation and filing acknowledgments.', source: 'RBI (NBFCs – Supervisory Returns) Directions, 2026, paragraphs 3 and 14–24.', id: 36 },
@@ -933,9 +934,9 @@ export default function Home() {
                     <div className="grid gap-3 lg:grid-cols-[150px_1fr_auto] lg:items-start">
                       <div><span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">{item.tag}</span><p className="mt-2 font-mono text-xs font-semibold text-muted-foreground">{item.date}</p></div>
                       <div><h3 className="font-semibold">{item.title}</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">{item.summary}</p><div className="mt-3 grid gap-1 text-xs text-muted-foreground sm:grid-cols-2"><p><span className="font-semibold text-foreground">Applies to:</span> {item.applies}</p><p><span className="font-semibold text-foreground">Effective:</span> {item.effective}</p></div></div>
-                      <button type="button" onClick={() => setOpenUpdate(openUpdate === index ? null : index)} className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">Explain this rule <span aria-hidden="true">{openUpdate === index ? '↑' : '↓'}</span></button>
+                      <button type="button" onClick={() => setOpenUpdate(openUpdate === index ? null : index)} className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">Explain this update <span aria-hidden="true">{openUpdate === index ? '↑' : '↓'}</span></button>
                     </div>
-                    {openUpdate === index && <div className="mt-4 rounded-2xl border border-primary/15 bg-primary/[.045] p-4 text-sm leading-6 sm:p-5"><p className="font-semibold text-primary">What this means</p><p className="mt-2 text-foreground/85">{item.changed}</p><div className="mt-4 grid gap-3 md:grid-cols-2"><div className="rounded-xl border border-primary/10 bg-background p-4"><p className="text-xs font-semibold uppercase tracking-[.08em] text-muted-foreground">What your team should do</p><p className="mt-2 text-foreground/85">{item.action}</p></div><div className="rounded-xl border border-primary/10 bg-background p-4"><p className="text-xs font-semibold uppercase tracking-[.08em] text-muted-foreground">Where the rule comes from</p><p className="mt-2 text-foreground/85">{item.source}</p></div></div><p className="mt-4"><span className="font-semibold">Applies to:</span> {item.applies}</p><p><span className="font-semibold">Status / date:</span> {item.effective}</p><button type="button" onClick={() => { const reg = regulations.find((entry) => entry.id === item.id); if (reg) setSelected(reg); }} className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">Open the detailed regulation note <ArrowRight className="size-3.5" /></button></div>}
+                    {openUpdate === index && <div className="mt-4 rounded-2xl border border-primary/15 bg-primary/[.045] p-4 text-sm leading-6 sm:p-5"><p className="font-semibold text-primary">What this means</p><p className="mt-2 text-foreground/85">{item.changed}</p><div className="mt-4 grid gap-3 md:grid-cols-2"><div className="rounded-xl border border-primary/10 bg-background p-4"><p className="text-xs font-semibold uppercase tracking-[.08em] text-muted-foreground">What your team should do</p><p className="mt-2 text-foreground/85">{item.action}</p></div><div className="rounded-xl border border-primary/10 bg-background p-4"><p className="text-xs font-semibold uppercase tracking-[.08em] text-muted-foreground">Where this comes from</p><p className="mt-2 text-foreground/85">{item.source}</p></div></div><p className="mt-4"><span className="font-semibold">Applies to:</span> {item.applies}</p><p><span className="font-semibold">Status / date:</span> {item.effective}</p>{item.id !== null && <button type="button" onClick={() => { const reg = regulations.find((entry) => entry.id === item.id); if (reg) setSelected(reg); }} className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">Open the detailed regulation note <ArrowRight className="size-3.5" /></button>}</div>}
                   </article>
                 ))}
               </div>
@@ -1053,6 +1054,7 @@ export default function Home() {
 
             <footer className="rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
               <p className="text-sm leading-6 text-muted-foreground">Written for general understanding, sourced from public RBI records. This site does not lend, take deposits, or give financial advice.</p>
+              <button type="button" onClick={() => selectPrimaryArea('disclaimer')} className="mt-3 text-sm font-semibold text-primary hover:underline">Prepared and maintained by Aahana Pal</button>
               <div className="mt-6 grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
                 {[
                   ['Just starting out', 'Bank vs NBFC · Glossary'],
@@ -1068,6 +1070,31 @@ export default function Home() {
               </div>
             </footer>
           </section>
+        )}
+
+        {primaryArea === 'disclaimer' && (
+          <article className="mx-auto max-w-4xl overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
+            <header className="border-b border-border bg-[#07182b] p-6 text-white sm:p-9">
+              <p className="text-xs font-semibold uppercase tracking-[.16em] text-cyan-200">About this website</p>
+              <h1 className="mt-3 text-3xl font-semibold tracking-[-.035em] sm:text-4xl">Disclaimer</h1>
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">Authorship, purpose, limitations and contact information for the NBFC Regulatory Desk.</p>
+            </header>
+            <div className="space-y-5 p-6 text-[15px] leading-7 text-foreground/85 sm:p-9">
+              <p>This website has been independently prepared and is maintained by <strong className="text-foreground">Aahana Pal</strong> for general informational and educational purposes. It is not an official website of the Reserve Bank of India (RBI) or any other regulator, and it is not endorsed by or affiliated with them.</p>
+              <p>The content is based on publicly available laws, regulations, circulars, directions and other materials. It is intended to help readers navigate NBFC-related regulatory information; it is not legal, regulatory, financial or professional advice. It should not be relied on as a substitute for reviewing the applicable law or official source materials, or for obtaining advice specific to your circumstances.</p>
+              <p>Regulatory requirements and official materials may change. While reasonable care is taken to prepare and update the content, no representation is made that it is complete, current or free from error. Please verify any information against the latest materials published by the relevant regulator before relying on it.</p>
+              <section className="rounded-2xl border border-primary/15 bg-primary/[.045] p-5 sm:p-6">
+                <h2 className="text-lg font-semibold text-foreground">Feedback, corrections and questions</h2>
+                <p className="mt-2">For feedback, corrections, suggestions or questions about the website, please contact:</p>
+                <div className="mt-4 space-y-1">
+                  <p className="font-semibold text-foreground">Aahana Pal</p>
+                  <p>Email: <a href="mailto:aahana.p.in@gmail.com" className="font-semibold text-primary hover:underline">aahana.p.in@gmail.com</a></p>
+                  <p>LinkedIn: <a href="https://www.linkedin.com/in/palaahana/" target="_blank" rel="noreferrer" className="font-semibold text-primary hover:underline">linkedin.com/in/palaahana</a></p>
+                </div>
+              </section>
+              <button type="button" onClick={goHome} className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"><Landmark className="size-4" />Return to homepage</button>
+            </div>
+          </article>
         )}
 
         <section className={`grid items-start gap-4 ${primaryArea === 'regulations' ? 'xl:grid-cols-1' : primaryArea === 'compliance' ? 'xl:grid-cols-[minmax(0,1fr)_390px]' : 'hidden'}`}>
@@ -1159,6 +1186,16 @@ export default function Home() {
           <TabsContent value="decision" className="pt-5"><div className="rounded-3xl border border-border bg-card p-5 sm:p-8"><div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div><p className="eyebrow">Complete syllabus</p><h3 className="mt-1 text-2xl font-semibold">Explore all {learningModules.length} concepts</h3><p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">Use this view when you already know the topic you need. Every card opens the same question-led lesson—simple answer, visual flow, example, scenario, terms and RBI source.</p></div><Badge variant="outline" className="w-fit">Beginner → practical</Badge></div><div className="mt-7 grid gap-3 md:grid-cols-2 xl:grid-cols-3">{learningModules.map((module, index) => <button type="button" key={module.number} onClick={() => { setActiveLearningModule(index); setWorkspaceTab('learn'); document.getElementById('workbench')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className="group rounded-2xl border border-border p-5 text-left hover:-translate-y-0.5 hover:border-primary/30 hover:bg-secondary/25 hover:shadow-sm"><div className="flex items-center justify-between"><span className="font-mono text-xs font-semibold text-primary">MODULE {String(module.number).padStart(2,'0')}</span><ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-1" /></div><h4 className="mt-4 text-lg font-semibold leading-6 group-hover:text-primary">{module.title}</h4><p className="mt-2 text-sm font-medium leading-6">{module.question}</p><p className="mt-3 text-xs leading-5 text-muted-foreground">{module.concepts}</p></button>)}</div></div></TabsContent>
         </Tabs>
       </div>
+
+      <footer className="border-t border-border bg-card/80">
+        <div className="mx-auto flex max-w-[1500px] flex-col gap-3 px-4 py-5 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+          <p>Prepared and maintained by <button type="button" onClick={() => selectPrimaryArea('disclaimer')} className="font-semibold text-primary hover:underline">Aahana Pal</button>.</p>
+          <div className="flex flex-wrap items-center gap-4">
+            <button type="button" onClick={goHome} className="font-semibold text-foreground hover:text-primary">Home</button>
+            <button type="button" onClick={() => selectPrimaryArea('disclaimer')} className="font-semibold text-foreground hover:text-primary">Disclaimer</button>
+          </div>
+        </div>
+      </footer>
 
       <Sheet open={foundationIndex !== null} onOpenChange={(open) => !open && setFoundationIndex(null)}>
         <SheetContent key={foundationIndex ?? 'closed'} ref={attachFoundationDrawer} className="!w-[min(98vw,1240px)] !max-w-none overflow-y-auto border-l-slate-200 bg-background xl:!w-[min(92vw,1240px)]">
