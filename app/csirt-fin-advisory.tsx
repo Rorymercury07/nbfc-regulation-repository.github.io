@@ -32,12 +32,12 @@ const evidenceItems = [
   'Containment, recovery, reporting and closure records',
 ] as const;
 
-const supervisoryRequestActions = [
-  ['Validate and register the communication', 'Confirm the sender and submission route through an authorised RBI contact or established supervisory channel. Preserve the original email, headers, attachment and receipt time in the regulatory-communications register.'],
-  ['Identify the four requested cyber items', 'Record the action taken for CSITEG Advisories 11, 12 and 13 of 2026 on unauthorised fund transfers through payment and disbursement APIs, and CSITEG Alert 6 of 2026 on critical PHP remote-code-execution vulnerabilities.'],
-  ['Collect implementation evidence', 'Obtain status and evidence from Information Security, SOC, IT, API/Application, Fraud Risk and Compliance. Distinguish implemented, not applicable, in progress and not implemented, with reasons, owners and target dates.'],
-  ['Complete only the RBI-supplied workbook', 'Use the Excel template attached to the original communication. The template was not supplied to this website, so its fields must not be guessed or recreated. If it is missing, request a fresh copy from the verified RBI contact.'],
-  ['Approve and submit securely', 'Have an authorised officer review the response for accuracy and confidentiality, then submit it through the channel stated in the verified communication by 5:00 PM IST on 3 November 2026. Retain the final workbook and delivery acknowledgement.'],
+const supervisoryExpectations = [
+  ['Track authoritative cyber advisories', 'Maintain a controlled register of relevant RBI, CERT-In, CSIRT-Fin and CSITEG advisories and alerts, with an owner and assessment status.'],
+  ['Assess applicability to the NBFC', 'Map each advisory to the NBFC’s systems, products and technology stack, including payment or disbursement APIs, internet-facing applications and PHP-based services where relevant.'],
+  ['Implement and validate safeguards', 'Apply the relevant patches, hardening, monitoring, detection and fraud controls, then test that the remediation works and does not create unmanaged operational risk.'],
+  ['Retain auditable evidence', 'Keep the applicability assessment, implementation tickets, approvals, configuration or patch evidence, test results, monitoring records, exceptions and closure sign-off.'],
+  ['Be ready to demonstrate compliance', 'When RBI or another competent authority seeks confirmation, provide an accurate and authorised account of the action taken through the verified supervisory channel and retain proof of submission.'],
 ] as const;
 
 function Expandable({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
@@ -86,20 +86,19 @@ export function CsirtFinAdvisory() {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-4xl">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge className="bg-red-700 text-white hover:bg-red-700">Same-day RBI response</Badge>
-              <Badge variant="outline" className="border-sky-300 bg-white text-sky-950">Entity-specific supervisory request</Badge>
-              <span className="text-xs font-semibold text-sky-900">Received 3 November 2026</span>
+              <Badge className="bg-sky-800 text-white hover:bg-sky-800">Supervisory cybersecurity expectation</Badge>
+              <Badge variant="outline" className="border-sky-300 bg-white text-sky-950">NBFC compliance</Badge>
             </div>
-            <h3 className="mt-3 text-xl font-semibold tracking-[-.02em] text-slate-950">Incidents of unauthorised transactions through fund-transfer APIs - submission of data</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-700">The supplied RBI Department of Supervision email asks the company to confirm action taken on CSITEG Advisories 11, 12 and 13 of 2026 and CSITEG Alert 6 of 2026, complete the attached Excel file and return it by <strong>5:00 PM IST on 3 November 2026</strong>.</p>
-            <p className="mt-2 text-sm leading-6 text-slate-700"><strong>Regulatory character:</strong> this is an urgent, entity-specific supervisory information request. It should be tracked and answered as regulatory correspondence; it is not presented here as a new RBI Master Direction or as a universal recurring return.</p>
+            <h3 className="mt-3 text-xl font-semibold tracking-[-.02em] text-slate-950">Cyber advisories must become documented controls</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-700">RBI supervision may require an NBFC to demonstrate what it has done in response to cybersecurity advisories, including alerts concerning unauthorised fund transfers through payment and disbursement APIs and critical vulnerabilities in internet-facing technology.</p>
+            <p className="mt-2 text-sm leading-6 text-slate-700"><strong>In practical terms:</strong> receiving an advisory is not the end of the process. The NBFC should assess whether it applies, implement the relevant safeguards, validate the result and retain evidence that can be produced during supervision.</p>
           </div>
           <AlertTriangle className="size-7 shrink-0 text-red-700" />
         </div>
 
         <div className="mt-5 grid gap-3 lg:grid-cols-2">
-          {supervisoryRequestActions.map(([title, body], index) => (
-            <div key={title} className={`flex gap-3 rounded-2xl border border-sky-200 bg-white p-4 ${index === supervisoryRequestActions.length - 1 ? 'lg:col-span-2' : ''}`}>
+          {supervisoryExpectations.map(([title, body], index) => (
+            <div key={title} className={`flex gap-3 rounded-2xl border border-sky-200 bg-white p-4 ${index === supervisoryExpectations.length - 1 ? 'lg:col-span-2' : ''}`}>
               <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-sky-100 font-mono text-xs font-semibold text-sky-950">{index + 1}</span>
               <div><p className="text-sm font-semibold text-slate-950">{title}</p><p className="mt-1 text-sm leading-6 text-slate-600">{body}</p></div>
             </div>
@@ -107,8 +106,8 @@ export function CsirtFinAdvisory() {
         </div>
 
         <div className="mt-4 rounded-2xl border border-amber-300 bg-amber-50 p-4">
-          <p className="text-sm font-semibold text-amber-950">Important limitation</p>
-          <p className="mt-1 text-sm leading-6 text-amber-900">The referenced Excel workbook and the underlying CSITEG Advisories 11-13 and Alert 6 were not supplied with this website update. The page therefore records the response workflow but does not claim that the requested technical actions have been completed or reproduce any missing reporting fields.</p>
+          <p className="text-sm font-semibold text-amber-950">Applicability must still be tested</p>
+          <p className="mt-1 text-sm leading-6 text-amber-900">A supervisory email to one company does not, by itself, make every underlying advisory universally applicable to every NBFC. The entity should test its layer, business activities, systems and exposure, while separately following any direct RBI communication addressed to it.</p>
         </div>
       </div>
 
