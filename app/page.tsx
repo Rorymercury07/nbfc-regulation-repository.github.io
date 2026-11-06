@@ -1100,7 +1100,7 @@ export default function Home() {
 
             <footer className="rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-7">
               <p className="text-sm leading-6 text-muted-foreground">Written for general understanding, sourced from public RBI records. This site does not lend, take deposits, or give financial advice.</p>
-              <button type="button" onClick={() => selectPrimaryArea('disclaimer')} className="mt-3 text-sm font-semibold text-primary hover:underline">Prepared and maintained by Aahana Pal</button>
+              <button type="button" onClick={() => selectPrimaryArea('disclaimer')} className="mt-3 text-sm font-semibold text-primary hover:underline">Prepared and maintained by Aahana</button>
               <div className="mt-6 grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
                 {[
                   ['Just starting out', 'Bank vs NBFC · Glossary'],
@@ -1126,14 +1126,14 @@ export default function Home() {
               <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">Authorship, purpose, limitations and contact information for the NBFC Regulatory Desk.</p>
             </header>
             <div className="space-y-5 p-6 text-[15px] leading-7 text-foreground/85 sm:p-9">
-              <p>This website has been independently prepared and is maintained by <strong className="text-foreground">Aahana Pal</strong> for general informational and educational purposes. It is not an official website of the Reserve Bank of India (RBI) or any other regulator, and it is not endorsed by or affiliated with them.</p>
+              <p>This website has been independently prepared and is maintained by <strong className="text-foreground">Aahana</strong> for general informational and educational purposes. It is not an official website of the Reserve Bank of India (RBI) or any other regulator, and it is not endorsed by or affiliated with them.</p>
               <p>The content is based on publicly available laws, regulations, circulars, directions and other materials. It is intended to help readers navigate NBFC-related regulatory information; it is not legal, regulatory, financial or professional advice. It should not be relied on as a substitute for reviewing the applicable law or official source materials, or for obtaining advice specific to your circumstances.</p>
               <p>Regulatory requirements and official materials may change. While reasonable care is taken to prepare and update the content, no representation is made that it is complete, current or free from error. Please verify any information against the latest materials published by the relevant regulator before relying on it.</p>
               <section className="rounded-2xl border border-primary/15 bg-primary/[.045] p-5 sm:p-6">
                 <h2 className="text-lg font-semibold text-foreground">Feedback, corrections and questions</h2>
                 <p className="mt-2">For feedback, corrections, suggestions or questions about the website, please contact:</p>
                 <div className="mt-4 space-y-1">
-                  <p className="font-semibold text-foreground">Aahana Pal</p>
+                  <p className="font-semibold text-foreground">Aahana</p>
                   <p>Email: <a href="mailto:aahana.p.in@gmail.com" className="font-semibold text-primary hover:underline">aahana.p.in@gmail.com</a></p>
                   <p>LinkedIn: <a href="https://www.linkedin.com/in/palaahana/" target="_blank" rel="noreferrer" className="font-semibold text-primary hover:underline">linkedin.com/in/palaahana</a></p>
                 </div>
@@ -1239,7 +1239,7 @@ export default function Home() {
 
       <footer className="border-t border-border bg-card/80">
         <div className="mx-auto flex max-w-[1500px] flex-col gap-3 px-4 py-5 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-          <p>Prepared and maintained by <button type="button" onClick={() => selectPrimaryArea('disclaimer')} className="font-semibold text-primary hover:underline">Aahana Pal</button>.</p>
+          <p>Prepared and maintained by <button type="button" onClick={() => selectPrimaryArea('disclaimer')} className="font-semibold text-primary hover:underline">Aahana</button>.</p>
           <div className="flex flex-wrap items-center gap-4">
             <button type="button" onClick={goHome} className="font-semibold text-foreground hover:text-primary">Home</button>
             <button type="button" onClick={() => selectPrimaryArea('disclaimer')} className="font-semibold text-foreground hover:text-primary">Disclaimer</button>
