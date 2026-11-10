@@ -97,15 +97,22 @@ export function LearnPageGuide({ onNavigate }: { onNavigate: (area: Area) => voi
 }
 
 export function LibraryPageGuide() {
+  return (
+    <section className={`${panel} mb-6 p-5 sm:p-8`}>
+      <p className="text-xs font-semibold uppercase tracking-[.14em] text-primary">Regulatory Library</p><h2 className="mt-2 text-2xl font-semibold tracking-tight">Read every rule in two modes.</h2><div className="mt-5 grid gap-3 lg:grid-cols-2"><div className={`${card} p-4`}><p className="font-semibold">Explained simply</p><p className="mt-1 text-sm leading-6 text-slate-600">Why the rule exists, who it affects, an example and the practical compliance impact.</p></div><div className={`${card} p-4`}><p className="font-semibold">Legal reference</p><p className="mt-1 text-sm leading-6 text-slate-600">Exact direction name, paragraph, definitions, applicability, dates, amendments and related obligations.</p></div></div>
+    </section>
+  );
+}
+
+export function ConnectedLawsGuide() {
   const connected = [
     ['Data privacy', 'DPDP Act and Rules'], ['Cybersecurity', 'IT Act, CERT-In directions and RBI technology rules'], ['Corporate governance', 'Companies Act, MCA Rules and Secretarial Standards'], ['Financial crime', 'PMLA, PML Rules and RBI KYC framework'], ['Recovery and insolvency', 'IBC, arbitration and SARFAESI where applicable'], ['Foreign investment', 'FEMA, FDI policy and RBI requirements'], ['Credit information', 'CICRA and RBI reporting rules'], ['Consumer protection', 'Consumer Protection Act and RBI conduct directions'],
   ];
   return (
-    <section className={`${panel} mb-6 p-5 sm:p-8`}>
-      <div className="grid gap-6 lg:grid-cols-[.85fr_1.15fr]">
-        <div><p className="text-xs font-semibold uppercase tracking-[.14em] text-primary">Regulatory Library</p><h2 className="mt-2 text-2xl font-semibold tracking-tight">Read every rule in two modes.</h2><div className="mt-5 space-y-3"><div className={`${card} p-4`}><p className="font-semibold">Explained simply</p><p className="mt-1 text-sm leading-6 text-slate-600">Why the rule exists, who it affects, an example and the practical compliance impact.</p></div><div className={`${card} p-4`}><p className="font-semibold">Legal reference</p><p className="mt-1 text-sm leading-6 text-slate-600">Exact direction name, paragraph, definitions, applicability, dates, amendments and related obligations.</p></div></div></div>
-        <div><p className="text-sm font-semibold">The library also connects RBI directions to other laws.</p><div className="mt-4 grid gap-2 sm:grid-cols-2">{connected.map(([title, body]) => <div key={title} className="rounded-xl bg-slate-50 p-4"><p className="text-sm font-semibold">{title}</p><p className="mt-1 text-xs leading-5 text-slate-600">{body}</p></div>)}</div><p className="mt-4 text-xs leading-5 text-slate-500">Status labels distinguish current, amended, superseded and historical material. Educational explanations do not replace the binding source.</p></div>
-      </div>
+    <section className={`${panel} mt-8 p-5 sm:p-8`}>
+      <p className="text-sm font-semibold">The library also connects RBI directions to other laws.</p>
+      <div className="mt-4 grid gap-2 sm:grid-cols-2">{connected.map(([title, body]) => <div key={title} className="rounded-xl bg-slate-50 p-4"><p className="text-sm font-semibold">{title}</p><p className="mt-1 text-xs leading-5 text-slate-600">{body}</p></div>)}</div>
+      <p className="mt-4 text-xs leading-5 text-slate-500">Status labels distinguish current, amended, superseded and historical material. Educational explanations do not replace the binding source.</p>
     </section>
   );
 }
