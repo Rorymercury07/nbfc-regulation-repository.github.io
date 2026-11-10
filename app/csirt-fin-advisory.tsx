@@ -54,24 +54,25 @@ function Expandable({ title, subtitle, children }: { title: string; subtitle: st
 
 export function CsirtFinAdvisory() {
   return (
-    <section className="overflow-hidden rounded-3xl border border-rose-200 bg-card shadow-sm" aria-labelledby="csirt-fin-title">
-      <header className="bg-[#2b0b18] p-5 text-white sm:p-7">
+    <section className="overflow-hidden rounded-3xl border border-slate-200 bg-card shadow-sm" aria-labelledby="csirt-fin-title">
+      <header className="bg-[#07182b] p-5 text-white sm:p-7">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div className="max-w-4xl">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge className="bg-rose-200 text-rose-950 hover:bg-rose-200">Critical cybersecurity advisory</Badge>
+              <Badge className="bg-cyan-200 text-slate-950 hover:bg-cyan-200">Latest cybersecurity advisory</Badge>
               <Badge variant="outline" className="border-white/25 text-white">CSIRT-Fin / CERT-In</Badge>
+              <Badge className="bg-amber-100 text-amber-950 hover:bg-amber-100">Severity: Critical</Badge>
               <Badge variant="outline" className="border-amber-200/40 text-amber-100">TLP:AMBER</Badge>
-              <span className="text-xs font-medium text-rose-100">Issued 30 October 2026 · revised IOC copy</span>
+              <span className="text-xs font-medium text-slate-300">Issued 30 October 2026 · revised IOC copy</span>
             </div>
-            <p className="mt-5 text-xs font-semibold uppercase tracking-[.16em] text-rose-200">Advisory 261830103401_ADD.2</p>
+            <p className="mt-5 text-xs font-semibold uppercase tracking-[.16em] text-cyan-200">Advisory 261830103401_ADD.2</p>
             <h2 id="csirt-fin-title" className="mt-2 text-2xl font-semibold leading-tight tracking-[-.025em] sm:text-3xl">Multi-tool AI-driven attack infrastructure: revised compliance response</h2>
-            <p className="mt-4 max-w-3xl text-sm leading-7 text-rose-50/85">This critical addendum continues the alert on unauthorised fund transfers through payment and disbursement API abuse. CSIRT-Fin identifies the campaign as CRAFTY FALCON and requires the revised ADD.2 material to be used with the parent advisory and ADD.1. The technical attachment remains restricted and is not reproduced here.</p>
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300">This critical addendum continues the alert on unauthorised fund transfers through payment and disbursement API abuse. CSIRT-Fin identifies the campaign as CRAFTY FALCON and requires the revised ADD.2 material to be used with the parent advisory and ADD.1. The technical attachment remains restricted and is not reproduced here.</p>
           </div>
-          <span className="grid size-12 shrink-0 place-items-center rounded-2xl border border-rose-200/20 bg-rose-200/10"><ShieldAlert className="size-6 text-rose-200" /></span>
+          <span className="grid size-12 shrink-0 place-items-center rounded-2xl border border-cyan-200/20 bg-cyan-200/10"><ShieldAlert className="size-6 text-cyan-200" /></span>
         </div>
         <div className="mt-6 grid gap-3 border-t border-white/10 pt-5 sm:grid-cols-3">
-          {[['What it affects', 'BFSI security, payment and disbursement controls'], ['What must happen', 'Replace revised IOCs; deploy, tune and retrospectively review'], ['How urgent', 'Critical; act on a priority basis']].map(([label, value]) => <div key={label}><p className="text-xs font-semibold uppercase tracking-[.1em] text-rose-200">{label}</p><p className="mt-1 text-sm font-semibold leading-6 text-white">{value}</p></div>)}
+          {[['What it affects', 'BFSI security, payment and disbursement controls'], ['What must happen', 'Replace revised IOCs; deploy, tune and retrospectively review'], ['How urgent', 'Critical; act on a priority basis']].map(([label, value]) => <div key={label}><p className="text-xs font-semibold uppercase tracking-[.1em] text-cyan-200">{label}</p><p className="mt-1 text-sm font-semibold leading-6 text-white">{value}</p></div>)}
         </div>
       </header>
 
@@ -93,7 +94,7 @@ export function CsirtFinAdvisory() {
             <p className="mt-2 text-sm leading-6 text-slate-700">RBI supervision may require an NBFC to demonstrate what it has done in response to cybersecurity advisories, including alerts concerning unauthorised fund transfers through payment and disbursement APIs and critical vulnerabilities in internet-facing technology.</p>
             <p className="mt-2 text-sm leading-6 text-slate-700"><strong>In practical terms:</strong> receiving an advisory is not the end of the process. The NBFC should assess whether it applies, implement the relevant safeguards, validate the result and retain evidence that can be produced during supervision.</p>
           </div>
-          <AlertTriangle className="size-7 shrink-0 text-red-700" />
+          <AlertTriangle className="size-7 shrink-0 text-amber-700" />
         </div>
 
         <div className="mt-5 grid gap-3 lg:grid-cols-2">
@@ -113,7 +114,7 @@ export function CsirtFinAdvisory() {
 
       <div>
         <Expandable title="What should the NBFC do now?" subtitle="Six actions for the revised ADD.2, without exposing restricted technical content.">
-          <ol className="grid gap-3 lg:grid-cols-2">{immediateActions.map(([title, body], index) => <li key={title} className="flex gap-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-4"><span className="grid size-7 shrink-0 place-items-center rounded-lg bg-rose-100 font-mono text-xs font-semibold text-rose-900">{index + 1}</span><div><p className="text-sm font-semibold text-slate-950">{title}</p><p className="mt-1 text-sm leading-6 text-slate-600">{body}</p></div></li>)}</ol>
+          <ol className="grid gap-3 lg:grid-cols-2">{immediateActions.map(([title, body], index) => <li key={title} className="flex gap-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-4"><span className="grid size-7 shrink-0 place-items-center rounded-lg bg-cyan-100 font-mono text-xs font-semibold text-cyan-950">{index + 1}</span><div><p className="text-sm font-semibold text-slate-950">{title}</p><p className="mt-1 text-sm leading-6 text-slate-600">{body}</p></div></li>)}</ol>
         </Expandable>
 
         <Expandable title="Who owns each part?" subtitle="A practical responsibility map for the incident-response team.">
